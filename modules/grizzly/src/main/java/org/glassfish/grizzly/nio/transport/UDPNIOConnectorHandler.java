@@ -81,18 +81,18 @@ public class UDPNIOConnectorHandler extends AbstractSocketConnectorHandler {
     }
 
     @Override
-    public void connect(final SocketAddress remoteAddress,
+    public GrizzlyFuture<Connection> connect(final SocketAddress remoteAddress,
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler) {
 
         if (!transport.isBlocking()) {
-            connectAsync(remoteAddress, localAddress, completionHandler, false);
+            return connectAsync(remoteAddress, localAddress, completionHandler, false);
         } else {
-            connectSync(remoteAddress, localAddress, completionHandler);
+            return connectSync(remoteAddress, localAddress, completionHandler);
         }
     }
 
-    protected void connectSync(final SocketAddress remoteAddress,
+    protected GrizzlyFuture<Connection> connectSync(final SocketAddress remoteAddress,
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler) {
         
@@ -100,6 +100,8 @@ public class UDPNIOConnectorHandler extends AbstractSocketConnectorHandler {
                 localAddress, completionHandler, true);
         
         waitNIOFuture(future, completionHandler);
+        
+        return future;
     }
 
     @Override
