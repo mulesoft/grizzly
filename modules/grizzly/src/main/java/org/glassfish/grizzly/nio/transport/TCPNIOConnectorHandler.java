@@ -78,24 +78,26 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
     }
 
     @Override
-    public void connect(final SocketAddress remoteAddress,
+    public GrizzlyFuture<Connection> connect(final SocketAddress remoteAddress,
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler) {
 
         if (!transport.isBlocking()) {
-            connectAsync(remoteAddress, localAddress, completionHandler, false);
+            return connectAsync(remoteAddress, localAddress, completionHandler, false);
         } else {
-            connectSync(remoteAddress, localAddress, completionHandler);
+            return connectSync(remoteAddress, localAddress, completionHandler);
         }
     }
 
-    protected void connectSync(SocketAddress remoteAddress, SocketAddress localAddress,
+    protected GrizzlyFuture<Connection> connectSync(SocketAddress remoteAddress, SocketAddress localAddress,
             CompletionHandler<Connection> completionHandler) {
 
         final FutureImpl<Connection> future = connectAsync(remoteAddress,
                 localAddress, completionHandler, true);
 
         waitNIOFuture(future, completionHandler);
+        
+        return future;
     }
 
     @Override

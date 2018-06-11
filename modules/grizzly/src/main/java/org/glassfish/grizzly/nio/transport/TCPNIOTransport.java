@@ -343,9 +343,9 @@ public final class TCPNIOTransport extends NIOTransport implements
      * @param completionHandler {@link CompletionHandler}.
      */
     @Override
-    public void connect(final SocketAddress remoteAddress,
+    public GrizzlyFuture<Connection> connect(final SocketAddress remoteAddress,
             final CompletionHandler<Connection> completionHandler) {
-        connectorHandler.connect(remoteAddress, completionHandler);
+        return connectorHandler.connect(remoteAddress, completionHandler);
     }
 
     /**
@@ -372,10 +372,10 @@ public final class TCPNIOTransport extends NIOTransport implements
      * @param completionHandler {@link CompletionHandler}.
      */
     @Override
-    public void connect(final SocketAddress remoteAddress,
+    public GrizzlyFuture<Connection> connect(final SocketAddress remoteAddress,
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler) {
-        connectorHandler.connect(remoteAddress, localAddress,
+        return connectorHandler.connect(remoteAddress, localAddress,
                 completionHandler);
     }
 
