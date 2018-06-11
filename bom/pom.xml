@@ -51,7 +51,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.grizzly</groupId>
+    <groupId>org.mule.glassfish.grizzly</groupId>
     <artifactId>grizzly-bom</artifactId>
     <packaging>pom</packaging>
     <name>grizzly-bom</name>
@@ -117,72 +117,72 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-framework</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-compression</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-portunif</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-ajp</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-websockets</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-spdy</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-comet</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-server-multipart</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-server-jaxws</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-servlet-extras</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>tls-sni</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -193,48 +193,48 @@
             </dependency>
             <!-- JMX monitoring modules -->
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-framework-monitoring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-monitoring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-server-monitoring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Bundles -->
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-server-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-all</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http-servlet-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-websockets-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
+                <groupId>org.mule.glassfish.grizzly</groupId>
                 <artifactId>grizzly-comet-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
