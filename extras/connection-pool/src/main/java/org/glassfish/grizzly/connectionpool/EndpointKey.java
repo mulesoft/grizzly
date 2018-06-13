@@ -39,6 +39,7 @@
  */
 package org.glassfish.grizzly.connectionpool;
 
+import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.ConnectorHandler;
 import org.glassfish.grizzly.GrizzlyFuture;
@@ -192,4 +193,10 @@ public class EndpointKey<E> extends Endpoint<E> {
                     + ", connectorHandler=" + connectorHandler
                     + "} " + super.toString();
     }
+
+	@Override
+	public GrizzlyFuture<Connection> connect(CompletionHandler<Connection> completionHandler) {
+        return (GrizzlyFuture) connectorHandler.connect(
+                targetEndpointAddress, localEndpointAddress, completionHandler);
+	}
 }
