@@ -55,18 +55,7 @@ import org.glassfish.grizzly.GrizzlyFuture;
 public abstract class Endpoint<E> {
     public abstract Object getId();
     public abstract GrizzlyFuture<Connection> connect();
-    
-    /**
-     * A connect with a completion handler.
-     * In order to guarantee compatibility the default behavior is connect without completion handler so
-     * that the subclasses do not have to implement this method.
-     * 
-     * @param commpletionHandler the completion handler
-     * @return a future for the connect operation
-     */
-    protected GrizzlyFuture<Connection> connect(CompletionHandler<Connection> commpletionHandler) {
-    		return connect();
-    	}
+    public abstract GrizzlyFuture<Connection> connect(CompletionHandler<Connection> completionHandler);
     
     /**
      * The method is called, once new {@link Connection} related to the
@@ -131,6 +120,12 @@ public abstract class Endpoint<E> {
                     return (GrizzlyFuture<Connection>)
                             connectorHandler.connect(targetAddress, localAddress);
                 }
+
+				@Override
+				public GrizzlyFuture<Connection> connect(CompletionHandler<Connection> completionHandler) {
+                    return (GrizzlyFuture<Connection>)
+                            connectorHandler.connect(targetAddress, localAddress, completionHandler);
+				}
             };
         }
     }

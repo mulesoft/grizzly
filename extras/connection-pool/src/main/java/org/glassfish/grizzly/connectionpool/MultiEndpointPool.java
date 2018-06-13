@@ -869,6 +869,12 @@ public class MultiEndpointPool<E> {
                         return (GrizzlyFuture<Connection>) defaultConnectorHandler
                                 .connect(epk.getEndpoint(), epk.getLocalEndpoint());
                     }
+
+					@Override
+					public GrizzlyFuture<Connection> connect(CompletionHandler<Connection> completionHandler) {
+                        return (GrizzlyFuture<Connection>) defaultConnectorHandler
+                                .connect(epk.getEndpoint(), epk.getLocalEndpoint(), completionHandler);
+					}
                 };
             }
         }
