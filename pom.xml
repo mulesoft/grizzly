@@ -370,7 +370,8 @@
                                                 org.apache.maven.plugins:maven-jar-plugin,
                                                 org.apache.maven.plugins:maven-clean-plugin,
                                                 org.apache.maven.plugins:maven-install-plugin,
-                                                org.apache.maven.plugins:maven-deploy-plugin
+                                                org.apache.maven.plugins:maven-deploy-plugin,
+                                                org.apache.maven.plugins:maven-war-plugin
                                             </unCheckedPluginList>
                                         </requirePluginVersions>
                                     </rules>
