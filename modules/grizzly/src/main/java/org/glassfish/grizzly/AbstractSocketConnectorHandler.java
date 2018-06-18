@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.utils.Futures;
 
 /**
  * Abstract class simplifies the implementation of
@@ -104,6 +105,13 @@ public abstract class AbstractSocketConnectorHandler
             final CompletionHandler<Connection> completionHandler,
             final boolean needFuture);
 
+    protected abstract FutureImpl<Connection> connectAsync(
+            final SocketAddress remoteAddress,
+            final SocketAddress localAddress,
+            final CompletionHandler<Connection> completionHandler,
+            final boolean needFuture,
+            final boolean onlyAddCompletionHandlerToFuture);
+    
     /**
      * Get the default {@link Processor} to process {@link IOEvent}, occurring
      * on connection phase.
@@ -253,4 +261,23 @@ public abstract class AbstractSocketConnectorHandler
 
         protected abstract AbstractSocketConnectorHandler create();
     }
+    
+	protected CompletionHandler<Connection> resolveFutureAndCompletionHandler(
+			CompletionHandler<Connection> completionHandler, boolean onlyAddCompletionHandlerToFuture,
+			final FutureImpl<Connection> futureToReturn) {
+		final CompletionHandler<Connection> completionHandlerToPass;
+		if (onlyAddCompletionHandlerToFuture) {
+			futureToReturn.addCompletionHandler(completionHandler);
+		    completionHandlerToPass = Futures.toCompletionHandler(
+		            futureToReturn, null);
+		} else {
+		    completionHandlerToPass = Futures.toCompletionHandler(
+		            futureToReturn, completionHandler);
+		}
+		return completionHandlerToPass;
+	}
+
+	public abstract GrizzlyFuture<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture,
+			boolean onlyAddCompletionHandlerToFuture);
 }
