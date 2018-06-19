@@ -53,6 +53,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
@@ -856,4 +857,19 @@ public final class TCPNIOTransport extends NIOTransport implements
             lock.unlock();
         }
     }
+
+	@Override
+	public Future<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture) {
+        return connectorHandler.connect(remoteAddress, localAddress,
+                completionHandler, needFuture, false);
+	}
+
+	@Override
+	public Future<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture,
+			boolean onlyAddCompletionHandlerToFuture) {
+        return connectorHandler.connect(remoteAddress, localAddress,
+                completionHandler, needFuture, onlyAddCompletionHandlerToFuture);
+	}
 }

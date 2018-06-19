@@ -81,12 +81,7 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
     public GrizzlyFuture<Connection> connect(final SocketAddress remoteAddress,
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler) {
-
-        if (!transport.isBlocking()) {
-            return connectAsync(remoteAddress, localAddress, completionHandler, false);
-        } else {
-            return connectSync(remoteAddress, localAddress, completionHandler);
-        }
+    		return connect(remoteAddress, localAddress, completionHandler, false);
     }
 
     protected GrizzlyFuture<Connection> connectSync(SocketAddress remoteAddress, SocketAddress localAddress,
@@ -106,97 +101,7 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler,
             final boolean needFuture) {
-        
-        final TCPNIOTransport nioTransport = (TCPNIOTransport) transport;
-        TCPNIOConnection newConnection = null;
-        try {
-            final SocketChannel socketChannel =
-                    nioTransport.getSelectorProvider().openSocketChannel();
-
-            newConnection = nioTransport.obtainNIOConnection(socketChannel);
-
-            final TCPNIOConnection finalConnection = newConnection;
-
-            final Socket socket = socketChannel.socket();
-            
-            nioTransport.getChannelConfigurator().preConfigure(
-                    nioTransport, socketChannel);
-            
-            final boolean reuseAddr = isReuseAddress;
-            if (reuseAddr != nioTransport.isReuseAddress()) {
-                socket.setReuseAddress(reuseAddr);
-            }
-
-            if (localAddress != null) {
-                socket.bind(localAddress);
-            }
-
-            preConfigure(finalConnection);
-
-            finalConnection.setProcessor(getProcessor());
-            finalConnection.setProcessorSelector(getProcessorSelector());
-
-            final boolean isConnected = socketChannel.connect(remoteAddress);
-
-            
-            final CompletionHandler<Connection> completionHandlerToPass;
-            final FutureImpl<Connection> futureToReturn;
-            
-            if (needFuture) {
-                futureToReturn = makeCancellableFuture(finalConnection);
-                
-                completionHandlerToPass = Futures.toCompletionHandler(
-                        futureToReturn, completionHandler);
-                
-            } else {
-                completionHandlerToPass = completionHandler;
-                futureToReturn = null;
-            }
-            
-            newConnection.setConnectResultHandler(
-                    new TCPNIOConnection.ConnectResultHandler() {
-                @Override
-                public void connected() throws IOException {
-                    onConnectedAsync(finalConnection, completionHandlerToPass);
-                }
-
-                @Override
-                public void failed(Throwable throwable) {
-                    abortConnection(finalConnection,
-                            completionHandlerToPass, throwable);
-                }
-            });
-
-            final NIOChannelDistributor nioChannelDistributor =
-                    nioTransport.getNIOChannelDistributor();
-
-            if (nioChannelDistributor == null) {
-                throw new IllegalStateException(
-                        "NIOChannelDistributor is null. Is Transport running?");
-            }
-
-            if (isConnected) {
-                nioChannelDistributor.registerChannelAsync(
-                        socketChannel, 0, newConnection,
-                        instantConnectHandler);
-            } else {
-                nioChannelDistributor.registerChannelAsync(
-                        socketChannel, SelectionKey.OP_CONNECT, newConnection,
-                        new RegisterChannelCompletionHandler(newConnection));
-            }
-            
-            return futureToReturn;
-        } catch (Exception e) {
-            if (newConnection != null) {
-                newConnection.closeSilently();
-            }
-
-            if (completionHandler != null) {
-                completionHandler.failed(e);
-            }
-
-            return needFuture ? ReadyFutureImpl.<Connection>create(e) : null;
-        }
+    		return connectAsync(remoteAddress, localAddress, completionHandler, needFuture, false);
     }
 
     protected static void onConnectedAsync(final TCPNIOConnection connection,
@@ -415,4 +320,115 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             return new TCPNIOConnectorHandler(transport);
         }
     }
+
+	@Override
+	public GrizzlyFuture<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture) {
+		return connect(remoteAddress, localAddress, completionHandler, needFuture, false);
+	}
+	
+	@Override
+	public GrizzlyFuture<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture, boolean onlyAddCompletionHandlerToFuture) {
+        if (!transport.isBlocking()) {
+            return connectAsync(remoteAddress, localAddress, completionHandler, needFuture, onlyAddCompletionHandlerToFuture);
+        } else {
+            return connectSync(remoteAddress, localAddress, completionHandler);
+        }
+	}
+	
+
+	@Override
+	protected FutureImpl<Connection> connectAsync(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture,
+			boolean onlyAddCompletionHandlerToFuture) {
+        final TCPNIOTransport nioTransport = (TCPNIOTransport) transport;
+        TCPNIOConnection newConnection = null;
+        try {
+            final SocketChannel socketChannel =
+                    nioTransport.getSelectorProvider().openSocketChannel();
+
+            newConnection = nioTransport.obtainNIOConnection(socketChannel);
+
+            final TCPNIOConnection finalConnection = newConnection;
+
+            final Socket socket = socketChannel.socket();
+            
+            nioTransport.getChannelConfigurator().preConfigure(
+                    nioTransport, socketChannel);
+            
+            final boolean reuseAddr = isReuseAddress;
+            if (reuseAddr != nioTransport.isReuseAddress()) {
+                socket.setReuseAddress(reuseAddr);
+            }
+
+            if (localAddress != null) {
+                socket.bind(localAddress);
+            }
+
+            preConfigure(finalConnection);
+
+            finalConnection.setProcessor(getProcessor());
+            finalConnection.setProcessorSelector(getProcessorSelector());
+
+            final boolean isConnected = socketChannel.connect(remoteAddress);
+
+            
+            final CompletionHandler<Connection> completionHandlerToPass;
+            final FutureImpl<Connection> futureToReturn;
+            
+            if (needFuture) {
+                futureToReturn = makeCancellableFuture(finalConnection);
+                completionHandlerToPass = resolveFutureAndCompletionHandler(completionHandler,
+						onlyAddCompletionHandlerToFuture, futureToReturn);
+            } else {
+                completionHandlerToPass = completionHandler;
+                futureToReturn = null;
+            }
+            
+            newConnection.setConnectResultHandler(
+                    new TCPNIOConnection.ConnectResultHandler() {
+                @Override
+                public void connected() throws IOException {
+                    onConnectedAsync(finalConnection, completionHandlerToPass);
+                }
+
+                @Override
+                public void failed(Throwable throwable) {
+                    abortConnection(finalConnection,
+                            completionHandlerToPass, throwable);
+                }
+            });
+
+            final NIOChannelDistributor nioChannelDistributor =
+                    nioTransport.getNIOChannelDistributor();
+
+            if (nioChannelDistributor == null) {
+                throw new IllegalStateException(
+                        "NIOChannelDistributor is null. Is Transport running?");
+            }
+
+            if (isConnected) {
+                nioChannelDistributor.registerChannelAsync(
+                        socketChannel, 0, newConnection,
+                        instantConnectHandler);
+            } else {
+                nioChannelDistributor.registerChannelAsync(
+                        socketChannel, SelectionKey.OP_CONNECT, newConnection,
+                        new RegisterChannelCompletionHandler(newConnection));
+            }
+            
+            return futureToReturn;
+        } catch (Exception e) {
+            if (newConnection != null) {
+                newConnection.closeSilently();
+            }
+
+            if (completionHandler != null) {
+                completionHandler.failed(e);
+            }
+
+            return needFuture ? ReadyFutureImpl.<Connection>create(e) : null;
+        }
+	}
 }

@@ -50,6 +50,7 @@ import java.nio.channels.SelectionKey;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
@@ -739,4 +740,19 @@ public final class UDPNIOTransport extends NIOTransport
             }
         }
     }
+
+	@Override
+	public Future<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture) {
+        return connectorHandler.connect(remoteAddress, localAddress,
+                completionHandler, needFuture);
+	}
+
+	@Override
+	public Future<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture,
+			boolean onlyAddCompletionHandlerToFuture) {
+        return connectorHandler.connect(remoteAddress, localAddress,
+                completionHandler, needFuture, onlyAddCompletionHandlerToFuture);
+	}
 }

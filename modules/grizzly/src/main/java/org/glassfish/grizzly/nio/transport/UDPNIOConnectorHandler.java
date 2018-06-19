@@ -110,81 +110,7 @@ public class UDPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             final SocketAddress localAddress,
             final CompletionHandler<Connection> completionHandler,
             final boolean needFuture) {
-
-        final UDPNIOTransport nioTransport = (UDPNIOTransport) transport;
-        UDPNIOConnection newConnection = null;
-
-        try {
-            
-            final DatagramChannel datagramChannel =
-                    nioTransport.getSelectorProvider().openDatagramChannel();
-
-            nioTransport.getChannelConfigurator().preConfigure(
-                    nioTransport, datagramChannel);
-            
-            final DatagramSocket socket = datagramChannel.socket();
-            newConnection = nioTransport.obtainNIOConnection(datagramChannel);
-
-            final boolean reuseAddr = isReuseAddress;
-            if (reuseAddr != nioTransport.isReuseAddress()) {
-                socket.setReuseAddress(reuseAddr);
-            }
-            
-            socket.bind(localAddress);
-
-            if (remoteAddress != null) {
-                datagramChannel.connect(remoteAddress);
-            }
-
-            nioTransport.getChannelConfigurator().postConfigure(
-                    nioTransport, datagramChannel);
-            
-            preConfigure(newConnection);
-
-            newConnection.setProcessor(getProcessor());
-            newConnection.setProcessorSelector(getProcessorSelector());
-
-            final NIOChannelDistributor nioChannelDistributor =
-                    nioTransport.getNIOChannelDistributor();
-
-            if (nioChannelDistributor == null) {
-                throw new IllegalStateException(
-                        "NIOChannelDistributor is null. Is Transport running?");
-            }
-            
-            final CompletionHandler<Connection> completionHandlerToPass;
-            final FutureImpl<Connection> futureToReturn;
-            
-            if (needFuture) {
-                futureToReturn = makeCancellableFuture(newConnection);
-                
-                completionHandlerToPass = Futures.toCompletionHandler(
-                        futureToReturn, completionHandler);
-                
-            } else {
-                completionHandlerToPass = completionHandler;
-                futureToReturn = null;
-            }
-
-            // if connected immediately - register channel on selector with NO_INTEREST
-            // interest
-            nioChannelDistributor.registerChannelAsync(datagramChannel,
-                    0, newConnection,
-                    new ConnectHandler(newConnection, completionHandlerToPass));
-            
-            return futureToReturn;
-        } catch (Exception e) {
-            if (newConnection != null) {
-                newConnection.closeSilently();
-            }
-
-            if (completionHandler != null) {
-                completionHandler.failed(e);
-            }
-            
-            return needFuture ? ReadyFutureImpl.<Connection>create(e) : null;
-        }
-
+    		return connectAsync(remoteAddress, localAddress, completionHandler, needFuture, false);
     }
 
     public boolean isReuseAddress() {
@@ -364,4 +290,95 @@ public class UDPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             return new UDPNIOConnectorHandler(transport);
         }
     }
+
+	@Override
+	public Future<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture) {
+		return connectAsync(null, null, null, needFuture);
+	}
+
+	@Override
+	protected FutureImpl<Connection> connectAsync(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture,
+			boolean onlyAddCompletionHandlerToFuture) {
+
+        final UDPNIOTransport nioTransport = (UDPNIOTransport) transport;
+        UDPNIOConnection newConnection = null;
+
+        try {
+            
+            final DatagramChannel datagramChannel =
+                    nioTransport.getSelectorProvider().openDatagramChannel();
+
+            nioTransport.getChannelConfigurator().preConfigure(
+                    nioTransport, datagramChannel);
+            
+            final DatagramSocket socket = datagramChannel.socket();
+            newConnection = nioTransport.obtainNIOConnection(datagramChannel);
+
+            final boolean reuseAddr = isReuseAddress;
+            if (reuseAddr != nioTransport.isReuseAddress()) {
+                socket.setReuseAddress(reuseAddr);
+            }
+            
+            socket.bind(localAddress);
+
+            if (remoteAddress != null) {
+                datagramChannel.connect(remoteAddress);
+            }
+
+            nioTransport.getChannelConfigurator().postConfigure(
+                    nioTransport, datagramChannel);
+            
+            preConfigure(newConnection);
+
+            newConnection.setProcessor(getProcessor());
+            newConnection.setProcessorSelector(getProcessorSelector());
+
+            final NIOChannelDistributor nioChannelDistributor =
+                    nioTransport.getNIOChannelDistributor();
+
+            if (nioChannelDistributor == null) {
+                throw new IllegalStateException(
+                        "NIOChannelDistributor is null. Is Transport running?");
+            }
+            
+            final CompletionHandler<Connection> completionHandlerToPass;
+            final FutureImpl<Connection> futureToReturn;
+            
+            if (needFuture) {
+                futureToReturn = makeCancellableFuture(newConnection);
+                completionHandlerToPass = resolveFutureAndCompletionHandler(completionHandler,
+						onlyAddCompletionHandlerToFuture, futureToReturn);
+            } else {
+                completionHandlerToPass = completionHandler;
+                futureToReturn = null;
+            }
+
+            // if connected immediately - register channel on selector with NO_INTEREST
+            // interest
+            nioChannelDistributor.registerChannelAsync(datagramChannel,
+                    0, newConnection,
+                    new ConnectHandler(newConnection, completionHandlerToPass));
+            
+            return futureToReturn;
+        } catch (Exception e) {
+            if (newConnection != null) {
+                newConnection.closeSilently();
+            }
+
+            if (completionHandler != null) {
+                completionHandler.failed(e);
+            }
+            
+            return needFuture ? ReadyFutureImpl.<Connection>create(e) : null;
+        }
+	}
+
+	@Override
+	public GrizzlyFuture<Connection> connect(SocketAddress remoteAddress, SocketAddress localAddress,
+			CompletionHandler<Connection> completionHandler, boolean needFuture,
+			boolean onlyAddCompletionHandlerToFuture) {
+		return connectAsync(remoteAddress, localAddress, completionHandler, needFuture, onlyAddCompletionHandlerToFuture);
+	}
 }

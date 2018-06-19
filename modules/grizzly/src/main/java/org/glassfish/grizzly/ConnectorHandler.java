@@ -94,4 +94,35 @@ public interface ConnectorHandler<E> {
     Future<Connection> connect(E remoteAddress,
                  E localAddress,
                  CompletionHandler<Connection> completionHandler);
+    
+    
+    /**
+     * Creates, initializes {@link Connection}, binds it to the specific local
+     * and remote <code>remoteAddress</code>.
+     *
+     * @param remoteAddress remote address to connect to
+     * @param localAddress local address to bind a {@link Connection} to
+     * @param completionHandler {@link CompletionHandler}
+     * @param needFuture whether the future is necessary
+     */
+    Future<Connection> connect(E remoteAddress,
+                 E localAddress,
+                 CompletionHandler<Connection> completionHandler, 
+                 boolean needFuture);
+    
+    /**
+     * Creates, initializes {@link Connection}, binds it to the specific local
+     * and remote <code>remoteAddress</code>.
+     *
+     * @param remoteAddress remote address to connect to
+     * @param localAddress local address to bind a {@link Connection} to
+     * @param completionHandler {@link CompletionHandler}
+     * @param needFuture whether the future is necessary
+     * @param onlyAddCompletionHandlerToFuture only adds completion handler to the return future
+     * 		  before connect to avoid race conditions.
+     */
+    Future<Connection> connect(E remoteAddress,
+                 E localAddress,
+                 CompletionHandler<Connection> completionHandler, 
+                 boolean needFuture, boolean onlyAddCompletionHandlerToFuture);
 }
