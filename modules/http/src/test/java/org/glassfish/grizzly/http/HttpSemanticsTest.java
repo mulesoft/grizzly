@@ -565,42 +565,6 @@ public class HttpSemanticsTest extends TestCase {
         });
     }
     
-    public void testHttp11WithHttp2UpgradeHeaderIgnoresEncodingAndDoesNotTimeout() throws Throwable {
-        final HttpRequestPacket request = HttpRequestPacket.builder()
-                .method("GET")
-                .uri("/path")
-                .chunked(false)
-                .header("Host", "localhost:" + PORT)
-                .protocol("HTTP/1.1")
-                .header(Header.Upgrade, "h2c")
-                .build();
-
-        ExpectedResult result = new ExpectedResult();
-        result.setProtocol("HTTP/1.1");
-        result.setStatusCode(200);
-        result.addHeader("!Transfer-Encoding", "chunked");
-        result.setStatusMessage("ok");
-        result.appendContent("Content");
-        doTest(request, result, new BaseFilter() {
-            @Override
-            public NextAction handleRead(FilterChainContext ctx) throws IOException {
-                HttpRequestPacket request =
-                        (HttpRequestPacket)
-                                ((HttpContent) ctx.getMessage()).getHttpHeader();
-                HttpResponsePacket response = request.getResponse();
-                HttpStatus.OK_200.setValues(response);
-                MemoryManager mm = ctx.getMemoryManager();
-                HttpContent content = response.httpContentBuilder().content(Buffers.wrap(mm, "Content")).build();
-                // Setting last flag to false to make sure HttpServerFilter will not
-                // add content-length header
-                content.setLast(false);
-                ctx.write(content);
-                ctx.flush(new FlushAndCloseHandler());
-                return ctx.getStopAction();
-            }
-        });    	
-    }
-        
     public void testUpgradeIgnoresTransferEncoding() throws Throwable {
 
         final HttpRequestPacket header = HttpRequestPacket.builder()
