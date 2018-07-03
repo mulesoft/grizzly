@@ -592,6 +592,10 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                     return ctx.getStopAction(input);
                 } else {
                     final int headerSizeInBytes = input.position();
+
+                    if (httpHeader.isUpgrade()) {
+                        onIncomingUpgrade(ctx, httpHeader);
+                    }
                     
                     if (onHttpHeaderParsed(httpHeader, input, ctx)) {
                         throw new IllegalStateException("Bad HTTP headers");
@@ -1505,7 +1509,30 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
 
         return ctx.getInvokeAction();
     }
+    
+    /**
+     * The method is called, when a peer sends an upgrade HTTP packet
+     * (either request or response).
+     * 
+     * @param ctx
+     * @param httpHeader 
+     */
+    protected void onIncomingUpgrade(final FilterChainContext ctx,
+            final HttpHeader httpHeader) {
+        httpHeader.setIgnoreContentModifiers(true);
+        
+        ctx.notifyUpstream(
+                HttpEvents.createIncomingUpgradeEvent(httpHeader));
+    }
+    
+    protected void onOutgoingUpgrade(final FilterChainContext ctx,
+            final HttpHeader httpHeader) {
+        httpHeader.setIgnoreContentModifiers(true);
 
+        ctx.notifyUpstream(
+                HttpEvents.createOutgoingUpgradeEvent(httpHeader));
+    }
+    
     protected Buffer encodeHttpPacket(final FilterChainContext ctx, final HttpPacket input) {
         final boolean isHeader = input.isHeader();
         final HttpContent httpContent;
@@ -1530,6 +1557,10 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
         Buffer encodedBuffer = null;
         
         if (!httpHeader.isCommitted()) {
+            
+            if (httpHeader.isUpgrade()) {
+                onOutgoingUpgrade(ctx, httpHeader);
+            }
             
             if (!httpHeader.isRequest()) {
                 final HttpResponsePacket response = (HttpResponsePacket) httpHeader;

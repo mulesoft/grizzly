@@ -381,9 +381,9 @@ public abstract class HttpHeader extends HttpPacket
      * "Content-Encoding" headers and act as none of them were specified.
      */
     public boolean isIgnoreContentModifiers() {
-		return isIgnoreContentModifiers || !upgrade.isNull(); // ignore content even in the case of h2c because 
-															 // version does not support HTTP/2
-															
+        return isIgnoreContentModifiers;
+//                || (!upgrade.isNull() &&
+//                !upgrade.startsWith("h2c", 0)); // don't ignore content modifiers for HTTP2 upgrade
     }
 
     /**
