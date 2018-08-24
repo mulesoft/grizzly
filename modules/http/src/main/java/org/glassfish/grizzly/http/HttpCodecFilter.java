@@ -726,11 +726,21 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                     connection, emptyContent);
 
             ctx.setMessage(emptyContent);
-            if (input.remaining() > 0) {
+            // In case it is a 204 the rest of the input should be ignored
+            // Actually the connection has to be open if it keep alive
+            // but the response associated to this request should be truncated
+            // This fixes the case where the server sends a 204 No Content
+            // with additional characters in the header.
+            if (input.remaining() > 0 && isNot204Response(httpHeader)) {
                 return ctx.getInvokeAction(input);
             }
             return ctx.getInvokeAction();
         }
+    }
+
+    private boolean isNot204Response(final HttpHeader httpHeader)
+    {
+        return !(httpHeader instanceof HttpResponsePacket) || ((HttpResponsePacket) httpHeader).getStatus() != 204;
     }
 
     protected boolean decodeHttpPacket(final FilterChainContext ctx,

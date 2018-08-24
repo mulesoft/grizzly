@@ -53,7 +53,7 @@ import org.glassfish.grizzly.Appender;
  * 
  * @author Alexey Stashok
  */
-final class InvokeAction extends AbstractNextAction {
+public final class InvokeAction extends AbstractNextAction {
     static final int TYPE = 0;
 
     private Appender appender;

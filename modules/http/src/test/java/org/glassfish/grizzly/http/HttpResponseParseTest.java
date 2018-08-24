@@ -41,6 +41,7 @@
 package org.glassfish.grizzly.http;
 
 import org.glassfish.grizzly.WriteHandler;
+import org.glassfish.grizzly.filterchain.InvokeAction;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -169,13 +170,21 @@ public class HttpResponseParseTest extends TestCase {
             assertTrue(true);
         }
     }
+    
+    public void test204NoContentResponseDoesNotCacheChunk() {
+        try {
+            InvokeAction nextAction = (InvokeAction) doTestNextAction("HTTP/1.1 204 No Content\r\n\r\nGarbage", 39);
+            assertNull(nextAction.getChunk());
+        } catch (IllegalStateException e) {
+            assertTrue(true);
+        }
+    }
 
     @SuppressWarnings({"unchecked"})
     private HttpPacket doTestDecoder(String response, int limit) {
 
         MemoryManager mm = MemoryManager.DEFAULT_MEMORY_MANAGER;
         Buffer input = Buffers.wrap(mm, response);
-        
         HttpClientFilter filter = new HttpClientFilter(limit);
         FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
         ctx.setMessage(input);
@@ -188,6 +197,22 @@ public class HttpResponseParseTest extends TestCase {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
+    private NextAction doTestNextAction(String response, int limit) {
+
+        MemoryManager mm = MemoryManager.DEFAULT_MEMORY_MANAGER;
+        Buffer input = Buffers.wrap(mm, response);
+        HttpClientFilter filter = new HttpClientFilter(limit);
+        FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
+        ctx.setMessage(input);
+
+        try {
+            return filter.handleRead(ctx);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+    }
+    
     private void doHttpResponseTest(String protocol, int code,
             String phrase, Map<String, Pair<String, String>> headers, String eol)
             throws Exception {
