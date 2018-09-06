@@ -40,6 +40,7 @@
 
 package org.glassfish.grizzly.utils;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Copyable;
@@ -251,4 +252,31 @@ public class Futures {
             future.failure(throwable);
         }
     }
+
+  public static <T> CompletableFuture<T> completable(GrizzlyFuture<T> future) {
+    CompletableFuture<T> completable = new CompletableFuture<>();
+    future.addCompletionHandler(new CompletionHandler<T>() {
+
+      @Override
+      public void cancelled() {
+        completable.cancel(true);
+      }
+
+      @Override
+      public void failed(Throwable throwable) {
+        completable.completeExceptionally(throwable);
+      }
+
+      @Override
+      public void completed(T result) {
+        completable.complete(result);
+      }
+
+      @Override
+      public void updated(T result) {
+      }
+    });
+
+    return completable;
+  }
 }

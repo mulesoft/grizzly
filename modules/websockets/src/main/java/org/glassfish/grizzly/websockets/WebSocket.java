@@ -39,6 +39,8 @@
  */
 package org.glassfish.grizzly.websockets;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.glassfish.grizzly.GrizzlyFuture;
 
 /**
@@ -228,6 +230,8 @@ public interface WebSocket {
      * @param reason the reason, if any.
      */
     void close(int code, String reason);
+
+    CompletableFuture<DataFrame> completableClose(int code, String reason);
 
     /**
      * <p>
