@@ -254,7 +254,7 @@ public class Futures {
     }
 
   public static <T> CompletableFuture<T> completable(GrizzlyFuture<T> future) {
-    CompletableFuture<T> completable = new CompletableFuture<>();
+    final CompletableFuture<T> completable = new CompletableFuture<>();
     future.addCompletionHandler(new CompletionHandler<T>() {
 
       @Override

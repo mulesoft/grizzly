@@ -39,6 +39,8 @@
  */
 package org.glassfish.grizzly.websockets;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -176,7 +178,7 @@ public final class Utils {
   }
 
   public static List<String> toString(byte[] bytes, int start, int end) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     for (int i = start; i < end; i++) {
       list.add(Integer.toHexString(bytes[i] & 0xFF).toUpperCase(Locale.US));
     }
@@ -184,8 +186,6 @@ public final class Utils {
   }
 
   public static CompletableFuture<DataFrame> completedFrame(byte[] fragment, boolean last) {
-    CompletableFuture<DataFrame> future = new CompletableFuture<>();
-    future.complete(new DataFrame(new BinaryFrameType(), fragment, last));
-    return future;
+    return completedFuture(new DataFrame(new BinaryFrameType(), fragment, last));
   }
 }
