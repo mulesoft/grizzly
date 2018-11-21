@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.websockets.frametypes.PingFrameType;
@@ -306,32 +307,32 @@ public class SimpleWebSocket implements WebSocket {
     }
   }
 
-  protected byte[] toRawData(String text) {
+  public byte[] toRawData(String text) {
     return toRawData(text, true);
   }
 
-  protected byte[] toRawData(byte[] binary) {
+  public byte[] toRawData(byte[] binary) {
     return toRawData(binary, true);
   }
 
-  protected byte[] toRawData(String fragment, boolean last) {
+  public byte[] toRawData(String fragment, boolean last) {
     final DataFrame dataFrame = protocolHandler.toDataFrame(fragment, last);
     return protocolHandler.frame(dataFrame);
   }
 
-  protected byte[] toRawData(byte[] binary, boolean last) {
+  public byte[] toRawData(byte[] binary, boolean last) {
     final DataFrame dataFrame = protocolHandler.toDataFrame(binary, last);
     return protocolHandler.frame(dataFrame);
   }
 
   @SuppressWarnings("unchecked")
-  protected void sendRaw(byte[] rawData) {
+  public GrizzlyFuture<WriteResult> sendRaw(byte[] rawData) {
     final Connection connection = protocolHandler.getConnection();
     final MemoryManager mm = connection.getTransport().getMemoryManager();
     final Buffer buffer = Buffers.wrap(mm, rawData);
     buffer.allowBufferDispose(false);
 
-    connection.write(buffer);
+    return connection.write(buffer);
   }
 
   protected Broadcaster getBroadcaster() {
