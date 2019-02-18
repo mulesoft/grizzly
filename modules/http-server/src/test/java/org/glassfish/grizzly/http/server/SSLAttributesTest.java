@@ -40,6 +40,11 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -49,6 +54,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.SocketConnectorHandler;
@@ -74,8 +80,6 @@ import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.junit.After;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Testing SSL attributes.
@@ -239,8 +243,11 @@ public class SSLAttributesTest {
             sslContextConfigurator.setKeyStorePass("changeit");
         }
 
+        // NOTE: testHttpsConnection relies on TLS renegotiation in order to function.  However,
+        //       in Java11, the default TLS version is 1.3 which does not support renegotiation,
+        //       so the test would fail when using that runtime.  Force TLS 1.2.
         return new SSLEngineConfigurator(sslContextConfigurator.createSSLContext(),
-                !isServer, false, false);
+                !isServer, false, false).setEnabledProtocols(new String[] { "TLSv1.2 "});
     }
 
     private void startHttpServer(final HttpHandler httpHandler) throws Exception {
