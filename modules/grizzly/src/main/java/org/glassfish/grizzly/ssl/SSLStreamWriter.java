@@ -40,21 +40,23 @@
 
 package org.glassfish.grizzly.ssl;
 
+import java.io.IOException;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.streams.StreamReader;
-import org.glassfish.grizzly.streams.TransformerStreamWriter;
 import org.glassfish.grizzly.streams.StreamWriter;
+import org.glassfish.grizzly.streams.TransformerStreamWriter;
 import org.glassfish.grizzly.utils.CompletionHandlerAdapter;
 import org.glassfish.grizzly.utils.conditions.Condition;
-import java.io.IOException;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
 /**
  * SSL aware {@link StreamWriter} implementation, which work like a wrapper over
@@ -217,7 +219,8 @@ public class SSLStreamWriter extends TransformerStreamWriter {
                     }
                 }
 
-                if (handshakeStatus == HandshakeStatus.FINISHED) {
+                if (handshakeStatus == HandshakeStatus.FINISHED
+                  || handshakeStatus == HandshakeStatus.NOT_HANDSHAKING) {
                     return true;
                 }
             }

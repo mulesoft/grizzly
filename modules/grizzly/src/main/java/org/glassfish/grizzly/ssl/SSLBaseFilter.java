@@ -40,6 +40,20 @@
 
 package org.glassfish.grizzly.ssl;
 
+import static org.glassfish.grizzly.ssl.SSLUtils.SSL_CTX_ATTR;
+import static org.glassfish.grizzly.ssl.SSLUtils.allocateInputBuffer;
+import static org.glassfish.grizzly.ssl.SSLUtils.allocateOutputBuffer;
+import static org.glassfish.grizzly.ssl.SSLUtils.allowDispose;
+import static org.glassfish.grizzly.ssl.SSLUtils.copy;
+import static org.glassfish.grizzly.ssl.SSLUtils.executeDelegatedTask;
+import static org.glassfish.grizzly.ssl.SSLUtils.getSSLPacketSize;
+import static org.glassfish.grizzly.ssl.SSLUtils.getSslConnectionContext;
+import static org.glassfish.grizzly.ssl.SSLUtils.handshakeUnwrap;
+import static org.glassfish.grizzly.ssl.SSLUtils.handshakeWrap;
+import static org.glassfish.grizzly.ssl.SSLUtils.isHandshaking;
+import static org.glassfish.grizzly.ssl.SSLUtils.makeInputRemainder;
+import static org.glassfish.grizzly.ssl.SSLUtils.move;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.Certificate;
@@ -52,12 +66,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -87,8 +103,6 @@ import org.glassfish.grizzly.ssl.SSLConnectionContext.Allocator;
 import org.glassfish.grizzly.ssl.SSLConnectionContext.SslResult;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.Futures;
-
-import static org.glassfish.grizzly.ssl.SSLUtils.*;
 
 /**
  * SSL {@link Filter} to operate with SSL encrypted data.
@@ -818,6 +832,7 @@ public class SSLBaseFilter extends BaseFilter {
     private Buffer silentRehandshake(final FilterChainContext context,
             final SSLConnectionContext sslCtx) throws SSLException {
         try {
+            sslCtx.getSslEngine().closeOutbound();
             return doHandshakeSync(
                     sslCtx, context, null, handshakeTimeoutMillis);
         } catch (Throwable t) {
