@@ -259,6 +259,97 @@ public class SSLTest {
     public void testParallelWrites100Packets100Size() throws Exception {
         doTestParallelWrites(100, 100);
     }
+    
+    @Test
+    public void testSSLEngineConfiguratorCipherSuitePreservedWhenNotSupported() throws Exception {
+        Connection connection = null;
+        SSLContextConfigurator sslContextConfigurator = createSSLContextConfigurator();
+        SSLEngineConfigurator clientSSLEngineConfigurator = null;
+        SSLEngineConfigurator serverSSLEngineConfigurator = null;
+
+        if (sslContextConfigurator.validateConfiguration(true)) {
+            clientSSLEngineConfigurator =
+                    new SSLEngineConfigurator(createSSLContext(),
+                                              true,
+                                              false,
+                                              false);
+            serverSSLEngineConfigurator =
+                    new SSLEngineConfigurator(sslContextConfigurator.createSSLContext(true),
+                                              false,
+                                              false,
+                                              false);
+            serverSSLEngineConfigurator.setEnabledCipherSuites(new String[] {"nonSupportedCipherSuites"});
+            serverSSLEngineConfigurator.setEnabledProtocols(new String[] {"nonSupportedProtocols"});
+        } else {
+            fail("Failed to validate SSLContextConfiguration.");
+        }
+
+
+        FilterChainBuilder filterChainBuilder = FilterChainBuilder.stateless();
+        filterChainBuilder.add(new SSLFilter(serverSSLEngineConfigurator, null));
+
+
+        TCPNIOTransport transport =
+                TCPNIOTransportBuilder.newInstance().build();
+        transport.setProcessor(filterChainBuilder.build());
+        transport.setMemoryManager(manager);
+
+        TCPNIOTransport cTransport =
+                TCPNIOTransportBuilder.newInstance().build();
+        FilterChainBuilder clientChain = FilterChainBuilder.stateless();
+        clientChain.add(new TransportFilter());
+        clientChain.add(new SSLFilter(null, clientSSLEngineConfigurator));
+        clientChain.add(new StringFilter());
+        cTransport.setProcessor(clientChain.build());
+        cTransport.setMemoryManager(manager);
+
+        try {
+            transport.bind(PORT);
+            transport.start();
+
+            cTransport.start();
+
+            Future<Connection> future = cTransport.connect("localhost", PORT);
+            connection = future.get(10, TimeUnit.SECONDS);
+            
+            assertNotNull(connection);
+
+            final FutureImpl<Boolean> result1 = Futures.createSafeFuture();
+            trustCert.set(false);
+            connection.write("message", new CompletionHandler() {
+                @Override
+                public void cancelled() {
+                    result1.result(true);
+                }
+
+                @Override
+                public void failed(Throwable throwable) {
+                    result1.result(true);
+                }
+
+                @Override
+                public void completed(Object result) {
+                    result1.result(true);
+                }
+
+                @Override
+                public void updated(Object result) {
+                    result1.result(true);
+                }
+            });
+            
+            result1.get(10, TimeUnit.SECONDS);
+            
+            assertNotNull(serverSSLEngineConfigurator.getEnabledCipherSuites());
+            assertNotNull(serverSSLEngineConfigurator.getEnabledProtocols());
+        } finally {
+            if (connection != null) {
+                connection.closeSilently();
+            }
+            cTransport.shutdownNow();
+            transport.shutdownNow();
+        }
+    }
 
     /**
      * Added for GRIZZLY-983.
