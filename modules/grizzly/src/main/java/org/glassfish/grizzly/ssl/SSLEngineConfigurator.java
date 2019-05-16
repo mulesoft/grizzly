@@ -229,6 +229,10 @@ public class SSLEngineConfigurator implements SSLEngineFactory {
                 enabledCipherSuites = configureEnabledCiphers(sslEngine,
                         enabledCipherSuites);
                 isCipherConfigured = true;
+                
+                if (enabledCipherSuites == null) {
+                    enabledCipherSuites = new String[0];
+                }
             }
             sslEngine.setEnabledCipherSuites(enabledCipherSuites);
         }
@@ -239,6 +243,10 @@ public class SSLEngineConfigurator implements SSLEngineFactory {
                         configureEnabledProtocols(sslEngine,
                         enabledProtocols);
                 isProtocolConfigured = true;
+                
+                if (enabledProtocols == null) {
+                    enabledProtocols = new String[0];
+                }
             }
             sslEngine.setEnabledProtocols(enabledProtocols);
         }
