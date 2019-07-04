@@ -64,17 +64,18 @@ public class CloseReason {
 
         REMOTELY_CLOSED = new IOException("Remotely closed");
         REMOTELY_CLOSED.setStackTrace(new StackTraceElement[0]);
-        
+
+        // This was done to avoid classloader references through the backtrace transient field.
         try {
-          ByteArrayOutputStream  buffer = new ByteArrayOutputStream();
-          new ObjectOutputStream (buffer).writeObject(LOCALLY_CLOSED);
-          LOCALLY_CLOSED = (IOException) new ObjectInputStream (new ByteArrayInputStream (buffer.toByteArray ())).readObject();
-          
-          new ObjectOutputStream (buffer).writeObject(REMOTELY_CLOSED);
-          REMOTELY_CLOSED = (IOException) new ObjectInputStream (new ByteArrayInputStream (buffer.toByteArray ())).readObject();
+          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+          new ObjectOutputStream(buffer).writeObject(LOCALLY_CLOSED);
+          LOCALLY_CLOSED = (IOException) new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray())).readObject();
+    
+          new ObjectOutputStream(buffer).writeObject(REMOTELY_CLOSED);
+          REMOTELY_CLOSED = (IOException) new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray())).readObject();
         } catch (Exception e) {
-          // This was done to avoid classloader references through the backtrace transient field.
-        } 
+          throw new RuntimeException("Exception on cleaning CloseReason backtrace", e);
+        }
 
         LOCALLY_CLOSED_REASON =
                 new CloseReason(org.glassfish.grizzly.CloseType.LOCALLY, LOCALLY_CLOSED);
