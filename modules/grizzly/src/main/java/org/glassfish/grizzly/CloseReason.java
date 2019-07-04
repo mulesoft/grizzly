@@ -40,7 +40,11 @@
 
 package org.glassfish.grizzly;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * An object, describing the reason why {@link Connection} was closed.
@@ -48,8 +52,8 @@ import java.io.IOException;
  * @author Alexey Stashok
  */
 public class CloseReason {
-    private static final IOException LOCALLY_CLOSED;
-    private static final IOException REMOTELY_CLOSED;
+    private static IOException LOCALLY_CLOSED;
+    private static IOException REMOTELY_CLOSED;
     
     public static final CloseReason LOCALLY_CLOSED_REASON;
     public static final CloseReason REMOTELY_CLOSED_REASON;
@@ -57,9 +61,21 @@ public class CloseReason {
     static {
         LOCALLY_CLOSED = new IOException("Locally closed");
         LOCALLY_CLOSED.setStackTrace(new StackTraceElement[0]);
-        
+
         REMOTELY_CLOSED = new IOException("Remotely closed");
         REMOTELY_CLOSED.setStackTrace(new StackTraceElement[0]);
+
+        // This was done to avoid classloader references through the backtrace transient field.
+        try {
+          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+          new ObjectOutputStream(buffer).writeObject(LOCALLY_CLOSED);
+          LOCALLY_CLOSED = (IOException) new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray())).readObject();
+    
+          new ObjectOutputStream(buffer).writeObject(REMOTELY_CLOSED);
+          REMOTELY_CLOSED = (IOException) new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray())).readObject();
+        } catch (Exception e) {
+          throw new RuntimeException("Exception on cleaning CloseReason backtrace", e);
+        }
 
         LOCALLY_CLOSED_REASON =
                 new CloseReason(org.glassfish.grizzly.CloseType.LOCALLY, LOCALLY_CLOSED);
