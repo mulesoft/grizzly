@@ -46,9 +46,13 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.glassfish.grizzly.Connection;
@@ -74,6 +78,8 @@ import static org.junit.Assert.*;
  * @author Alexey Stashok
  */
 public class SingleEndPointPoolTest {
+    private static final int THREAD_COUNT = 1000;
+
     private static final int PORT = 18333;
     
     private final Set<Connection> serverSideConnections =
@@ -467,6 +473,75 @@ public class SingleEndPointPoolTest {
             assertNull(connection.get());
             assertTrue(notified.get());
             assertEquals(0, pool.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pool.close();
+            clientTransport.shutdownNow();
+        }
+    }
+    
+    @Test
+    public void testAsyncClientsAreCorrectlyRemovedOnConnectionError() throws Exception {
+        final FilterChain filterChain = FilterChainBuilder.stateless()
+                .add(new TransportFilter())
+                .build();
+
+        final TCPNIOTransport clientTransport =
+                TCPNIOTransportBuilder.newInstance()
+                        .setProcessor(filterChain)
+                        .build();
+
+        final SingleEndpointPool<SocketAddress> pool = SingleEndpointPool
+                .builder(SocketAddress.class)
+                .connectorHandler(clientTransport)
+                .endpointAddress(new InetSocketAddress("localhost", PORT))
+                .corePoolSize(4)
+                .maxPoolSize(5)
+                .keepAliveTimeout(-1, TimeUnit.SECONDS)
+                .build();
+        
+        final ThreadFactory f =
+                new ThreadFactory() {
+                    final AtomicInteger ii =
+                            new AtomicInteger();
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        final Thread t = new Thread(r);
+                        t.setName("Stress-" + ii.incrementAndGet());
+                        t.setDaemon(true);
+                        return t;
+                    }
+                };
+
+        ExecutorService service =
+                Executors.newFixedThreadPool(THREAD_COUNT, f);
+
+		try {
+			clientTransport.start();
+			transport.shutdownNow();
+			final CountDownLatch latch = new CountDownLatch(1);
+			AtomicInteger counter = new AtomicInteger(THREAD_COUNT);
+			for (int i = 0; i < THREAD_COUNT; i++) {
+				service.submit(new Runnable() {
+
+					@Override
+					public void run() {
+						pool.take(new EmptyCompletionHandler<Connection>() {
+							@Override
+							public void failed(Throwable throwable) {
+								if (counter.decrementAndGet() == 0) {
+									latch.countDown();
+								}
+							}
+						});
+					}
+				});
+			}
+
+           latch.await();
+           assertEquals(pool.getWaitingListSize(), 0);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

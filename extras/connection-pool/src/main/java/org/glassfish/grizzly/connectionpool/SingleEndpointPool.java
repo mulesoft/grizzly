@@ -1173,15 +1173,15 @@ public class SingleEndpointPool<E> {
     }
     
     private void notifyAsyncPollersOfFailure(final Throwable t) {
-        failedConnectAttempts = 0;
-        final int waitersToFail = getWaitingListSize() - pendingConnections;
-        
-        for (int i = 0; i < waitersToFail; i++) {
-            final AsyncPoll asyncPoll = obtainFromAsyncWaitingList();
-            Futures.notifyFailure(asyncPoll.future,
-                                  asyncPoll.completionHandler,
-                                  t);
-        }
+    	synchronized (poolSync) {
+    		failedConnectAttempts = 0;
+	        final int waitersToFail = getWaitingListSize() - pendingConnections;
+	        
+	        for (int i = 0; i < waitersToFail; i++) {
+					final AsyncPoll asyncPoll = obtainFromAsyncWaitingList();
+					Futures.notifyFailure(asyncPoll.future, asyncPoll.completionHandler, t);
+	        }
+    	}
     }
 
     private void deregisterConnection(final ConnectionInfo<E> info) {
