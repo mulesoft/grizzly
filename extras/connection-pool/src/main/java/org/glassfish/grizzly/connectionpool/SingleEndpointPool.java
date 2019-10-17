@@ -43,7 +43,9 @@ package org.glassfish.grizzly.connectionpool;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -1173,15 +1175,19 @@ public class SingleEndpointPool<E> {
     }
     
     private void notifyAsyncPollersOfFailure(final Throwable t) {
-        failedConnectAttempts = 0;
-        final int waitersToFail = getWaitingListSize() - pendingConnections;
-        
-        for (int i = 0; i < waitersToFail; i++) {
-            final AsyncPoll asyncPoll = obtainFromAsyncWaitingList();
-            Futures.notifyFailure(asyncPoll.future,
-                                  asyncPoll.completionHandler,
-                                  t);
-        }
+	List<AsyncPoll> asyncPollsForFailureNotifaction = new ArrayList<AsyncPoll>();
+	synchronized (poolSync) {
+	    failedConnectAttempts = 0;
+	    final int waitersToFail = getWaitingListSize() - pendingConnections;
+	    for (int i = 0; i < waitersToFail; i++) {
+		final AsyncPoll asyncPoll = obtainFromAsyncWaitingList();
+		asyncPollsForFailureNotifaction.add(asyncPoll);
+	    }
+	}
+	
+	for (AsyncPoll asyncPoll : asyncPollsForFailureNotifaction) {
+	    Futures.notifyFailure(asyncPoll.future, asyncPoll.completionHandler, t);
+	}
     }
 
     private void deregisterConnection(final ConnectionInfo<E> info) {
