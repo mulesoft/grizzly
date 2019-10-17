@@ -529,8 +529,6 @@ public class SingleEndPointPoolTest {
 
 	    latch.await();
 	    assertEquals(pool.getWaitingListSize(), 0);
-	} catch (Exception e) {
-	    e.printStackTrace();
 	} finally {
 	    pool.close();
 	    clientTransport.shutdownNow();
