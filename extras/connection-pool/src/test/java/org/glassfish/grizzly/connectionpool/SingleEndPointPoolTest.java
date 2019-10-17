@@ -483,71 +483,58 @@ public class SingleEndPointPoolTest {
     
     @Test
     public void testAsyncClientsAreCorrectlyRemovedOnConnectionError() throws Exception {
-        final FilterChain filterChain = FilterChainBuilder.stateless()
-                .add(new TransportFilter())
-                .build();
+	final FilterChain filterChain = FilterChainBuilder.stateless().add(new TransportFilter()).build();
 
-        final TCPNIOTransport clientTransport =
-                TCPNIOTransportBuilder.newInstance()
-                        .setProcessor(filterChain)
-                        .build();
+	final TCPNIOTransport clientTransport = TCPNIOTransportBuilder.newInstance().setProcessor(filterChain).build();
 
-        final SingleEndpointPool<SocketAddress> pool = SingleEndpointPool
-                .builder(SocketAddress.class)
-                .connectorHandler(clientTransport)
-                .endpointAddress(new InetSocketAddress("localhost", PORT))
-                .corePoolSize(4)
-                .maxPoolSize(5)
-                .keepAliveTimeout(-1, TimeUnit.SECONDS)
-                .build();
-        
-        final ThreadFactory f =
-                new ThreadFactory() {
-                    final AtomicInteger ii =
-                            new AtomicInteger();
+	final SingleEndpointPool<SocketAddress> pool = SingleEndpointPool.builder(SocketAddress.class)
+		.connectorHandler(clientTransport).endpointAddress(new InetSocketAddress("localhost", PORT))
+		.corePoolSize(4).maxPoolSize(5).keepAliveTimeout(-1, TimeUnit.SECONDS).build();
 
-                    @Override
-                    public Thread newThread(Runnable r) {
-                        final Thread t = new Thread(r);
-                        t.setName("Stress-" + ii.incrementAndGet());
-                        t.setDaemon(true);
-                        return t;
-                    }
-                };
+	final ThreadFactory f = new ThreadFactory() {
+	    final AtomicInteger ii = new AtomicInteger();
 
-        ExecutorService service =
-                Executors.newFixedThreadPool(THREAD_COUNT, f);
+	    @Override
+	    public Thread newThread(Runnable r) {
+		final Thread t = new Thread(r);
+		t.setName("Stress-" + ii.incrementAndGet());
+		t.setDaemon(true);
+		return t;
+	    }
+	};
 
-		try {
-			clientTransport.start();
-			transport.shutdownNow();
-			final CountDownLatch latch = new CountDownLatch(1);
-			AtomicInteger counter = new AtomicInteger(THREAD_COUNT);
-			for (int i = 0; i < THREAD_COUNT; i++) {
-				service.submit(new Runnable() {
+	ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT, f);
 
-					@Override
-					public void run() {
-						pool.take(new EmptyCompletionHandler<Connection>() {
-							@Override
-							public void failed(Throwable throwable) {
-								if (counter.decrementAndGet() == 0) {
-									latch.countDown();
-								}
-							}
-						});
-					}
-				});
-			}
+	try {
+	    clientTransport.start();
+	    transport.shutdownNow();
+	    final CountDownLatch latch = new CountDownLatch(1);
+	    AtomicInteger counter = new AtomicInteger(THREAD_COUNT);
+	    for (int i = 0; i < THREAD_COUNT; i++) {
+		service.submit(new Runnable() {
 
-           latch.await();
-           assertEquals(pool.getWaitingListSize(), 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            pool.close();
-            clientTransport.shutdownNow();
-        }
+		    @Override
+		    public void run() {
+			pool.take(new EmptyCompletionHandler<Connection>() {
+			    @Override
+			    public void failed(Throwable throwable) {
+				if (counter.decrementAndGet() == 0) {
+				    latch.countDown();
+				}
+			    }
+			});
+		    }
+		});
+	    }
+
+	    latch.await();
+	    assertEquals(pool.getWaitingListSize(), 0);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	} finally {
+	    pool.close();
+	    clientTransport.shutdownNow();
+	}
     }
     
     @Test
