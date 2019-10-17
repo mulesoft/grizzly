@@ -1179,8 +1179,6 @@ public class SingleEndpointPool<E> {
 	synchronized (poolSync) {
 	    failedConnectAttempts = 0;
 	    final int waitersToFail = getWaitingListSize() - pendingConnections;
-
-
 	    for (int i = 0; i < waitersToFail; i++) {
 		final AsyncPoll asyncPoll = obtainFromAsyncWaitingList();
 		asyncPollsForFailureNotifaction.add(asyncPoll);
