@@ -117,47 +117,35 @@ public class HttpResponseParseTest extends TestCase {
     }
 
     public void testDecoder100continueThen200() {
-        try {
-            HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\n\nHTTP/1.1 200 OK\n\n", 4096);
-            assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
-            HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
-            assertTrue(response.getStatus() == 200);
-        } catch (IllegalStateException e) {
-            logger.log(Level.SEVERE, "exception", e);
-            assertTrue("Unexpected exception", false);
-        }
+        HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\n\nHTTP/1.1 200 OK\n\n", 4096);
+        assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
+        HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
+        assertEquals(200, response.getStatus());
     }
 
     public void testDecoder100continueWithAHeaderThen200() {
-        try {
-            HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\r\nConnection: keep-alive\r\n\r\nHTTP/1.1 200 OK\r\n\r\n", 4096);
-            assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
-            HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
-            assertTrue(response.getStatus() == 200);
-        } catch (IllegalStateException e) {
-            logger.log(Level.SEVERE, "exception", e);
-            assertTrue("Unexpected exception", false);
-        }
+        HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\r\nConnection: keep-alive\r\n\r\nHTTP/1.1 200 OK\r\n\r\n", 4096);
+        assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
+        HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
+        assertEquals(200, response.getStatus());
     }
 
     public void testDecoder100continueAndResponseUsingSameConnection() throws IOException {
         HttpClientFilter filter = new HttpClientFilter(4096);
-
         FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
 
         handleRead(filter, ctx, "HTTP/1.1 100 Continue\n\n");
         HttpPacket lastPacket = (HttpPacket) handleRead(filter, ctx, "HTTP/1.1 200 OK\n\n");
-        assertTrue(((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus() == 200);
+        assertEquals(200, ((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus());
     }
 
     public void testDecoder100continueAndResponseUsingSameConnectionWithHeader() throws IOException {
         HttpClientFilter filter = new HttpClientFilter(4096);
-
         FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
 
         handleRead(filter, ctx, "HTTP/1.1 100 Continue\nConnection: keep-alive\n\n");
         HttpPacket lastPacket = (HttpPacket) handleRead(filter, ctx, "HTTP/1.1 200 OK\n\n");
-        assertTrue(((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus() == 200);
+        assertEquals(200, ((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus());
     }
 
     private Object handleRead(HttpClientFilter filter, FilterChainContext ctx, String httpMessage) throws IOException {
@@ -174,14 +162,14 @@ public class HttpResponseParseTest extends TestCase {
             assertTrue(true);
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "exception", e);
-            assertTrue("Unexpected exception", false);
+            fail("Unexpected exception");
         }
     }
 
     public void testDecoderOverflowProtocol() {
         try {
             doTestDecoder("HTTP/1.0 404 Not found\n\n", 2);
-            assertTrue("Overflow exception had to be thrown", false);
+            fail("Overflow exception had to be thrown");
         } catch (IllegalStateException e) {
             assertTrue(true);
         }
@@ -190,7 +178,7 @@ public class HttpResponseParseTest extends TestCase {
     public void testDecoderOverflowCode() {
         try {
             doTestDecoder("HTTP/1.0 404 Not found\n\n", 11);
-            assertTrue("Overflow exception had to be thrown", false);
+            fail("Overflow exception had to be thrown");
         } catch (IllegalStateException e) {
             assertTrue(true);
         }
@@ -199,7 +187,7 @@ public class HttpResponseParseTest extends TestCase {
     public void testDecoderOverflowPhrase() {
         try {
             doTestDecoder("HTTP/1.0 404 Not found\n\n", 19);
-            assertTrue("Overflow exception had to be thrown", false);
+            fail("Overflow exception had to be thrown");
         } catch (IllegalStateException e) {
             assertTrue(true);
         }
@@ -208,7 +196,7 @@ public class HttpResponseParseTest extends TestCase {
     public void testDecoderOverflowHeader() {
         try {
             doTestDecoder("HTTP/1.0 404 Not found\nHeader1: somevalue\n\n", 30);
-            assertTrue("Overflow exception had to be thrown", false);
+            fail("Overflow exception had to be thrown");
         } catch (IllegalStateException e) {
             assertTrue(true);
         }
@@ -281,7 +269,7 @@ public class HttpResponseParseTest extends TestCase {
 
             Future<Connection> future = transport.connect("localhost", PORT);
             connection = (TCPNIOConnection) future.get(10, TimeUnit.SECONDS);
-            assertTrue(connection != null);
+            assertNotNull(connection);
 
             connection.configureStandalone(true);
 
