@@ -804,10 +804,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                         }
 
                         int newOffset = parsingState.offset;
-
-                        ((HttpHeader) httpPacket).reset();
                         parsingState.recycle();
-
                         inputBuffer.position(newOffset);
                         parsingState.offset = parsingState.start = newOffset;
 
