@@ -40,27 +40,6 @@
 
 package org.glassfish.grizzly.http;
 
-import org.glassfish.grizzly.WriteHandler;
-import org.glassfish.grizzly.filterchain.InvokeAction;
-import org.glassfish.grizzly.Buffer;
-import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.StandaloneProcessor;
-import org.glassfish.grizzly.filterchain.BaseFilter;
-import org.glassfish.grizzly.filterchain.FilterChainBuilder;
-import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.filterchain.NextAction;
-import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.impl.SafeFutureImpl;
-import org.glassfish.grizzly.memory.MemoryManager;
-import org.glassfish.grizzly.nio.NIOConnection;
-import org.glassfish.grizzly.nio.transport.TCPNIOConnection;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.streams.StreamWriter;
-import org.glassfish.grizzly.utils.ChunkingFilter;
-import org.glassfish.grizzly.utils.Pair;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Collections;
@@ -71,8 +50,30 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import junit.framework.TestCase;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.StandaloneProcessor;
+import org.glassfish.grizzly.WriteHandler;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.InvokeAction;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.impl.FutureImpl;
+import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.memory.Buffers;
+import org.glassfish.grizzly.memory.MemoryManager;
+import org.glassfish.grizzly.nio.NIOConnection;
+import org.glassfish.grizzly.nio.transport.TCPNIOConnection;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.streams.StreamWriter;
+import org.glassfish.grizzly.utils.ChunkingFilter;
+import org.glassfish.grizzly.utils.Pair;
 
 /**
  * Testing HTTP response parsing
@@ -114,15 +115,57 @@ public class HttpResponseParseTest extends TestCase {
         headers.put("Content-length", new Pair<String, String>("2345", "2345"));
         doHttpResponseTest("HTTP/1.0", 200, "DONE", headers, "\n");
     }
-    
+
     public void testDecoder100continueThen200() {
         try {
-            doTestDecoder("HTTP/1.1 100 Continue\n\nHTTP/1.1 200 OK\n\n", 4096);
-            assertTrue(true);
+            HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\n\nHTTP/1.1 200 OK\n\n", 4096);
+            assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
+            HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
+            assertTrue(response.getStatus() == 200);
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "exception", e);
             assertTrue("Unexpected exception", false);
         }
+    }
+
+    public void testDecoder100continueWithAHeaderThen200() {
+        try {
+            HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\r\nConnection: keep-alive\r\n\r\nHTTP/1.1 200 OK\r\n\r\n", 4096);
+            assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
+            HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
+            assertTrue(response.getStatus() == 200);
+        } catch (IllegalStateException e) {
+            logger.log(Level.SEVERE, "exception", e);
+            assertTrue("Unexpected exception", false);
+        }
+    }
+
+    public void testDecoder100continueAndResponseUsingSameConnection() throws IOException {
+        HttpClientFilter filter = new HttpClientFilter(4096);
+
+        FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
+
+        handleRead(filter, ctx, "HTTP/1.1 100 Continue\n\n");
+        HttpPacket lastPacket = (HttpPacket) handleRead(filter, ctx, "HTTP/1.1 200 OK\n\n");
+        assertTrue(((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus() == 200);
+    }
+
+    public void testDecoder100continueAndResponseUsingSameConnectionWithHeader() throws IOException {
+        HttpClientFilter filter = new HttpClientFilter(4096);
+
+        FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
+
+        handleRead(filter, ctx, "HTTP/1.1 100 Continue\nConnection: keep-alive\n\n");
+        HttpPacket lastPacket = (HttpPacket) handleRead(filter, ctx, "HTTP/1.1 200 OK\n\n");
+        assertTrue(((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus() == 200);
+    }
+
+    private Object handleRead(HttpClientFilter filter, FilterChainContext ctx, String httpMessage) throws IOException {
+        MemoryManager mm = MemoryManager.DEFAULT_MEMORY_MANAGER;
+        Buffer input = Buffers.wrap(mm, httpMessage);
+        ctx.setMessage(input);
+        filter.handleRead(ctx);
+        return ctx.getMessage();
     }
 
     public void testDecoderOK() {

@@ -40,6 +40,11 @@
 
 package org.glassfish.grizzly.http;
 
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.findEOL;
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.findSpace;
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.put;
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.skipSpaces;
+
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -47,21 +52,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.attributes.Attribute;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.filterchain.NextAction;
-import org.glassfish.grizzly.http.util.MimeHeaders;
-import org.glassfish.grizzly.memory.MemoryManager;
-import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.filterchain.FilterChainEvent;
-
+import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.http.util.Ascii;
 import org.glassfish.grizzly.http.util.Constants;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HttpStatus;
-
-import static org.glassfish.grizzly.http.util.HttpCodecUtils.*;
+import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.glassfish.grizzly.memory.MemoryManager;
 
 /**
  * Client side {@link HttpCodecFilter} implementation, which is responsible for
@@ -146,13 +148,18 @@ public class HttpClientFilter extends HttpCodecFilter {
     public NextAction handleRead(FilterChainContext ctx) throws IOException {
         final Connection connection = ctx.getConnection();
         HttpResponsePacket httpResponse = httpResponseInProcessAttr.get(connection);
-        
+
         if (httpResponse == null) {
             httpResponse = createHttpResponse(ctx);
-
             httpResponseInProcessAttr.set(connection, httpResponse);
+        } else if (httpResponse.getStatus() == 100) {
+            // we are reading a new response after the 100 Continue using the same connection
+            HttpResponsePacket newResponse = createHttpResponse(ctx);
+            newResponse.setRequest(httpResponse.getRequest());
+            httpResponse = newResponse;
+            httpResponseInProcessAttr.set(connection, newResponse);
         }
-        
+
         final HttpRequestPacket request = httpResponse.getRequest();
         
         HttpContext httpCtx;
@@ -431,20 +438,6 @@ public class HttpClientFilter extends HttpCodecFilter {
                     parsingState.start = -1;
                     parsingState.checkpoint = -1;
                     onInitialLineParsed(httpResponse, ctx);
-                    if (httpResponse.getStatus() == 100) {
-                        // reset the parsing state in preparation to parse
-                        // another initial line which represents the final
-                        // response from the server after it has sent a
-                        // 100-Continue.
-                        parsingState.offset += 2;
-                        parsingState.start = parsingState.offset;
-                        if (parsingState.start < end)
-                        {
-                            parsingState.subState = 0;
-                            continue;
-                        }
-                        return false;
-                    }
                     return true;
                 }
 
