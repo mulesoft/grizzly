@@ -40,11 +40,17 @@
 
 package org.glassfish.grizzly.http;
 
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.checkEOL;
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.put;
+import static org.glassfish.grizzly.http.util.HttpCodecUtils.skipSpaces;
+import static org.glassfish.grizzly.utils.Charsets.ASCII_CHARSET;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -62,15 +68,12 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.memory.CompositeBuffer.DisposeOrder;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.glassfish.grizzly.monitoring.DefaultMonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringAware;
 import org.glassfish.grizzly.monitoring.MonitoringConfig;
-import org.glassfish.grizzly.monitoring.DefaultMonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.ssl.SSLUtils;
 import org.glassfish.grizzly.utils.ArraySet;
-
-import static org.glassfish.grizzly.http.util.HttpCodecUtils.*;
-import static org.glassfish.grizzly.utils.Charsets.ASCII_CHARSET;
 
 /**
  * The {@link org.glassfish.grizzly.filterchain.Filter}, responsible for transforming {@link Buffer} into
@@ -580,7 +583,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
          // Check if HTTP header has been parsed
         final boolean wasHeaderParsed = parsingState == null ||
                 parsingState.isHeaderParsed();
-        
+
         if (!wasHeaderParsed) {
             try {
                 assert parsingState != null;
@@ -596,7 +599,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                     if (httpHeader.isUpgrade()) {
                         onIncomingUpgrade(ctx, httpHeader);
                     }
-                    
+
                     if (onHttpHeaderParsed(httpHeader, input, ctx)) {
                         throw new IllegalStateException("Bad HTTP headers");
                     }
@@ -622,7 +625,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, "Error parsing HTTP header", e);
-                
+
                 HttpProbeNotifier.notifyProbesError(this, connection, httpHeader, e);
                 onHttpHeaderError(httpHeader, ctx, e);
 
@@ -759,12 +762,12 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                                                  final Buffer inputBuffer) {
         
         final HeaderParsingState parsingState = httpPacket.getHeaderParsingState();
-        
+
         parsingState.arrayOffset = inputBuffer.arrayOffset();
         final int end = parsingState.arrayOffset + inputBuffer.limit();
-        
+
         final byte[] input = inputBuffer.array();
-        
+
         switch (parsingState.state) {
             case 0: { // parsing initial line
                 if (!decodeInitialLineFromBytes(ctx, httpPacket, parsingState, input, end)) {
@@ -794,6 +797,21 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                     // no headers - do not expect further content
                     ((HttpHeader) httpPacket).setExpectContent(false);
                 }
+                if (is100Continue(httpPacket)) {
+                    if (parsingState.offset < end) {
+                        while (inputBuffer.get(parsingState.offset) == '\r' || inputBuffer.get(parsingState.offset) == '\n') {
+                            parsingState.offset += 1;
+                        }
+
+                        int newOffset = parsingState.offset;
+                        parsingState.recycle();
+                        inputBuffer.position(newOffset);
+                        parsingState.offset = parsingState.start = newOffset;
+
+                        return decodeHttpPacketFromBytes(ctx, httpPacket, inputBuffer);
+                    }
+                    ((HttpHeader) httpPacket).setExpectContent(false);
+                }
                 inputBuffer.position(parsingState.offset);
                 return true;
             }
@@ -801,7 +819,16 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
             default: throw new IllegalStateException();
         }
     }
-    
+
+    private boolean is100Continue(HttpPacketParsing httpPacket) {
+        if (httpPacket instanceof HttpResponsePacket) {
+            final HttpResponsePacket httpResponse = (HttpResponsePacket) httpPacket;
+            return httpResponse.getStatus() == 100;
+        } else {
+            return false;
+        }
+    }
+
     protected boolean parseHeadersFromBytes(final HttpHeader httpHeader,
                                    final MimeHeaders mimeHeaders,
                                    final HeaderParsingState parsingState,
