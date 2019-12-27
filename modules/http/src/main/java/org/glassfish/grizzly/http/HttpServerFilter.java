@@ -1062,18 +1062,20 @@ public class HttpServerFilter extends HttpCodecFilter {
                 final HttpContext context = HttpContext.get(ctx);
                 final HttpRequestPacket httpRequest = context.getRequest();
 
-                if (allowKeepAlive) {
+                final boolean isStayAlive =
+                    httpRequest.getProcessingState().isStayAlive();
+                
+                if (allowKeepAlive && isStayAlive) {
                     if (keepAliveQueue != null) {
                         final KeepAliveContext keepAliveContext =
                                 keepAliveContextAttr.get(context);
 
+                        
                         keepAliveQueue.add(keepAliveContext,
                                 keepAlive.getIdleTimeoutInSeconds(),
                                 TimeUnit.SECONDS);
+                        keepAliveContextAttr.set(ctx.getConnection(), keepAliveContext);
                     }
-
-                    final boolean isStayAlive =
-                            httpRequest.getProcessingState().isKeepAlive();
 
                     processResponseComplete(ctx, httpRequest, isStayAlive);
                 } else {
@@ -1103,6 +1105,13 @@ public class HttpServerFilter extends HttpCodecFilter {
                 // notify processed. If packet has transfer encoding - the notification should be called elsewhere
                 onHttpPacketParsed(httpRequest, ctx);
             }
+        }
+        
+        final KeepAliveContext keepAliveContext =
+            keepAliveContextAttr.get(ctx.getConnection());
+
+        if (keepAliveQueue != null && keepAliveContext != null) {
+          keepAliveQueue.remove(keepAliveContext);
         }
 
         return ctx.getInvokeAction();
@@ -1209,7 +1218,7 @@ public class HttpServerFilter extends HttpCodecFilter {
     // ---------------------------------------------------------- Nested Classes
 
      private static class KeepAliveContext {
-        private final Connection connection;
+        private Connection connection;
 
         public KeepAliveContext(Connection connection) {
             this.connection = connection;
@@ -1217,6 +1226,10 @@ public class HttpServerFilter extends HttpCodecFilter {
 
         private volatile long keepAliveTimeoutMillis = DelayedExecutor.UNSET_TIMEOUT;
         private int requestsProcessed;
+        
+        public void remove() {
+          connection = null;
+        }
     } // END KeepAliveContext
 
 
@@ -1246,6 +1259,7 @@ public class HttpServerFilter extends HttpCodecFilter {
         public boolean removeTimeout(KeepAliveContext context) {
             if (context.keepAliveTimeoutMillis != DelayedExecutor.UNSET_TIMEOUT) {
                 context.keepAliveTimeoutMillis = DelayedExecutor.UNSET_TIMEOUT;
+                context.remove();
                 return true;
             }
 
