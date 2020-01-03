@@ -2025,6 +2025,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
     protected static boolean statusDropsConnection(int status) {
         return status == 400 /* SC_BAD_REQUEST */ ||
                status == 408 /* SC_REQUEST_TIMEOUT */ ||
+               status == 499 /* SC_NGINX */ ||
                status == 411 /* SC_LENGTH_REQUIRED */ ||
                status == 413 /* SC_REQUEST_ENTITY_TOO_LARGE */ ||
                status == 414 /* SC_REQUEST_URI_TOO_LARGE */ ||

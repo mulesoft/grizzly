@@ -82,8 +82,8 @@ public class IdleTimeoutFilter extends BaseFilter {
     });
     
     private final TimeoutResolver timeoutResolver;
-    private final DelayedExecutor.DelayQueue<Connection> queue;
-    private final DelayedExecutor.Resolver<Connection> resolver;
+    private final DelayedExecutor.DelayQueue<IdleTimeoutContext> queue;
+    private final DelayedExecutor.Resolver<IdleTimeoutContext> resolver;
 
     private final FilterChainContext.CompletionListener contextCompletionListener =
             new ContextCompletionListener();
@@ -128,7 +128,7 @@ public class IdleTimeoutFilter extends BaseFilter {
 
 
     protected IdleTimeoutFilter(final DelayedExecutor executor,
-                                final DelayedExecutor.Worker<Connection> worker,
+                                final DelayedExecutor.Worker<IdleTimeoutContext> worker,
                                 final TimeoutResolver timeoutResolver) {
 
         if (executor == null) {
@@ -148,15 +148,16 @@ public class IdleTimeoutFilter extends BaseFilter {
 
     @Override
     public NextAction handleAccept(final FilterChainContext ctx) throws IOException {
-        queue.add(ctx.getConnection(), FOREVER, TimeUnit.MILLISECONDS);
-
+        IdleTimeoutContext idleTimeoutContext = new IdleTimeoutContext(ctx.getConnection());
+        queue.add(idleTimeoutContext, FOREVER, TimeUnit.MILLISECONDS);
+        IDLE_ATTR.get(ctx.getConnection()).setIdleTimeoutContext(idleTimeoutContext);
         queueAction(ctx);
         return ctx.getInvokeAction();
     }
 
     @Override
     public NextAction handleConnect(final FilterChainContext ctx) throws IOException {
-        queue.add(ctx.getConnection(), FOREVER, TimeUnit.MILLISECONDS);
+        queue.add(new IdleTimeoutContext(ctx.getConnection()), FOREVER, TimeUnit.MILLISECONDS);
 
         queueAction(ctx);
         return ctx.getInvokeAction();
@@ -176,7 +177,10 @@ public class IdleTimeoutFilter extends BaseFilter {
 
     @Override
     public NextAction handleClose(final FilterChainContext ctx) throws IOException {
-        queue.remove(ctx.getConnection());
+        IdleTimeoutContext idleTimeoutContext = IDLE_ATTR.get(ctx.getConnection()).getIdleTimeoutContext();
+        if (idleTimeoutContext != null && idleTimeoutContext.getConnection() != null) {
+          queue.remove(idleTimeoutContext);
+        }
         return ctx.getInvokeAction();
     }
 
@@ -185,7 +189,7 @@ public class IdleTimeoutFilter extends BaseFilter {
 
 
     @SuppressWarnings("UnusedDeclaration")
-    public DelayedExecutor.Resolver<Connection> getResolver() {
+    public DelayedExecutor.Resolver<IdleTimeoutContext> getResolver() {
         return resolver;
     }
 
@@ -327,31 +331,50 @@ public class IdleTimeoutFilter extends BaseFilter {
     }
 
 
-    private static final class Resolver implements DelayedExecutor.Resolver<Connection> {
+    private static final class Resolver implements DelayedExecutor.Resolver<IdleTimeoutContext> {
 
         @Override
-        public boolean removeTimeout(final Connection connection) {
-            IDLE_ATTR.get(connection).close();
+        public boolean removeTimeout(final IdleTimeoutContext context) {
+            IDLE_ATTR.get(context.getConnection()).close();
+            context.close();
             return true;
         }
 
         @Override
-        public long getTimeoutMillis(final Connection connection) {
-            return IDLE_ATTR.get(connection).timeoutMillis;
+        public long getTimeoutMillis(final IdleTimeoutContext context) {
+            return IDLE_ATTR.get(context.getConnection()).timeoutMillis;
         }
 
         @Override
-        public void setTimeoutMillis(final Connection connection,
+        public void setTimeoutMillis(final IdleTimeoutContext context,
                 final long timeoutMillis) {
-            IDLE_ATTR.get(connection).timeoutMillis = timeoutMillis;
+            IDLE_ATTR.get(context.getConnection()).timeoutMillis = timeoutMillis;
         }
 
     } // END Resolver
 
+    private static final class IdleTimeoutContext {
+      
+      private Connection connection;
+
+      public IdleTimeoutContext(Connection connection) {
+        this.connection = connection;
+      }
+
+      public Connection getConnection() {
+        return this.connection;
+      }
+      
+      public void close() {
+         this.connection = null;
+      }
+
+    }
     private static final class IdleRecord {
         private boolean isClosed;
         private volatile boolean isInitialSet;
         private long initialTimeoutMillis;
+        private IdleTimeoutContext idleTimeoutContext;
         
         private static final AtomicLongFieldUpdater<IdleRecord> timeoutMillisUpdater =
                 AtomicLongFieldUpdater.newUpdater(IdleRecord.class, "timeoutMillis");
@@ -366,19 +389,28 @@ public class IdleTimeoutFilter extends BaseFilter {
             return isInitialSet ? initialTimeoutMillis : defaultTimeoutMillis;
         }
         
+        private IdleTimeoutContext getIdleTimeoutContext() {
+          return idleTimeoutContext;
+        }
+
         private void setInitialTimeoutMillis(final long initialTimeoutMillis) {
             this.initialTimeoutMillis = initialTimeoutMillis;
             isInitialSet = true;
+        }
+        
+        private void setIdleTimeoutContext(IdleTimeoutContext idleTimeoutContext) {
+          this.idleTimeoutContext = idleTimeoutContext;
         }
 
         private void close() {
             isClosed = true;
             timeoutMillis = 0;
+            idleTimeoutContext = null;
         }
 
     } // END IdleRecord
 
-    private static final class DefaultWorker implements DelayedExecutor.Worker<Connection> {
+    private static final class DefaultWorker implements DelayedExecutor.Worker<IdleTimeoutContext> {
 
         private final TimeoutHandler handler;
 
@@ -396,7 +428,11 @@ public class IdleTimeoutFilter extends BaseFilter {
         // --------------------------------- Methods from DelayedExecutor.Worker
 
         @Override
-        public boolean doWork(final Connection connection) {
+        public boolean doWork(final IdleTimeoutContext context) {
+            Connection connection = context.getConnection();
+            if (connection == null) {
+              return true;
+            }
             if (connection.isOpen()) {
                 if (handler != null) {
                     handler.onTimeout(connection);
