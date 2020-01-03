@@ -47,7 +47,6 @@
         <version>2.3.36-MULE-008</version>
         <relativePath>bom/pom.xml</relativePath>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-project</artifactId>
     <packaging>pom</packaging>
