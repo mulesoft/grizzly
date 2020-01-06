@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.utils;
 
+import static org.glassfish.grizzly.utils.DelayedExecutor.UNSET_TIMEOUT;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -342,6 +344,9 @@ public class IdleTimeoutFilter extends BaseFilter {
 
         @Override
         public long getTimeoutMillis(final IdleTimeoutContext context) {
+            if (context.getConnection() == null) {
+              return UNSET_TIMEOUT;
+            }
             return IDLE_ATTR.get(context.getConnection()).timeoutMillis;
         }
 

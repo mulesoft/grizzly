@@ -1111,7 +1111,7 @@ public class HttpServerFilter extends HttpCodecFilter {
             keepAliveContextAttr.get(ctx.getConnection());
 
         if (keepAliveQueue != null && keepAliveContext != null) {
-          keepAliveQueue.remove(keepAliveContext);
+          keepAliveContext.remove();
         }
 
         return ctx.getInvokeAction();
@@ -1259,7 +1259,6 @@ public class HttpServerFilter extends HttpCodecFilter {
         public boolean removeTimeout(KeepAliveContext context) {
             if (context.keepAliveTimeoutMillis != DelayedExecutor.UNSET_TIMEOUT) {
                 context.keepAliveTimeoutMillis = DelayedExecutor.UNSET_TIMEOUT;
-                context.remove();
                 return true;
             }
 
