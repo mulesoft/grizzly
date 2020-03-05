@@ -55,6 +55,7 @@ import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
 import org.glassfish.grizzly.utils.DelayedExecutor;
 
 import java.io.IOException;
@@ -83,8 +84,9 @@ public class HttpServerFilter extends HttpCodecFilter {
 
     public static final FilterChainEvent RESPONSE_COMPLETE_EVENT =
             new HttpEvents.ResponseCompleteEvent();
+    public static final String SERVER_CONNECTION_ATTRIBUTE = "Server Connection";
 
-    
+
     private final Attribute<ServerHttpRequestImpl> httpRequestInProcessAttr;
     private final Attribute<KeepAliveContext> keepAliveContextAttr;
 
@@ -1070,14 +1072,12 @@ public class HttpServerFilter extends HttpCodecFilter {
                         final KeepAliveContext keepAliveContext =
                                 keepAliveContextAttr.get(context);
 
-                        
                         keepAliveQueue.add(keepAliveContext,
                                 keepAlive.getIdleTimeoutInSeconds(),
                                 TimeUnit.SECONDS);
                         keepAliveContextAttr.set(ctx.getConnection(), keepAliveContext);
                     }
-
-                    processResponseComplete(ctx, httpRequest, isStayAlive);
+                    processResponseComplete(ctx, httpRequest, true);
                 } else {
                     processResponseComplete(ctx, httpRequest, false);
                 }
@@ -1156,7 +1156,7 @@ public class HttpServerFilter extends HttpCodecFilter {
     
     protected HttpContent customizeErrorResponse(
             final HttpResponsePacket response) {
-        
+
         response.setContentLength(0);
         return HttpContent.builder(response).last(true).build();
     }
@@ -1174,8 +1174,10 @@ public class HttpServerFilter extends HttpCodecFilter {
         
         if (requestsProcessed == 0) {
             if (isKeepAlive) { // New keep-alive connection
-                KeepAlive.notifyProbesConnectionAccepted(keepAlive,
-                        keepAliveContext.connection);
+                KeepAlive.notifyProbesConnectionAccepted(keepAlive, keepAliveContext.connection);
+                if (keepAliveQueue != null && isServerConnectionClosed(keepAliveContext.connection)) {
+                    keepAliveQueue.add(keepAliveContext, keepAlive.getIdleTimeoutInSeconds(), TimeUnit.SECONDS);
+                }
             } else { // Refused keep-alive connection
                 KeepAlive.notifyProbesRefused(keepAlive, keepAliveContext.connection);
             }
@@ -1216,6 +1218,17 @@ public class HttpServerFilter extends HttpCodecFilter {
                 ((HttpPacketParsing) httpRequest).getContentParsingState().chunkRemainder <= maxPayloadRemainderToSkip;
     }
 
+    private static boolean isServerConnectionClosed(Connection connection) {
+        if (connection != null) {
+            Object serverConnection = connection.getAttributes().getAttribute(SERVER_CONNECTION_ATTRIBUTE);
+            if (serverConnection instanceof TCPNIOServerConnection) {
+                TCPNIOServerConnection tcpnioServerConnection = (TCPNIOServerConnection) serverConnection;
+                return !tcpnioServerConnection.isOpen();
+            }
+        }
+        return false;
+    }
+
     // ---------------------------------------------------------- Nested Classes
 
      private static class KeepAliveContext {
@@ -1244,8 +1257,10 @@ public class HttpServerFilter extends HttpCodecFilter {
 
         @Override
         public boolean doWork(final KeepAliveContext context) {
-            KeepAlive.notifyProbesTimeout(keepAlive, context.connection);
-            context.connection.closeSilently();
+            if (context.connection != null) {
+                KeepAlive.notifyProbesTimeout(keepAlive, context.connection);
+                context.connection.closeSilently();
+            }
 
             return true;
         }
@@ -1268,6 +1283,10 @@ public class HttpServerFilter extends HttpCodecFilter {
 
         @Override
         public long getTimeoutMillis(KeepAliveContext element) {
+            if (isServerConnectionClosed(element.connection)) {
+                return 0;
+            }
+
             return element.keepAliveTimeoutMillis;
         }
 
