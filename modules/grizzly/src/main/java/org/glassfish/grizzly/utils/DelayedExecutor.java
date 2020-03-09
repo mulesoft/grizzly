@@ -48,20 +48,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ *
  * @author Alexey Stashok
  */
 public class DelayedExecutor {
     public final static long UNSET_TIMEOUT = -1;
-    
+
     private final ExecutorService threadPool;
 
     private final DelayedRunnable runnable = new DelayedRunnable();
-    
-    private final Queue<DelayQueue> queues =
-             new ConcurrentLinkedQueue<DelayQueue>();
 
-    private final Object sync = new Object();
+    private final Queue<DelayQueue> queues =
+            new ConcurrentLinkedQueue<DelayQueue>();
 
     private volatile boolean isStarted;
 
@@ -72,17 +70,17 @@ public class DelayedExecutor {
     }
 
     public DelayedExecutor(final ExecutorService threadPool,
-            final long checkInterval, final TimeUnit timeunit) {
+                           final long checkInterval, final TimeUnit timeunit) {
         if (checkInterval < 0) {
             throw new IllegalArgumentException("check interval can't be negative");
         }
-        
+
         this.threadPool = threadPool;
         this.checkIntervalMillis = TimeUnit.MILLISECONDS.convert(checkInterval, timeunit);
     }
 
     public void start() {
-        synchronized(sync) {
+        synchronized(this) {
             if (!isStarted) {
                 isStarted = true;
                 threadPool.execute(runnable);
@@ -91,17 +89,32 @@ public class DelayedExecutor {
     }
 
     public void stop() {
-        synchronized(sync) {
+        synchronized(this) {
             if (isStarted) {
                 isStarted = false;
-                sync.notify();
+                purgeQueues();
+                notifyAll();
             }
         }
     }
 
+    private void purgeQueues() {
+        for (final DelayQueue delayQueue : queues) {
+            if (delayQueue.queue.isEmpty()) continue;
+
+            Worker worker = delayQueue.worker;
+            for (Iterator it = delayQueue.queue.keySet().iterator(); it.hasNext(); ) {
+                final Object element = it.next();
+                worker.doWork(element);
+                it.remove();
+            }
+        }
+
+    }
+
     public void destroy() {
         stop();
-        synchronized(sync) {
+        synchronized(this) {
             queues.clear();
         }
     }
@@ -112,8 +125,8 @@ public class DelayedExecutor {
     }
 
     public <E> DelayQueue<E> createDelayQueue(final Worker<E> worker,
-            final Resolver<E> resolver) {
-        
+                                              final Resolver<E> resolver) {
+
         final DelayQueue<E> queue = new DelayQueue<E>(worker, resolver);
 
         queues.add(queue);
@@ -132,26 +145,24 @@ public class DelayedExecutor {
         public void run() {
             while(isStarted) {
                 final long currentTimeMillis = System.currentTimeMillis();
-                
+
                 for (final DelayQueue delayQueue : queues) {
                     if (delayQueue.queue.isEmpty()) continue;
-                    
+
                     final Resolver resolver = delayQueue.resolver;
 
                     for (Iterator it = delayQueue.queue.keySet().iterator(); it.hasNext(); ) {
                         final Object element = it.next();
                         final long timeoutMillis = resolver.getTimeoutMillis(element);
-                        
+
                         if (timeoutMillis == UNSET_TIMEOUT) {
                             it.remove();
-                            if (wasModified(timeoutMillis,
-                                    resolver.getTimeoutMillis(element))) {                                
+                            if (wasModified(timeoutMillis, resolver.getTimeoutMillis(element))) {
                                 delayQueue.queue.put(element, delayQueue);
                             }
                         } else if (currentTimeMillis - timeoutMillis >= 0) {
                             it.remove();
-                            if (wasModified(timeoutMillis,
-                                    resolver.getTimeoutMillis(element))) {
+                            if (wasModified(timeoutMillis, resolver.getTimeoutMillis(element))) {
                                 delayQueue.queue.put(element, delayQueue);
                             } else {
                                 try {
@@ -165,11 +176,13 @@ public class DelayedExecutor {
                     }
                 }
 
-                synchronized(sync) {
+                synchronized(DelayedExecutor.this) {
+                    DelayedExecutor.this.notify();
+
                     if (!isStarted) return;
-                    
+
                     try {
-                        sync.wait(checkIntervalMillis);
+                        DelayedExecutor.this.wait(checkIntervalMillis);
                     } catch (InterruptedException ignored) {
                     }
                 }
@@ -196,6 +209,10 @@ public class DelayedExecutor {
                 resolver.setTimeoutMillis(elem, ((delayWithSysTime < 0) ? Long.MAX_VALUE : delayWithSysTime));
                 queue.put(elem, this);
             }
+
+            synchronized (DelayedExecutor.this) {
+                DelayedExecutor.this.notify();
+            }
         }
 
         public void remove(final E elem) {
@@ -210,7 +227,7 @@ public class DelayedExecutor {
     public interface Worker<E> {
         /**
          * The method is executed by <tt>DelayExecutor</tt> once element's timeout expires.
-         * 
+         *
          * @param element element to operate upon.
          * @return <tt>true</tt>, if the work is done and element has to be removed
          *          from the delay queue, or <tt>false</tt> if the element
@@ -221,9 +238,9 @@ public class DelayedExecutor {
 
     public interface Resolver<E> {
         boolean removeTimeout(E element);
-        
+
         long getTimeoutMillis(E element);
-        
+
         void setTimeoutMillis(E element, long timeoutMillis);
     }
 }
