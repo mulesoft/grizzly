@@ -40,10 +40,19 @@
 
 package org.glassfish.grizzly;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
@@ -53,6 +62,9 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.DelayedExecutor;
 import org.glassfish.grizzly.utils.IdleTimeoutFilter;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Test {@link IdleTimeoutFilter}
@@ -60,16 +72,20 @@ import org.glassfish.grizzly.utils.IdleTimeoutFilter;
  * @author Alexey Stashok
  */
 public class IdleConnectionFilterTest extends GrizzlyTestCase {
-    public static final int PORT = 7782;
+    public static final int PORT = 7780;
 
     public void testAcceptedConnectionIdleTimeout() throws Exception {
         Connection connection = null;
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch handleCloseLatch = new CountDownLatch(2);
         final DelayedExecutor timeoutExecutor = IdleTimeoutFilter.createDefaultIdleDelayedExecutor();
         timeoutExecutor.start();
+        Set<Object> elemsInQueue = new HashSet<Object>(); 
+        DelayedExecutor spyExecutor = configSpiedQueue(timeoutExecutor, elemsInQueue);
+        
         IdleTimeoutFilter idleTimeoutFilter =
-                new IdleTimeoutFilter(timeoutExecutor, 2, TimeUnit.SECONDS);
+                new IdleTimeoutFilter(spyExecutor, 2, TimeUnit.SECONDS);
 
         FilterChainBuilder filterChainBuilder = FilterChainBuilder.stateless();
         filterChainBuilder.add(new TransportFilter());
@@ -90,6 +106,8 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
                         latch.countDown();
                     }
 
+                    handleCloseLatch.countDown();
+                    
                     return ctx.getInvokeAction();
                 }
 
@@ -105,8 +123,9 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
             Future<Connection> future = transport.connect("localhost", PORT);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
-
             assertTrue(latch.await(10, TimeUnit.SECONDS));
+            assertTrue(handleCloseLatch.await(10, TimeUnit.SECONDS));
+            assertTrue(elemsInQueue.isEmpty());
         } finally {
             if (connection != null) {
                 connection.closeSilently();
@@ -120,11 +139,15 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
     public void testConnectedConnectionIdleTimeout() throws Exception {
         Connection connection = null;
         final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch handleCloseLatch = new CountDownLatch(2);
 
         final DelayedExecutor timeoutExecutor = IdleTimeoutFilter.createDefaultIdleDelayedExecutor();
+        Set<Object> elemsInQueue = new HashSet<Object>(); 
+        DelayedExecutor spyExecutor = configSpiedQueue(timeoutExecutor, elemsInQueue);
+        
         timeoutExecutor.start();
         IdleTimeoutFilter idleTimeoutFilter =
-                new IdleTimeoutFilter(timeoutExecutor, 2, TimeUnit.SECONDS);
+                new IdleTimeoutFilter(spyExecutor, 2, TimeUnit.SECONDS);
 
         FilterChainBuilder filterChainBuilder = FilterChainBuilder.stateless();
         filterChainBuilder.add(new TransportFilter());
@@ -145,6 +168,8 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
                 if (ctx.getConnection().equals(connectedConnection)) {
                     latch.countDown();
                 }
+                
+                handleCloseLatch.countDown();
 
                 return ctx.getInvokeAction();
             }
@@ -163,6 +188,8 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
             assertTrue(connection != null);
 
             assertTrue(latch.await(10, TimeUnit.SECONDS));
+            assertTrue(handleCloseLatch.await(10, TimeUnit.SECONDS));
+            assertTrue(elemsInQueue.isEmpty());
         } finally {
             if (connection != null) {
                 connection.closeSilently();
@@ -178,9 +205,11 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final DelayedExecutor timeoutExecutor = IdleTimeoutFilter.createDefaultIdleDelayedExecutor();
+        Set<Object> elemsInQueue = new HashSet<Object>(); 
+        DelayedExecutor spyExecutor = configSpiedQueue(timeoutExecutor, elemsInQueue);
         timeoutExecutor.start();
         IdleTimeoutFilter idleTimeoutFilter =
-                new IdleTimeoutFilter(timeoutExecutor, -1, TimeUnit.SECONDS);
+                new IdleTimeoutFilter(spyExecutor, -1, TimeUnit.SECONDS);
 
         FilterChainBuilder filterChainBuilder = FilterChainBuilder.stateless();
         filterChainBuilder.add(new TransportFilter());
@@ -216,8 +245,8 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
             Future<Connection> future = transport.connect("localhost", PORT);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
-
             assertFalse(latch.await(2, TimeUnit.SECONDS));
+            assertFalse(elemsInQueue.isEmpty());
         } finally {
             if (connection != null) {
                 connection.closeSilently();
@@ -227,4 +256,38 @@ public class IdleConnectionFilterTest extends GrizzlyTestCase {
             transport.shutdownNow();
         }
     }
+    
+	private DelayedExecutor configSpiedQueue(final DelayedExecutor timeoutExecutor, Set<Object> elemsInQueue) {
+		DelayedExecutor spyExecutor = spy(timeoutExecutor);
+        DelayedExecutor.DelayQueue queue = timeoutExecutor.createDelayQueue(new IdleTimeoutFilter.DefaultWorker(null), new IdleTimeoutFilter.Resolver());
+        DelayedExecutor.DelayQueue spyQueue = spy(queue);
+        when(spyExecutor.createDelayQueue(any(), any())).thenReturn(spyQueue);
+        doAnswer(new Answer<Object>() {
+
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				elemsInQueue.add(args[0]);
+				queue.add(args[0], (Long) args[1], (TimeUnit) args[2]);
+				return null;
+			}
+        	
+        	
+		}).when(spyQueue).add(any(), anyLong(), any());
+        
+        doAnswer(new Answer<Object>() {
+
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				elemsInQueue.remove(args[0]);
+				queue.remove(args[0]);
+				return null;
+			}
+        	
+        	
+		}).when(spyQueue).remove(any());
+		return spyExecutor;
+	}
+    
 }
