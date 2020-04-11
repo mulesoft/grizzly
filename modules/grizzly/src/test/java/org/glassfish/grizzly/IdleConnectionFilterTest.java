@@ -72,7 +72,7 @@ import org.mockito.stubbing.Answer;
  * @author Alexey Stashok
  */
 public class IdleConnectionFilterTest extends GrizzlyTestCase {
-    public static final int PORT = 7780;
+    public static final int PORT = 7782;
 
     public void testAcceptedConnectionIdleTimeout() throws Exception {
         Connection connection = null;
