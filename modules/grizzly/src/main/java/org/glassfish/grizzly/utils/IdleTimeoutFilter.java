@@ -160,8 +160,8 @@ public class IdleTimeoutFilter extends BaseFilter {
     @Override
     public NextAction handleConnect(final FilterChainContext ctx) throws IOException {
     	IdleTimeoutContext idleTimeoutContext = new IdleTimeoutContext(ctx.getConnection());
-        queue.add(idleTimeoutContext, FOREVER, TimeUnit.MILLISECONDS);
-        IDLE_ATTR.get(ctx.getConnection()).setIdleTimeoutContext(idleTimeoutContext);
+    	queue.add(idleTimeoutContext, FOREVER, TimeUnit.MILLISECONDS);
+    	IDLE_ATTR.get(ctx.getConnection()).setIdleTimeoutContext(idleTimeoutContext);
 
         queueAction(ctx);
         return ctx.getInvokeAction();
