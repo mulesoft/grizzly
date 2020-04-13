@@ -159,7 +159,9 @@ public class IdleTimeoutFilter extends BaseFilter {
 
     @Override
     public NextAction handleConnect(final FilterChainContext ctx) throws IOException {
-        queue.add(new IdleTimeoutContext(ctx.getConnection()), FOREVER, TimeUnit.MILLISECONDS);
+    	IdleTimeoutContext idleTimeoutContext = new IdleTimeoutContext(ctx.getConnection());
+    	queue.add(idleTimeoutContext, FOREVER, TimeUnit.MILLISECONDS);
+    	IDLE_ATTR.get(ctx.getConnection()).setIdleTimeoutContext(idleTimeoutContext);
 
         queueAction(ctx);
         return ctx.getInvokeAction();
@@ -333,7 +335,7 @@ public class IdleTimeoutFilter extends BaseFilter {
     }
 
 
-    private static final class Resolver implements DelayedExecutor.Resolver<IdleTimeoutContext> {
+    public static final class Resolver implements DelayedExecutor.Resolver<IdleTimeoutContext> {
 
         @Override
         public boolean removeTimeout(final IdleTimeoutContext context) {
@@ -358,7 +360,7 @@ public class IdleTimeoutFilter extends BaseFilter {
 
     } // END Resolver
 
-    private static final class IdleTimeoutContext {
+    public static final class IdleTimeoutContext {
       
       private Connection connection;
 
@@ -415,7 +417,7 @@ public class IdleTimeoutFilter extends BaseFilter {
 
     } // END IdleRecord
 
-    private static final class DefaultWorker implements DelayedExecutor.Worker<IdleTimeoutContext> {
+    public static final class DefaultWorker implements DelayedExecutor.Worker<IdleTimeoutContext> {
 
         private final TimeoutHandler handler;
 
@@ -423,7 +425,7 @@ public class IdleTimeoutFilter extends BaseFilter {
         // -------------------------------------------------------- Constructors
 
 
-        DefaultWorker(final TimeoutHandler handler) {
+        public DefaultWorker(final TimeoutHandler handler) {
 
             this.handler = handler;
 
