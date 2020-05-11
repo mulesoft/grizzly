@@ -251,7 +251,7 @@ public class SSLFilter extends SSLBaseFilter {
         // tearing down the SSL connection and we can't do beginHandshake(),
         // because it will throw an exception
 
-        // Check if it is in handshaking avoid failing when SSLEngine not support renegotiation
+        // Check if it is in handshaking to avoid fail when SSLEngine not support renegotiation
         // e.g. Bouncy Castle
         if(forceBeginHandshake ||
                 (!sslEngine.getSession().isValid() && !isHandshaking(sslEngine))) {
