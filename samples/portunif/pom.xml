@@ -45,14 +45,14 @@
     <parent>
         <groupId>org.mule.glassfish.grizzly</groupId>
         <artifactId>grizzly-project</artifactId>
-        <version>2.3.36-MULE-019-SNAPSHOT</version>
+        <version>2.3.36-MULE-020-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
      <groupId>org.glassfish.grizzly.samples</groupId>
     <artifactId>grizzly-portunif-samples</artifactId>
     <packaging>bundle</packaging>
-    <version>2.3.36-MULE-019-SNAPSHOT</version>
+    <version>2.3.36-MULE-020-SNAPSHOT</version>
     <name>grizzly-portunif-samples</name>
     <build>
         <defaultGoal>install</defaultGoal>
