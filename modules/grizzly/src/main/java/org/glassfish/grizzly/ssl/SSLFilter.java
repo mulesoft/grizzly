@@ -264,7 +264,7 @@ public class SSLFilter extends SSLBaseFilter {
 
     /**
      * Checks if {@link SSLEngine#beginHandshake()} should be call
-     * There are some situation that {@link SSLEngine#beginHandshake()} should not be call:
+     * There are some situation that {@link SSLEngine#beginHandshake()} should not be called:
      * 1- if the session is still valid - we're most probably tearing down the SSL connection
      * and we can't do beginHandshake(), because it will throw an exception.
      *
