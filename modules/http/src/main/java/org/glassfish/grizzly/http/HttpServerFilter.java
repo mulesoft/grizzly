@@ -1203,7 +1203,7 @@ public class HttpServerFilter extends HttpCodecFilter {
     private void sendRequestUriTooLongResponse(final FilterChainContext ctx,
                                                final HttpResponsePacket response) {
         if (response.getHttpStatus().getStatusCode() < 400) {
-            // 400 - Bad request
+            // 414 - Request-URI Too Long
             HttpStatus.REQUEST_URI_TOO_LONG_414.setValues(response);
         }
         commitAndCloseAsError(ctx, response);
