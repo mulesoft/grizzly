@@ -40,6 +40,7 @@
 
 package org.glassfish.grizzly.http;
 
+import com.sun.org.apache.xerces.internal.util.URI;
 import org.glassfish.grizzly.http.util.ContentType;
 import org.glassfish.grizzly.filterchain.FilterChainEvent;
 import org.glassfish.grizzly.http.util.Constants;
@@ -794,7 +795,11 @@ public class HttpServerFilter extends HttpCodecFilter {
         final ServerHttpRequestImpl request = (ServerHttpRequestImpl) httpHeader;
         final HttpResponsePacket response = request.getResponse();
 
-        sendBadRequestResponse(ctx, response);
+        if (t instanceof URI.MalformedURIException) {
+            sendRequestUriTooLongResponse(ctx, response);
+        } else {
+            sendBadRequestResponse(ctx, response);
+        }
     }
 
 
@@ -1191,6 +1196,15 @@ public class HttpServerFilter extends HttpCodecFilter {
         if (response.getHttpStatus().getStatusCode() < 400) {
             // 400 - Bad request
             HttpStatus.BAD_REQUEST_400.setValues(response);
+        }
+        commitAndCloseAsError(ctx, response);
+    }
+
+    private void sendRequestUriTooLongResponse(final FilterChainContext ctx,
+                                               final HttpResponsePacket response) {
+        if (response.getHttpStatus().getStatusCode() < 400) {
+            // 400 - Bad request
+            HttpStatus.REQUEST_URI_TOO_LONG_414.setValues(response);
         }
         commitAndCloseAsError(ctx, response);
     }
