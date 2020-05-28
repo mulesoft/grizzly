@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.org.apache.xerces.internal.util.URI;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -627,7 +628,12 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 LOGGER.log(Level.FINE, "Error parsing HTTP header", e);
 
                 HttpProbeNotifier.notifyProbesError(this, connection, httpHeader, e);
-                onHttpHeaderError(httpHeader, ctx, e);
+
+                if (parsingState.getHeaderParsingState().state == 0) {
+                    onHttpHeaderError(httpHeader, ctx, new URI.MalformedURIException());
+                } else {
+                    onHttpHeaderError(httpHeader, ctx, e);
+                }
 
                 // make the connection deaf to any following input
                 // onHttpError call will take care of error processing
