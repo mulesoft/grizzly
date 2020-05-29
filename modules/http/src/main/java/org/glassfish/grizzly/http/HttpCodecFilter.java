@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.org.apache.xerces.internal.util.URI;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -76,8 +75,6 @@ import org.glassfish.grizzly.monitoring.MonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.ssl.SSLUtils;
 import org.glassfish.grizzly.utils.ArraySet;
-
-import javax.xml.ws.http.HTTPException;
 
 /**
  * The {@link org.glassfish.grizzly.filterchain.Filter}, responsible for transforming {@link Buffer} into
@@ -635,11 +632,12 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 switch (parsingState.getHeaderParsingState().state)
                 {
                     case 0:
-                        onHttpHeaderError(httpHeader, ctx, new URI.MalformedURIException());
+                        onHttpHeaderError(httpHeader, ctx, new HttpErrorException(
+                            HttpStatus.REQUEST_URI_TOO_LONG_414));
                         break;
                     case 1:
-                        onHttpHeaderError(httpHeader, ctx, new HTTPException(HttpStatus.
-                            REQUEST_ENTITY_TOO_LARGE_413.getStatusCode()));
+                        onHttpHeaderError(httpHeader, ctx, new HttpErrorException(
+                            HttpStatus.REQUEST_ENTITY_TOO_LARGE_413));
                         break;
                     default:
                         onHttpHeaderError(httpHeader, ctx, e);

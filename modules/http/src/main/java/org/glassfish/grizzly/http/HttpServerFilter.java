@@ -40,7 +40,6 @@
 
 package org.glassfish.grizzly.http;
 
-import com.sun.org.apache.xerces.internal.util.URI;
 import org.glassfish.grizzly.http.util.ContentType;
 import org.glassfish.grizzly.filterchain.FilterChainEvent;
 import org.glassfish.grizzly.http.util.Constants;
@@ -66,8 +65,6 @@ import org.glassfish.grizzly.ThreadCache;
 import static org.glassfish.grizzly.http.Method.PayloadExpectation;
 import static org.glassfish.grizzly.http.util.HttpCodecUtils.*;
 import org.glassfish.grizzly.http.util.HttpUtils;
-
-import javax.xml.ws.http.HTTPException;
 
 /**
  * Server side {@link HttpCodecFilter} implementation, which is responsible for
@@ -797,10 +794,8 @@ public class HttpServerFilter extends HttpCodecFilter {
         final ServerHttpRequestImpl request = (ServerHttpRequestImpl) httpHeader;
         final HttpResponsePacket response = request.getResponse();
 
-        if (t instanceof URI.MalformedURIException) {
-            sendRequestUriTooLongResponse(ctx, response);
-        } else if (t instanceof HTTPException) {
-            sendEntityTooLargeResponse(ctx, response);
+        if (t instanceof HttpErrorException) {
+            sendErrorResponse(ctx, response, ((HttpErrorException) t).statusCode);
         } else {
             sendBadRequestResponse(ctx, response);
         }
@@ -1195,6 +1190,8 @@ public class HttpServerFilter extends HttpCodecFilter {
         return isKeepAlive;
     }
 
+
+
     private void sendBadRequestResponse(final FilterChainContext ctx,
                                         final HttpResponsePacket response) {
         if (response.getHttpStatus().getStatusCode() < 400) {
@@ -1204,23 +1201,15 @@ public class HttpServerFilter extends HttpCodecFilter {
         commitAndCloseAsError(ctx, response);
     }
 
-    private void sendEntityTooLargeResponse(final FilterChainContext ctx,
-                                        final HttpResponsePacket response) {
+    private void sendErrorResponse(final FilterChainContext ctx,
+                                   final HttpResponsePacket response,
+                                   final HttpStatus httpStatus) {
         if (response.getHttpStatus().getStatusCode() < 400) {
-            // 413 - Request Entity Too Large
-            HttpStatus.REQUEST_ENTITY_TOO_LARGE_413.setValues(response);
+            httpStatus.setValues(response);
         }
         commitAndCloseAsError(ctx, response);
     }
 
-    private void sendRequestUriTooLongResponse(final FilterChainContext ctx,
-                                               final HttpResponsePacket response) {
-        if (response.getHttpStatus().getStatusCode() < 400) {
-            // 414 - Request URI Too Long
-            HttpStatus.REQUEST_URI_TOO_LONG_414.setValues(response);
-        }
-        commitAndCloseAsError(ctx, response);
-    }
 
     /*
      * caller has the responsibility to set the status of th response.
