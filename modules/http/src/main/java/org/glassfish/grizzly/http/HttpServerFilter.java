@@ -67,6 +67,8 @@ import static org.glassfish.grizzly.http.Method.PayloadExpectation;
 import static org.glassfish.grizzly.http.util.HttpCodecUtils.*;
 import org.glassfish.grizzly.http.util.HttpUtils;
 
+import javax.xml.ws.http.HTTPException;
+
 /**
  * Server side {@link HttpCodecFilter} implementation, which is responsible for
  * decoding {@link HttpRequestPacket} and encoding {@link HttpResponsePacket} messages.
@@ -797,6 +799,8 @@ public class HttpServerFilter extends HttpCodecFilter {
 
         if (t instanceof URI.MalformedURIException) {
             sendRequestUriTooLongResponse(ctx, response);
+        } else if (t instanceof HTTPException) {
+            sendEntityTooLargeResponse(ctx, response);
         } else {
             sendBadRequestResponse(ctx, response);
         }
@@ -1200,10 +1204,19 @@ public class HttpServerFilter extends HttpCodecFilter {
         commitAndCloseAsError(ctx, response);
     }
 
+    private void sendEntityTooLargeResponse(final FilterChainContext ctx,
+                                        final HttpResponsePacket response) {
+        if (response.getHttpStatus().getStatusCode() < 400) {
+            // 413 - Request Entity Too Large
+            HttpStatus.REQUEST_ENTITY_TOO_LARGE_413.setValues(response);
+        }
+        commitAndCloseAsError(ctx, response);
+    }
+
     private void sendRequestUriTooLongResponse(final FilterChainContext ctx,
                                                final HttpResponsePacket response) {
         if (response.getHttpStatus().getStatusCode() < 400) {
-            // 414 - Request-URI Too Long
+            // 414 - Request URI Too Long
             HttpStatus.REQUEST_URI_TOO_LONG_414.setValues(response);
         }
         commitAndCloseAsError(ctx, response);

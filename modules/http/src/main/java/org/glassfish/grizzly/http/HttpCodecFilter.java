@@ -64,6 +64,7 @@ import org.glassfish.grizzly.http.util.CacheableDataChunk;
 import org.glassfish.grizzly.http.util.Constants;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.Header;
+import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.CompositeBuffer;
@@ -75,6 +76,8 @@ import org.glassfish.grizzly.monitoring.MonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.ssl.SSLUtils;
 import org.glassfish.grizzly.utils.ArraySet;
+
+import javax.xml.ws.http.HTTPException;
 
 /**
  * The {@link org.glassfish.grizzly.filterchain.Filter}, responsible for transforming {@link Buffer} into
@@ -629,10 +632,17 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
 
                 HttpProbeNotifier.notifyProbesError(this, connection, httpHeader, e);
 
-                if (parsingState.getHeaderParsingState().state == 0) {
-                    onHttpHeaderError(httpHeader, ctx, new URI.MalformedURIException());
-                } else {
-                    onHttpHeaderError(httpHeader, ctx, e);
+                switch (parsingState.getHeaderParsingState().state)
+                {
+                    case 0:
+                        onHttpHeaderError(httpHeader, ctx, new URI.MalformedURIException());
+                        break;
+                    case 1:
+                        onHttpHeaderError(httpHeader, ctx, new HTTPException(HttpStatus.
+                            REQUEST_ENTITY_TOO_LARGE_413.getStatusCode()));
+                        break;
+                    default:
+                        onHttpHeaderError(httpHeader, ctx, e);
                 }
 
                 // make the connection deaf to any following input
