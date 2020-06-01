@@ -795,7 +795,7 @@ public class HttpServerFilter extends HttpCodecFilter {
         final HttpResponsePacket response = request.getResponse();
 
         if (t instanceof HttpErrorException) {
-            sendErrorResponse(ctx, response, ((HttpErrorException) t).statusCode);
+            sendErrorResponse(ctx, response, ((HttpErrorException) t).getStatusCode());
         } else {
             sendBadRequestResponse(ctx, response);
         }

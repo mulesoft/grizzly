@@ -633,11 +633,13 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 {
                     case 0:
                         onHttpHeaderError(httpHeader, ctx, new HttpErrorException(
-                            HttpStatus.REQUEST_URI_TOO_LONG_414));
+                                e.getMessage(),
+                                HttpStatus.REQUEST_URI_TOO_LONG_414));
                         break;
                     case 1:
                         onHttpHeaderError(httpHeader, ctx, new HttpErrorException(
-                            HttpStatus.REQUEST_ENTITY_TOO_LARGE_413));
+                                e.getMessage(),
+                                HttpStatus.REQUEST_ENTITY_TOO_LARGE_413));
                         break;
                     default:
                         onHttpHeaderError(httpHeader, ctx, e);

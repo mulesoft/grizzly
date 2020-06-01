@@ -826,10 +826,10 @@ public class HttpSemanticsTest extends TestCase {
 
         ExpectedResult result = new ExpectedResult();
         result.setProtocol("HTTP/1.1");
-        result.setStatusCode(400);
+        result.setStatusCode(413);
         result.addHeader("!Transfer-Encoding", null);
         result.addHeader("Content-Length", "0");
-        result.setStatusMessage("Bad request");
+        result.setStatusMessage("request entity too large");
         doTest(request, result);
     }
 

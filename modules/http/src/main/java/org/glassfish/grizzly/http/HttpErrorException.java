@@ -41,9 +41,9 @@ package org.glassfish.grizzly.http;
 
 import org.glassfish.grizzly.http.util.HttpStatus;
 
-public class HttpErrorException extends RuntimeException
+public class HttpErrorException extends Exception
 {
-    final HttpStatus statusCode;
+    private final HttpStatus statusCode;
 
     public HttpErrorException(HttpStatus statusCode)
     {
@@ -68,4 +68,7 @@ public class HttpErrorException extends RuntimeException
         this.statusCode = statusCode;
     }
 
+    public HttpStatus getStatusCode() {
+        return statusCode;
+    }
 }
