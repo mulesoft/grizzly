@@ -63,6 +63,7 @@ import org.glassfish.grizzly.http.util.CacheableDataChunk;
 import org.glassfish.grizzly.http.util.Constants;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.Header;
+import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.CompositeBuffer;
@@ -627,7 +628,22 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 LOGGER.log(Level.FINE, "Error parsing HTTP header", e);
 
                 HttpProbeNotifier.notifyProbesError(this, connection, httpHeader, e);
-                onHttpHeaderError(httpHeader, ctx, e);
+
+                switch (parsingState.getHeaderParsingState().state)
+                {
+                    case 0:
+                        onHttpHeaderError(httpHeader, ctx, new HttpErrorException(
+                                e.getMessage(),
+                                HttpStatus.REQUEST_URI_TOO_LONG_414));
+                        break;
+                    case 1:
+                        onHttpHeaderError(httpHeader, ctx, new HttpErrorException(
+                                e.getMessage(),
+                                HttpStatus.REQUEST_ENTITY_TOO_LARGE_413));
+                        break;
+                    default:
+                        onHttpHeaderError(httpHeader, ctx, e);
+                }
 
                 // make the connection deaf to any following input
                 // onHttpError call will take care of error processing
