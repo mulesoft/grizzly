@@ -599,12 +599,12 @@ public class UDPNIOConnection extends NIOConnection {
     }
 
     @Override
-    public ClassLoader getClassLoader() {
+    public ClassLoader getCreationContextClassLoader() {
         return classLoader;
     }
 
     @Override
-    public void setClassLoader(ClassLoader classLoader) {
+    public void setCreationContextClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 

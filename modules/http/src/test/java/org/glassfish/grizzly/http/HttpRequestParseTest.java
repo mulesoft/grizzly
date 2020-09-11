@@ -436,12 +436,12 @@ public class HttpRequestParseTest extends TestCase {
         }
 
         @Override
-        public ClassLoader getClassLoader() {
+        public ClassLoader getCreationContextClassLoader() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void setClassLoader(ClassLoader classLoader) {
+        public void setCreationContextClassLoader(ClassLoader classLoader) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

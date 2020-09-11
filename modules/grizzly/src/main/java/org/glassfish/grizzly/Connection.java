@@ -493,15 +493,21 @@ public interface Connection<L> extends Readable<L>, Writeable<L>,
     }
 
     /**
-     * Get ClassLoader. Default is null.
-     * @return
+     * Get ClassLoader set by setCreationContextClassLoader method. Default is null.
+     *
+     * @return the ClassLoader set by setCreationContextClassLoader method. Default is null.
+     *
+     * @since 2.3.36-MULE-022-SNAPSHOT
      */
-     ClassLoader getClassLoader();
+     ClassLoader getCreationContextClassLoader();
 
     /**
      * Set classloader variable.
+     *
      * @param classLoader
+     *
+     * @since 2.3.36-MULE-022-SNAPSHOT
      */
-    void setClassLoader(ClassLoader classLoader);
+    void setCreationContextClassLoader(ClassLoader classLoader);
 
 }

@@ -899,7 +899,7 @@ public class FilterChainContext implements AttributeStorage {
 
         final FilterChainContext newContext =
                 getFilterChain().obtainFilterChainContext(getConnection());
-        newContext.getConnection().setClassLoader(context);
+        newContext.getConnection().setCreationContextClassLoader(context);
         addParamsToWriteContext(newContext, address, message, completionHandler, pushBackHandler, cloner, blocking);
         ProcessorExecutor.execute(newContext.internalContext);
     }
