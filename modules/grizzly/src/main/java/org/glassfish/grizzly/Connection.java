@@ -492,10 +492,18 @@ public interface Connection<L> extends Readable<L>, Writeable<L>,
         LOCALLY, REMOTELY
     }
 
-    default ClassLoader getLoggerClassLoader(){
+    /**
+     * Get ClassLoader. Default is null.
+     * @return
+     */
+    default ClassLoader getClassLoader(){
         return null;
     }
 
-    default void setLoggerClassLoader(ClassLoader classLoader){}
+    /**
+     * Default class to be override in implementations. Set classloader variable.
+     * @param classLoader
+     */
+    default void setClassLoader(ClassLoader classLoader){}
 
 }

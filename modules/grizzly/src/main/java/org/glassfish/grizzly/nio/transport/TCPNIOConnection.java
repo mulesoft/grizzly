@@ -240,12 +240,12 @@ public class TCPNIOConnection extends NIOConnection {
     }
 
     @Override
-    public ClassLoader getLoggerClassLoader() {
+    public ClassLoader getClassLoader() {
         return classLoader;
     }
 
     @Override
-    public void setLoggerClassLoader(ClassLoader classLoader) {
+    public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
