@@ -386,6 +386,16 @@ public class HttpResponseParseTest extends TestCase {
         }
 
         @Override
+        public ClassLoader getClassLoader() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setClassLoader(ClassLoader classLoader) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
         public void notifyCanWrite(WriteHandler handler) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
