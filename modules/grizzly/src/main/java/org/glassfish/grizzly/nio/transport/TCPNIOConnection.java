@@ -71,7 +71,7 @@ public class TCPNIOConnection extends NIOConnection {
 
     private int readBufferSize = -1;
     private int writeBufferSize = -1;
-
+    private ClassLoader classLoader;
     private AtomicReference<ConnectResultHandler> connectHandlerRef;
 
     public TCPNIOConnection(TCPNIOTransport transport,
@@ -238,7 +238,17 @@ public class TCPNIOConnection extends NIOConnection {
             }
         }
     }
-    
+
+    @Override
+    public ClassLoader getLoggerClassLoader() {
+        return classLoader;
+    }
+
+    @Override
+    public void setLoggerClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
     protected final void setConnectResultHandler(
             final ConnectResultHandler connectHandler) {
         connectHandlerRef =

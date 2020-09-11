@@ -761,6 +761,19 @@ public class FilterChainContext implements AttributeStorage {
 
     }
 
+    public void writeWithContext(final Object message,
+                      final CompletionHandler<WriteResult> completionHandler,
+                                 ClassLoader context) {
+
+        writeWithContext(null,
+                message,
+                completionHandler,
+                null, null,
+                transportFilterContext.isBlocking(),
+                context);
+
+    }
+
 
     public void write(final Object message,
                       final CompletionHandler<WriteResult> completionHandler,
@@ -873,7 +886,31 @@ public class FilterChainContext implements AttributeStorage {
 
         final FilterChainContext newContext =
                 getFilterChain().obtainFilterChainContext(getConnection());
+        addParamsToWriteContext(newContext, address, message, completionHandler, pushBackHandler, cloner, blocking);
+        ProcessorExecutor.execute(newContext.internalContext);
+    }
 
+    public void writeWithContext(final Object address,
+                      final Object message,
+                      final CompletionHandler<WriteResult> completionHandler,
+                      final org.glassfish.grizzly.asyncqueue.PushBackHandler pushBackHandler,
+                      final MessageCloner cloner,
+                      final boolean blocking, ClassLoader context) {
+
+        final FilterChainContext newContext =
+                getFilterChain().obtainFilterChainContext(getConnection());
+        newContext.getConnection().setLoggerClassLoader(context);
+        addParamsToWriteContext(newContext, address, message, completionHandler, pushBackHandler, cloner, blocking);
+        ProcessorExecutor.execute(newContext.internalContext);
+    }
+
+    private void addParamsToWriteContext(final FilterChainContext newContext,
+                                    final Object address,
+                                    final Object message,
+                                    final CompletionHandler<WriteResult> completionHandler,
+                                    final org.glassfish.grizzly.asyncqueue.PushBackHandler pushBackHandler,
+                                    final MessageCloner cloner,
+                                    final boolean blocking){
         newContext.operation = Operation.WRITE;
         newContext.transportFilterContext.configureBlocking(blocking);
         newContext.message = message;
@@ -886,8 +923,6 @@ public class FilterChainContext implements AttributeStorage {
         newContext.filterIdx = filterIdx - 1;
         newContext.endIdx = -1;
         getAttributes().copyTo(newContext.getAttributes());
-
-        ProcessorExecutor.execute(newContext.internalContext);
     }
 
     public void flush(final CompletionHandler completionHandler) {
