@@ -680,8 +680,6 @@ public class UDPNIOConnection extends NIOConnection {
         this.monitoringConfig.addProbes(monitoringProbes);
     }
 
-
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
