@@ -501,7 +501,7 @@ public interface Connection<L> extends Readable<L>, Writeable<L>,
     }
 
     /**
-     * Default class to be override in implementations. Set classloader variable.
+     * Default method to be override in implementations. Set classloader variable.
      * @param classLoader
      */
     default void setClassLoader(ClassLoader classLoader){}
