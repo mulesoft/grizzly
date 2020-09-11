@@ -144,6 +144,7 @@ public class UDPNIOConnection extends NIOConnection {
 
     private int readBufferSize = -1;
     private int writeBufferSize = -1;
+    private ClassLoader classLoader;
 
     public UDPNIOConnection(UDPNIOTransport transport,
             DatagramChannel channel) {
@@ -598,6 +599,16 @@ public class UDPNIOConnection extends NIOConnection {
     }
 
     @Override
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    @Override
     protected void enableInitialOpRead() throws IOException {
         super.enableInitialOpRead();
     }
@@ -668,6 +679,8 @@ public class UDPNIOConnection extends NIOConnection {
     void setMonitoringProbes(final ConnectionProbe[] monitoringProbes) {
         this.monitoringConfig.addProbes(monitoringProbes);
     }
+
+
 
     @Override
     public String toString() {

@@ -496,14 +496,12 @@ public interface Connection<L> extends Readable<L>, Writeable<L>,
      * Get ClassLoader. Default is null.
      * @return
      */
-    default ClassLoader getClassLoader(){
-        return null;
-    }
+     ClassLoader getClassLoader();
 
     /**
-     * Default method to be override in implementations. Set classloader variable.
+     * Set classloader variable.
      * @param classLoader
      */
-    default void setClassLoader(ClassLoader classLoader){}
+    void setClassLoader(ClassLoader classLoader);
 
 }
