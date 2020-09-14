@@ -494,6 +494,9 @@ public interface Connection<L> extends Readable<L>, Writeable<L>,
 
     /**
      * Get ClassLoader set by setCreationContextClassLoader method. Default is null.
+     * This field will be used by Mule to save the context ClassLoader of the app.
+     * If the ClassLoader changes when the app has to log,
+     * Mule will replace it with the application ClassLoader and, once it logs, set the original again.
      *
      * @return the ClassLoader set by setCreationContextClassLoader method. Default is null.
      *
