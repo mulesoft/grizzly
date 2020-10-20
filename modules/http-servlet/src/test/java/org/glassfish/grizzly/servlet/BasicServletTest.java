@@ -135,13 +135,13 @@ public class BasicServletTest extends HttpServerAbstractTest {
 //    public void testNotAllowEncodedSlash() throws IOException {
 //        System.out.println("testNotAllowEncodedSlash");
 //        try {
-//            newHttpServer(PORT);
+//            newHttpServer(port);
 //            String alias = "/contextPath/servletPath/";
 //            ServletHandler servletHandler = addHttpHandler(alias);
 //            servletHandler.setContextPath("/contextPath");
 //            servletHandler.setServletPath("/servletPath");
 //            httpServer.start();
-//            HttpURLConnection conn = getConnection("/contextPath/servletPath%5FpathInfo", PORT);
+//            HttpURLConnection conn = getConnection("/contextPath/servletPath%5FpathInfo", port);
 //            String s = conn.getHeaderField("Path-Info");
 //            assertNotSame(s, "/pathInfo");
 //        } finally {
@@ -152,14 +152,14 @@ public class BasicServletTest extends HttpServerAbstractTest {
 //    public void testAllowEncodedSlash() throws IOException {
 //        System.out.println("testAllowEncodedSlash");
 //        try {
-//            newHttpServer(PORT);
+//            newHttpServer(port);
 //            String alias = "/contextPath/servletPath/";
 //            ServletHandler servletHandler = addHttpHandler(alias);
 //            servletHandler.setAllowEncodedSlash(true);
 //            servletHandler.setContextPath("/contextPath");
 //            servletHandler.setServletPath("/servletPath");
 //            httpServer.start();
-//            HttpURLConnection conn = getConnection("/contextPath/servletPath%5FpathInfo", PORT);
+//            HttpURLConnection conn = getConnection("/contextPath/servletPath%5FpathInfo", port);
 //            String s = conn.getHeaderField("Path-Info");
 //            assertNotSame(s, "/pathInfo");
 //        } finally {
