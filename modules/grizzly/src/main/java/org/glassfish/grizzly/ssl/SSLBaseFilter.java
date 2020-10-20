@@ -480,7 +480,11 @@ public class SSLBaseFilter extends BaseFilter {
 
             if (output.hasRemaining() || isClosed) {
                 ctx.setMessage(output);
-                return ctx.getInvokeAction(makeInputRemainder(sslCtx, ctx, input));
+                if (!isClosed) {
+                    return ctx.getInvokeAction(makeInputRemainder(sslCtx, ctx, input));
+                } else {
+                    LOGGER.finer("Closed SSL connection detected, terminating chain.");
+                }
             }
         }
 

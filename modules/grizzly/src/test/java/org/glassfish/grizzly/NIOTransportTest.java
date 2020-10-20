@@ -197,7 +197,7 @@ public class NIOTransportTest {
         LOGGER.log(Level.INFO, "Running: testPortRangeBind ({0})", transport.getName());
 
         final int portsTest = 10;
-        final int startPort = port + 1234;
+        final int startPort = 7777 + 1234;
         final PortRange portRange =
                 new PortRange(startPort, startPort + portsTest - 1);
 
