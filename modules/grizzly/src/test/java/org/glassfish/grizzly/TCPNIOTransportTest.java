@@ -109,7 +109,6 @@ public class TCPNIOTransportTest {
     @Before
     public void setUp() throws Exception {
         port = findFreePort();
-        logger.info("Using port: " + port);
         ByteBufferWrapper.DEBUG_MODE = true;
     }
 
