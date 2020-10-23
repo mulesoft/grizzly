@@ -480,6 +480,9 @@ public class SSLBaseFilter extends BaseFilter {
 
             if (output.hasRemaining() || isClosed) {
                 ctx.setMessage(output);
+
+                // This change prevents endless loops if the SSL connection is terminated early without enough data.
+                // https://github.com/eclipse-ee4j/grizzly/pull/2085
                 if (!isClosed) {
                     return ctx.getInvokeAction(makeInputRemainder(sslCtx, ctx, input));
                 } else {
