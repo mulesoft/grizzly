@@ -509,6 +509,10 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
 
         if (filtersState != null) {
             Object message = ctx.getMessage();
+
+            // This change was introduced in:
+            // PAYARA-3288 memory leak in DefaultFilterChain, resulting in large amounts of HeapBuffer
+            // https://github.com/eclipse-ee4j/grizzly/commit/c435680a1da09c15682b21370737e49df825bf1f
             if (message instanceof Buffer) {
                 Buffer bufferMessage = (Buffer) message;
                 if (!bufferMessage.hasRemaining()) {
