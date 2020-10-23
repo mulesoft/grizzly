@@ -41,6 +41,7 @@
 package org.glassfish.grizzly;
 
 import static junit.framework.Assert.assertTrue;
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -101,12 +102,13 @@ import org.junit.Test;
  */
 public class TCPNIOTransportTest {
 
-    public static final int PORT = 7777;
+    private int port;
 
     private static final Logger logger = Grizzly.logger(TCPNIOTransportTest.class);
 
     @Before
     public void setUp() throws Exception {
+        port = findFreePort();
         ByteBufferWrapper.DEBUG_MODE = true;
     }
 
@@ -116,17 +118,17 @@ public class TCPNIOTransportTest {
         TCPNIOTransport transport =
                 TCPNIOTransportBuilder.newInstance().build();
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
-            Future<Connection> future = transport.connect("localhost", PORT);
+            Future<Connection> future = transport.connect("localhost", port);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
             connection.closeSilently();
 
             transport.unbindAll();
 
-            future = transport.connect("localhost", PORT);
+            future = transport.connect("localhost", port);
             try {
                 future.get(10, TimeUnit.SECONDS);
                 fail("Server connection should be closed!");
@@ -134,9 +136,9 @@ public class TCPNIOTransportTest {
                 assertTrue(e.getCause() instanceof IOException);
             }
 
-            transport.bind(PORT);
+            transport.bind(port);
 
-            future = transport.connect("localhost", PORT);
+            future = transport.connect("localhost", port);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
         } finally {
@@ -155,25 +157,25 @@ public class TCPNIOTransportTest {
                 TCPNIOTransportBuilder.newInstance().build();
         try {
             final Connection serverConnection1 =
-                    transport.bind(PORT);
+                    transport.bind(port);
             final Connection serverConnection2 =
-                    transport.bind(PORT + 1);
+                    transport.bind(port + 1);
 
             transport.start();
 
-            Future<Connection> future = transport.connect("localhost", PORT);
+            Future<Connection> future = transport.connect("localhost", port);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
             connection.closeSilently();
 
-            future = transport.connect("localhost", PORT + 1);
+            future = transport.connect("localhost", port + 1);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
             connection.closeSilently();
 
             transport.unbind(serverConnection1);
 
-            future = transport.connect("localhost", PORT);
+            future = transport.connect("localhost", port);
             try {
                 connection = future.get(10, TimeUnit.SECONDS);
                 fail("Server connection should be closed!");
@@ -182,7 +184,7 @@ public class TCPNIOTransportTest {
             }
 
             transport.unbind(serverConnection2);
-            future = transport.connect("localhost", PORT + 1);
+            future = transport.connect("localhost", port + 1);
             try {
                 connection = future.get(10, TimeUnit.SECONDS);
                 fail("Server connection should be closed!");
@@ -223,11 +225,11 @@ public class TCPNIOTransportTest {
             
             transport.setProcessor(filterChainBuilder.build());
 
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
             
             Future<Connection> connectFuture = transport.connect(
-                    new InetSocketAddress("localhost", PORT));
+                    new InetSocketAddress("localhost", port));
                         
             connectedConnection = connectFuture.get(10, TimeUnit.SECONDS);
             acceptedConnection = acceptedQueue.poll(10, TimeUnit.SECONDS);
@@ -302,13 +304,13 @@ public class TCPNIOTransportTest {
         transport.setSelectorRunnersCount(4);
         
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                     connectFuture, new EmptyCompletionHandler<Connection>()  {
 
@@ -384,14 +386,14 @@ public class TCPNIOTransportTest {
                 .build();
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final int connectionsNum = 100;
             
             for (int i = 0; i < connectionsNum; i++) {
                 final Future<Connection> connectFuture = connectorHandler.connect(
-                        new InetSocketAddress("localhost", PORT));
+                        new InetSocketAddress("localhost", port));
                 if (!connectFuture.cancel(false)) {
                     assertTrue("Future is not done", connectFuture.isDone());
                     final Connection c = connectFuture.get();
@@ -428,7 +430,7 @@ public class TCPNIOTransportTest {
         transport.setSelectorRunnersCount(1);
         transport.setKernelThreadPoolConfig(ThreadPoolConfig.defaultConfig().setCorePoolSize(1).setMaxPoolSize(1));
         transport.setIOStrategy(new SameThreadIOStrategyInterruptWrapper(true));
-        transport.bind(PORT);
+        transport.bind(port);
         transport.start();
 
         final TCPNIOTransport clientTransport = TCPNIOTransportBuilder.newInstance().build();
@@ -441,7 +443,7 @@ public class TCPNIOTransportTest {
                     .processor(FilterChainBuilder.stateless().add(new TransportFilter()).build())
                     .build();
             try {
-                final Future<Connection> f1 = connectorHandler.connect("localhost", PORT);
+                final Future<Connection> f1 = connectorHandler.connect("localhost", port);
                 final Connection c = f1.get(5, TimeUnit.SECONDS);
                 Thread.sleep(500); // Give a little time for the remote RST to be acknowledged.
                 if (c.isOpen()) {
@@ -456,7 +458,7 @@ public class TCPNIOTransportTest {
 
             for (int i = 0; i < 10; i++) {
                 try {
-                    final Future f2 = connectorHandler.connect("localhost", PORT);
+                    final Future f2 = connectorHandler.connect("localhost", port);
                     f2.get(5, TimeUnit.SECONDS);
                     System.out.println("Successful connection in " + ++successfulAttempts + " attempts.");
                     break;
@@ -481,7 +483,7 @@ public class TCPNIOTransportTest {
         transport.setSelectorRunnersCount(1);
         transport.setKernelThreadPoolConfig(ThreadPoolConfig.defaultConfig().setCorePoolSize(1).setMaxPoolSize(1));
         transport.setIOStrategy(new SameThreadIOStrategyInterruptWrapper(false));
-        transport.bind(PORT);
+        transport.bind(port);
         transport.start();
 
         final TCPNIOTransport clientTransport = TCPNIOTransportBuilder.newInstance().build();
@@ -499,7 +501,7 @@ public class TCPNIOTransportTest {
 
             for (int i = 0; i < 10; i++) {
                 try {
-                    final Future f2 = connectorHandler.connect("localhost", PORT);
+                    final Future f2 = connectorHandler.connect("localhost", port);
                     f2.get(5, TimeUnit.SECONDS);
                     System.out.println("Successful connection (" + ++successfulAttempts + ").");
                 } catch (Exception e2) {
@@ -541,7 +543,7 @@ public class TCPNIOTransportTest {
         transport.configureBlocking(blocking);
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final FutureImpl<Boolean> clientFuture = SafeFutureImpl.create();
@@ -559,7 +561,7 @@ public class TCPNIOTransportTest {
                             .processor(clientFilterChainBuilder.build())
                             .build();
 
-            Future<Connection> future = connectorHandler.connect("localhost", PORT);
+            Future<Connection> future = connectorHandler.connect("localhost", port);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
 
