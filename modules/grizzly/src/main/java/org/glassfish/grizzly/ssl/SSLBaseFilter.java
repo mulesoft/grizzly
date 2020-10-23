@@ -643,7 +643,9 @@ public class SSLBaseFilter extends BaseFilter {
                                      Buffer inputBuffer) throws IOException {
         return doHandshakeStep(sslCtx, ctx, inputBuffer, null);
     }
-            
+
+    // This method includes the changes of:
+    // https://github.com/eclipse-ee4j/grizzly/pull/2014
     protected Buffer doHandshakeStep(final SSLConnectionContext sslCtx,
                                      final FilterChainContext ctx,
                                      Buffer inputBuffer,
