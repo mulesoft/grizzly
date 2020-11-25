@@ -40,6 +40,9 @@
 
 package org.glassfish.grizzly.http;
 
+import static org.glassfish.grizzly.http.Method.PayloadExpectation.ALLOWED;
+import static org.glassfish.grizzly.http.Method.PayloadExpectation.UNDEFINED;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.Header;
@@ -746,9 +749,19 @@ public abstract class HttpRequestPacket extends HttpHeader {
         this.response = response;
     }
 
+    @Override
+    protected void makeContentLengthHeader(final long defaultLength) {
+        boolean hasContent = contentLength > 0 || defaultLength > 0;
+        if (hasContent || methodHasBodySemantic()) {
+            super.makeContentLengthHeader(defaultLength);
+        }
+    }
 
     // --------------------------------------------------------- Private Methods
 
+    private boolean methodHasBodySemantic() {
+        return getMethod().getPayloadExpectation().equals(ALLOWED);
+    }
 
     private void parseHostHeader() {
         if (!hostHeaderParsed) {
