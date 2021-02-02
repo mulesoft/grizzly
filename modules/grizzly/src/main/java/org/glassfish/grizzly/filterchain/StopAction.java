@@ -48,8 +48,8 @@ import org.glassfish.grizzly.Appender;
  * 
  * @author Alexey Stashok
  */
-final class StopAction extends AbstractNextAction {
-    static final int TYPE = 1;
+public final class StopAction extends AbstractNextAction {
+    public static final int TYPE = 1;
     
     private Appender appender;
     private Object incompleteChunk;
