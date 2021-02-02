@@ -474,18 +474,29 @@ public class SSLBaseFilter extends BaseFilter {
                             result.getSslEngineResult().getStatus());
             }
         } while (true);
-        
+
         if (output != null) {
             output.trim();
+            ctx.setMessage(output);
+        }
+        
+        return resolveNextAction(ctx, sslCtx, input, output, isClosed);
+    }
 
-            if (output.hasRemaining() || isClosed) {
-                ctx.setMessage(output);
-                return ctx.getInvokeAction(makeInputRemainder(sslCtx, ctx, input));
-            }
+	protected NextAction resolveNextAction(final FilterChainContext ctx, final SSLConnectionContext sslCtx,
+			Buffer input, Buffer output, boolean isClosed) {
+		if (output != null && shouldContinueFilter(output, isClosed)) {
+			return ctx.getInvokeAction(makeInputRemainder(sslCtx, ctx, input));
         }
 
         return ctx.getStopAction(makeInputRemainder(sslCtx, ctx, input));
-    }
+	}
+
+	private boolean shouldContinueFilter(Buffer output, boolean isClosed) {
+        // This change prevents endless loops if the SSL connection is terminated early without enough data.
+        // https://github.com/eclipse-ee4j/grizzly/pull/2085
+		return !isClosed || output.hasRemaining();
+	}
 
     @SuppressWarnings("MethodMayBeStatic")
     protected Buffer wrapAll(final FilterChainContext ctx,

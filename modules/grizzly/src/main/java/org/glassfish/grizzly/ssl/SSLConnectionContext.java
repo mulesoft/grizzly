@@ -62,7 +62,7 @@ import static org.glassfish.grizzly.ssl.SSLUtils.*;
  * 
  * @author Alexey Stashok
  */
-public final class SSLConnectionContext {
+public class SSLConnectionContext {
     private static final Logger LOGGER = Grizzly.logger(SSLConnectionContext.class);
     private static final float BUFFER_SIZE_COEF;
     
