@@ -246,11 +246,8 @@ public class SSLFilter extends SSLBaseFilter {
         }
         
         notifyHandshakeStart(connection);
-        
-        // if the session is still valid - we're most probably
-        // tearing down the SSL connection and we can't do beginHandshake(),
-        // because it will throw an exception
-        if (forceBeginHandshake || !sslEngine.getSession().isValid()) {
+
+        if(forceBeginHandshake || shouldBeginHandshake(sslEngine)) {
             sslEngine.beginHandshake();
         }
 
@@ -263,6 +260,22 @@ public class SSLFilter extends SSLBaseFilter {
             final Buffer buffer = doHandshakeStep(sslCtx, context, null);
             assert (buffer == null);
         }
+    }
+
+    /**
+     * Checks if {@link SSLEngine#beginHandshake()} should be call
+     * There are some situation that {@link SSLEngine#beginHandshake()} should not be called:
+     * 1- if the session is still valid - we're most probably tearing down the SSL connection
+     * and we can't do beginHandshake(), because it will throw an exception.
+     *
+     * 2- If we are actually in handshaking process. There are some SSLEngine that not support renegotiation
+     * (e.g Bouncy Castle) so calling beginHandshake again will throw an exception
+     * See: MULE-18398
+     * @param sslEngine
+     * @return true if session is invalid and it is not in handshaking (See: {@link SSLUtils#isHandshaking(SSLEngine)})
+     */
+    private boolean shouldBeginHandshake(SSLEngine sslEngine) {
+        return !sslEngine.getSession().isValid() && !isHandshaking(sslEngine);
     }
 
     // --------------------------------------------------------- Private Methods

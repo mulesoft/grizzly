@@ -615,7 +615,7 @@ public class SSLBaseFilter extends BaseFilter {
         
         final Connection connection = ctx.getConnection();
         final SSLEngine sslEngine = sslCtx.getSslEngine();
-        
+
         final Buffer tmpAppBuffer = allocateOutputBuffer(sslCtx.getAppBufferSize());
         
         final long oldReadTimeout = connection.getReadTimeout(TimeUnit.MILLISECONDS);
@@ -647,14 +647,15 @@ public class SSLBaseFilter extends BaseFilter {
                                      Buffer inputBuffer) throws IOException {
         return doHandshakeStep(sslCtx, ctx, inputBuffer, null);
     }
-            
+
+    // This method includes the changes of:
+    // https://github.com/eclipse-ee4j/grizzly/pull/2014
     protected Buffer doHandshakeStep(final SSLConnectionContext sslCtx,
                                      final FilterChainContext ctx,
                                      Buffer inputBuffer,
                                      final Buffer tmpAppBuffer0)
             throws IOException {
 
-        final SSLEngine sslEngine = sslCtx.getSslEngine();
         final Connection connection = ctx.getConnection();
         
         final boolean isLoggingFinest = LOGGER.isLoggable(Level.FINEST);
@@ -664,7 +665,7 @@ public class SSLBaseFilter extends BaseFilter {
         Buffer tmpAppBuffer = tmpAppBuffer0;
         
         try {
-            HandshakeStatus handshakeStatus = sslEngine.getHandshakeStatus();
+            HandshakeStatus handshakeStatus = sslCtx.getSslEngine().getHandshakeStatus();
 
             _exitWhile:
             
@@ -672,14 +673,14 @@ public class SSLBaseFilter extends BaseFilter {
 
                 if (isLoggingFinest) {
                     LOGGER.log(Level.FINEST, "Loop Engine: {0} handshakeStatus={1}",
-                            new Object[]{sslEngine, sslEngine.getHandshakeStatus()});
+                            new Object[]{sslCtx.getSslEngine(), sslCtx.getSslEngine().getHandshakeStatus()});
                 }
 
                 switch (handshakeStatus) {
                     case NEED_UNWRAP: {
 
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_UNWRAP Engine: {0}", sslEngine);
+                            LOGGER.log(Level.FINEST, "NEED_UNWRAP Engine: {0}", sslCtx.getSslEngine());
                         }
 
                         if (inputBuffer == null || !inputBuffer.hasRemaining()) {
@@ -711,28 +712,28 @@ public class SSLBaseFilter extends BaseFilter {
                             throw new SSLException("SSL unwrap error: " + status);
                         }
 
-                        handshakeStatus = sslEngine.getHandshakeStatus();
+                        handshakeStatus = sslCtx.getSslEngine().getHandshakeStatus();
                         break;
                     }
 
                     case NEED_WRAP: {
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_WRAP Engine: {0}", sslEngine);
+                            LOGGER.log(Level.FINEST, "NEED_WRAP Engine: {0}", sslCtx.getSslEngine());
                         }
 
                         tmpNetBuffer = handshakeWrap(
                                 connection, sslCtx, tmpNetBuffer);
-                        handshakeStatus = sslEngine.getHandshakeStatus();
+                        handshakeStatus = sslCtx.getSslEngine().getHandshakeStatus();
 
                         break;
                     }
 
                     case NEED_TASK: {
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_TASK Engine: {0}", sslEngine);
+                            LOGGER.log(Level.FINEST, "NEED_TASK Engine: {0}", sslCtx.getSslEngine());
                         }
-                        executeDelegatedTask(sslEngine);
-                        handshakeStatus = sslEngine.getHandshakeStatus();
+                        executeDelegatedTask(sslCtx.getSslEngine());
+                        handshakeStatus = sslCtx.getSslEngine().getHandshakeStatus();
                         break;
                     }
 

@@ -53,6 +53,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class DelayedExecutor {
     public final static long UNSET_TIMEOUT = -1;
+    
+    private final static boolean PERFORM_NOTIFY_ON_ADD_PROPERTY = Boolean.getBoolean("mule.perform.notify.on.add.property");
 
     private final ExecutorService threadPool;
 
@@ -210,8 +212,10 @@ public class DelayedExecutor {
                 queue.put(elem, this);
             }
 
-            synchronized (DelayedExecutor.this) {
-                DelayedExecutor.this.notify();
+            if (PERFORM_NOTIFY_ON_ADD_PROPERTY) {
+	            synchronized (DelayedExecutor.this) {
+	                DelayedExecutor.this.notify();
+	            }
             }
         }
 

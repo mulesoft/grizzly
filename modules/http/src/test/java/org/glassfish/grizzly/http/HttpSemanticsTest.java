@@ -564,6 +564,62 @@ public class HttpSemanticsTest extends TestCase {
             }
         });
     }
+
+    public void testHttpGetWithPayloadEnabledDoesNotIncludeContentLengthHeader() throws Throwable {
+
+        // allow payload for GET
+        httpServerFilter.setAllowPayloadForUndefinedHttpMethods(true);
+
+        // don't include content-length header
+        final HttpRequestPacket header = HttpRequestPacket.builder()
+                .method("GET")
+                .uri("/path")
+                .contentLength(0)
+                .header("Host", "localhost:" + PORT)
+                .protocol("HTTP/1.1")
+                .build();
+
+        // empty payload
+        final HttpContent chunk1 = HttpContent.builder(header)
+                .content(Buffers.EMPTY_BUFFER)
+                .build();
+
+        ExpectedResult result = new ExpectedResult();
+        result.setProtocol("HTTP/1.1");
+        result.setStatusCode(200);
+        result.addHeader("!Connection", "close");
+        result.addHeader("!Transfer-Encoding", "chunked");
+        // RESPONSE should contain content length header
+        result.addHeader("Content-Length", "0");
+        result.setStatusMessage("ok");
+
+        doTest(new ClientFilter(chunk1, result, 1000), new BaseFilter() {
+            @Override
+            public NextAction handleRead(FilterChainContext ctx) throws IOException {
+                final HttpContent requestContent = ctx.getMessage();
+                if (!requestContent.isLast()) {
+                    return ctx.getStopAction(requestContent);
+                }
+
+                HttpRequestPacket request = (HttpRequestPacket) requestContent.getHttpHeader();
+                HttpResponsePacket response = request.getResponse();
+
+                // REQUEST shouldn't contain content length header
+                if (request.containsHeader("Content-Length")) {
+                    response.setStatus(400);
+                    response.setReasonPhrase("GET with empty body shouldn't contain content length header");
+                    ctx.write(response.httpContentBuilder().last(requestContent.isLast()).build());
+                } else {
+                    final Buffer payload = requestContent.getContent();
+                    HttpContent responseContent = response.httpContentBuilder().
+                            content(payload).last(requestContent.isLast()).build();
+                    ctx.write(responseContent);
+                }
+
+                return ctx.getStopAction();
+            }
+        });
+    }
     
     public void testUpgradeIgnoresTransferEncoding() throws Throwable {
 
@@ -826,10 +882,10 @@ public class HttpSemanticsTest extends TestCase {
 
         ExpectedResult result = new ExpectedResult();
         result.setProtocol("HTTP/1.1");
-        result.setStatusCode(400);
+        result.setStatusCode(413);
         result.addHeader("!Transfer-Encoding", null);
         result.addHeader("Content-Length", "0");
-        result.setStatusMessage("Bad request");
+        result.setStatusMessage("request entity too large");
         doTest(request, result);
     }
 
@@ -1041,8 +1097,8 @@ public class HttpSemanticsTest extends TestCase {
                 HttpResponsePacket response =
                         (HttpResponsePacket) httpContent.getHttpHeader();
                 if (expectedResult.getStatusCode() != -1) {
-                    assertEquals(expectedResult.getStatusCode(),
-                                 response.getStatus());
+                    assertEquals("Status code doesn't match. Actual response reason: " + response.getReasonPhrase(),
+                                 expectedResult.getStatusCode(), response.getStatus());
                 }
                 if (expectedResult.getProtocol() != null) {
                     assertEquals(expectedResult.getProtocol(),

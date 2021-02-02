@@ -794,7 +794,11 @@ public class HttpServerFilter extends HttpCodecFilter {
         final ServerHttpRequestImpl request = (ServerHttpRequestImpl) httpHeader;
         final HttpResponsePacket response = request.getResponse();
 
-        sendBadRequestResponse(ctx, response);
+        if (t instanceof HttpErrorException) {
+            sendErrorResponse(ctx, response, ((HttpErrorException) t).getStatusCode());
+        } else {
+            sendBadRequestResponse(ctx, response);
+        }
     }
 
 
@@ -1186,6 +1190,8 @@ public class HttpServerFilter extends HttpCodecFilter {
         return isKeepAlive;
     }
 
+
+
     private void sendBadRequestResponse(final FilterChainContext ctx,
                                         final HttpResponsePacket response) {
         if (response.getHttpStatus().getStatusCode() < 400) {
@@ -1194,6 +1200,16 @@ public class HttpServerFilter extends HttpCodecFilter {
         }
         commitAndCloseAsError(ctx, response);
     }
+
+    private void sendErrorResponse(final FilterChainContext ctx,
+                                   final HttpResponsePacket response,
+                                   final HttpStatus httpStatus) {
+        if (response.getHttpStatus().getStatusCode() < 400) {
+            httpStatus.setValues(response);
+        }
+        commitAndCloseAsError(ctx, response);
+    }
+
 
     /*
      * caller has the responsibility to set the status of th response.

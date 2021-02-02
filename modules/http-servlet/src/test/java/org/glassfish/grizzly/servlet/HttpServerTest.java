@@ -152,7 +152,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
 //    public void testAddRemoveMixAfterStart() throws IOException {
 //        System.out.println("testAddRemoveMixAfterStart");
 //        try {
-//            final int port = PORT + 4;
+//            final int port = port + 4;
 //            startHttpServer(port);
 //            String[] aliases = new String[]{"/1", "/2", "/3"};
 //            WebappContext ctx = new WebappContext("Test");

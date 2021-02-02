@@ -57,6 +57,7 @@ import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.grizzly.utils.EchoFilter;
 import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.grizzly.utils.Holder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -73,13 +74,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class NIOTransportTest {
 
     private static final Logger LOGGER = Grizzly.logger(NIOTransportTest.class);
-    private static final int PORT = 7777;
+    private int port;
+
+    @Before
+    public void setup() {
+        port = findFreePort();
+    }
 
     @Parameterized.Parameters
     public static Collection<Object[]> getTransport() {
@@ -112,7 +119,7 @@ public class NIOTransportTest {
         LOGGER.log(Level.INFO, "Running: testStartStop ({0})", transport.getName());
         
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
         } finally {
             transport.shutdownNow();
@@ -124,9 +131,9 @@ public class NIOTransportTest {
         LOGGER.log(Level.INFO, "Running: testStartStopStart ({0})", transport.getName());
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
-            Future<Connection> future = transport.connect("localhost", PORT);
+            Future<Connection> future = transport.connect("localhost", port);
             Connection connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
             connection.closeSilently();
@@ -134,11 +141,11 @@ public class NIOTransportTest {
             transport.shutdownNow();
             assertTrue(transport.isStopped());
 
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
             assertTrue(!transport.isStopped());
 
-            future = transport.connect("localhost", PORT);
+            future = transport.connect("localhost", port);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
             connection.closeSilently();
@@ -170,10 +177,10 @@ public class NIOTransportTest {
         Connection connection = null;
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
-            Future<Connection> future = transport.connect("localhost", PORT);
+            Future<Connection> future = transport.connect("localhost", port);
             connection = future.get(10, TimeUnit.SECONDS);
             assertTrue(connection != null);
         } finally {
@@ -190,7 +197,7 @@ public class NIOTransportTest {
         LOGGER.log(Level.INFO, "Running: testPortRangeBind ({0})", transport.getName());
 
         final int portsTest = 10;
-        final int startPort = PORT + 1234;
+        final int startPort = 7777 + 1234;
         final PortRange portRange =
                 new PortRange(startPort, startPort + portsTest - 1);
 
@@ -231,13 +238,13 @@ public class NIOTransportTest {
         StreamWriter writer = null;
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                             connectFuture,
                             new EmptyCompletionHandler<Connection>() {
@@ -287,13 +294,13 @@ public class NIOTransportTest {
         transport.setProcessor(filterChainBuilder.build());
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                             connectFuture,
                             new EmptyCompletionHandler<Connection>() {
@@ -349,14 +356,14 @@ public class NIOTransportTest {
         transport.setProcessor(filterChainBuilder.build());
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
             transport.configureBlocking(true);
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                             connectFuture,
                             new EmptyCompletionHandler<Connection>() {
@@ -414,13 +421,13 @@ public class NIOTransportTest {
         transport.setProcessor(filterChainBuilder.build());
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                             connectFuture,
                             new EmptyCompletionHandler<Connection>() {
@@ -481,14 +488,14 @@ public class NIOTransportTest {
             transport.setReadBufferSize(2048);
             transport.setWriteBufferSize(2048);
 
-            transport.bind(PORT);
+            transport.bind(port);
 
             transport.start();
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                     connectFuture, new EmptyCompletionHandler<Connection>() {
                 @Override
@@ -573,13 +580,13 @@ public class NIOTransportTest {
         transport.setProcessor(filterChainBuilder.build());
 
         try {
-            transport.bind(PORT);
+            transport.bind(port);
             transport.start();
 
             final FutureImpl<Connection> connectFuture =
                     Futures.createSafeFuture();
             transport.connect(
-                    new InetSocketAddress("localhost", PORT),
+                    new InetSocketAddress("localhost", port),
                     Futures.toCompletionHandler(
                             connectFuture,
                             new EmptyCompletionHandler<Connection>() {

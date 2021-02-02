@@ -60,6 +60,7 @@ import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
@@ -151,8 +152,9 @@ public class HttpRequestParseTest extends TestCase {
         try {
             doTestDecoder("GET /index.html HTTP/1.0\n\n", 2);
             fail("Overflow exception had to be thrown");
-        } catch (IllegalStateException e) {
-            // expected
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof HttpErrorException);
+            assertEquals(HttpStatus.REQUEST_URI_TOO_LONG_414, ((HttpErrorException)e.getCause()).getStatusCode());
         }
     }
 
@@ -160,8 +162,9 @@ public class HttpRequestParseTest extends TestCase {
         try {
             doTestDecoder("GET /index.html HTTP/1.0\n\n", 8);
             fail("Overflow exception had to be thrown");
-        } catch (IllegalStateException e) {
-            // expected
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof HttpErrorException);
+            assertEquals(HttpStatus.REQUEST_URI_TOO_LONG_414, ((HttpErrorException)e.getCause()).getStatusCode());
         }
     }
 
@@ -169,8 +172,9 @@ public class HttpRequestParseTest extends TestCase {
         try {
             doTestDecoder("GET /index.html HTTP/1.0\n\n", 19);
             fail("Overflow exception had to be thrown");
-        } catch (IllegalStateException e) {
-            // expected
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof HttpErrorException);
+            assertEquals(HttpStatus.REQUEST_URI_TOO_LONG_414, ((HttpErrorException)e.getCause()).getStatusCode());
         }
     }
 
@@ -178,8 +182,9 @@ public class HttpRequestParseTest extends TestCase {
         try {
             doTestDecoder("GET /index.html HTTP/1.0\nHost: localhost\n\n", 41);
             fail("Overflow exception had to be thrown");
-        } catch (IllegalStateException e) {
-            // expected
+        } catch (Exception e) {
+            assertTrue(e.getCause() instanceof HttpErrorException);
+            assertEquals(HttpStatus.REQUEST_ENTITY_TOO_LARGE_413, ((HttpErrorException)e.getCause()).getStatusCode());
         }
     }
 
@@ -192,7 +197,8 @@ public class HttpRequestParseTest extends TestCase {
             doTestDecoder("GET /index.html HTTP/1.0\nHost: localhost\r\n\r\n", 43);
             fail("Overflow exception had to be thrown");
         } catch (IllegalStateException e) {
-            // expected
+            assertTrue(e.getCause() instanceof HttpErrorException);
+            assertEquals(HttpStatus.REQUEST_ENTITY_TOO_LARGE_413, ((HttpErrorException)e.getCause()).getStatusCode());
         }
     }
 

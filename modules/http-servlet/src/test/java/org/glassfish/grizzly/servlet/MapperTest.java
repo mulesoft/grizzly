@@ -204,10 +204,10 @@ public class MapperTest extends HttpServerAbstractTest {
 //    public void testComplexMapping() throws IOException {
 //        System.out.println("testComplexMapping");
 //        try {
-//            startHttpServer(PORT);
+//            startHttpServer(port);
 //            String alias = "/a/b/c/*.html";
 //            addHttpHandler(alias);
-//            HttpURLConnection conn = getConnection("/a/b/c/index.html", PORT);
+//            HttpURLConnection conn = getConnection("/a/b/c/index.html", port);
 //            assertEquals(HttpServletResponse.SC_OK,
 //                    getResponseCodeFromAlias(conn));
 //            assertEquals(alias, readResponse(conn));
