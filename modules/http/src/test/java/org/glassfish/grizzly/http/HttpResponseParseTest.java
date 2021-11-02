@@ -105,7 +105,6 @@ public class HttpResponseParseTest extends TestCase {
         headers.put("Content-length", new Pair<String, String>("2345", "2345"));
         doHttpResponseTest("HTTP/1.0", 200, "DONE", headers, "\r\n");
     }
-    
 
     public void testHeadersN() throws Exception {
         Map<String, Pair<String, String>> headers =
@@ -124,7 +123,7 @@ public class HttpResponseParseTest extends TestCase {
     }
 
     public void testDecoder100continueWithAHeaderThen200() {
-        HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\r\nConnection: keep-alive\r\n\r\nHTTP/1.1 200 OK\r\n\r\n", 4096);
+        HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\r\nConnection: keep-alive\n\nHTTP/1.1 200 OK\n\n", 4096);
         assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
         HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
         assertEquals(200, response.getStatus());
@@ -139,11 +138,20 @@ public class HttpResponseParseTest extends TestCase {
         assertEquals(200, ((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus());
     }
 
+    public void testDecoder100continueAndResponseUsingSameConnectionWithCrLf() throws IOException {
+        HttpClientFilter filter = new HttpClientFilter(4096);
+        FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
+
+        handleRead(filter, ctx, "HTTP/1.1 100 Continue\r\n\r\n");
+        HttpPacket lastPacket = (HttpPacket) handleRead(filter, ctx, "HTTP/1.1 200 OK\r\n\r\n");
+        assertEquals(200, ((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus());
+    }
+
     public void testDecoder100continueAndResponseUsingSameConnectionWithHeader() throws IOException {
         HttpClientFilter filter = new HttpClientFilter(4096);
         FilterChainContext ctx = FilterChainContext.create(new StandaloneConnection());
 
-        handleRead(filter, ctx, "HTTP/1.1 100 Continue\nConnection: keep-alive\n\n");
+        handleRead(filter, ctx, "HTTP/1.1 100 Continue\r\nConnection: keep-alive\n\n");
         HttpPacket lastPacket = (HttpPacket) handleRead(filter, ctx, "HTTP/1.1 200 OK\n\n");
         assertEquals(200, ((HttpResponsePacket) lastPacket.getHttpHeader()).getStatus());
     }

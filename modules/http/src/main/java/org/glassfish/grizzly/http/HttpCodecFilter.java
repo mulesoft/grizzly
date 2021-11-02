@@ -815,7 +815,8 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 }
                 if (is100Continue(httpPacket)) {
                     if (parsingState.offset < end) {
-                        while (inputBuffer.get(parsingState.offset) == '\r' || inputBuffer.get(parsingState.offset) == '\n') {
+                        while (parsingState.offset < inputBuffer.limit() && (inputBuffer.get(parsingState.offset) == '\r'
+                                || inputBuffer.get(parsingState.offset) == '\n')) {
                             parsingState.offset += 1;
                         }
 
