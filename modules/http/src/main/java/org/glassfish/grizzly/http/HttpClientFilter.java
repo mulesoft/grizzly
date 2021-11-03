@@ -438,6 +438,24 @@ public class HttpClientFilter extends HttpCodecFilter {
                     parsingState.start = -1;
                     parsingState.checkpoint = -1;
                     onInitialLineParsed(httpResponse, ctx);
+
+                    if (httpResponse.getStatus() == 100 && parsingState.offset + 1 < input.length) {
+                        // reset the parsing state in preparation to parse
+                        // another initial line which represents the final
+                        // response from the server after it has sent a
+                        // 100-Continue.
+                        parsingState.start = parsingState.offset;
+
+                        if (parsingState.start < end && input[parsingState.start] == Constants.LF
+                                && input[parsingState.start+1] == Constants.LF)
+                        {
+                            parsingState.offset += 2;
+                            parsingState.subState = 0;
+                            continue;
+                        }
+                        return true;
+                    }
+
                     return true;
                 }
 
