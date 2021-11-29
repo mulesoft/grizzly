@@ -115,8 +115,15 @@ public class HttpResponseParseTest extends TestCase {
         doHttpResponseTest("HTTP/1.0", 200, "DONE", headers, "\n");
     }
 
-    public void testDecoder100continueThen200() {
+    public void testDecoder100continueThen200WithoutCarryReturn() {
         HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\n\nHTTP/1.1 200 OK\n\n", 4096);
+        assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
+        HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
+        assertEquals(200, response.getStatus());
+    }
+
+    public void testDecoder100continueThen200WithCarryReturn() {
+        HttpPacket packet = doTestDecoder("HTTP/1.1 100 Continue\r\n\r\nHTTP/1.1 200 OK\r\n\r\n", 4096);
         assertTrue(packet.getHttpHeader() instanceof HttpResponsePacket);
         HttpResponsePacket response = (HttpResponsePacket) packet.getHttpHeader();
         assertEquals(200, response.getStatus());
