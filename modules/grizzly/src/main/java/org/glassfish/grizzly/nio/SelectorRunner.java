@@ -204,6 +204,16 @@ public final class SelectorRunner implements Runnable {
         
         transport.getKernelThreadPool().execute(this);
     }
+
+    public synchronized void startRedirect() {
+        if (!stateHolder.compareAndSet(State.STOPPED, State.STARTING)) {
+            LOGGER.log(Level.WARNING,
+                    LogMessages.WARNING_GRIZZLY_SELECTOR_RUNNER_NOT_IN_STOPPED_STATE_EXCEPTION());
+            return;
+        }
+
+        transport.getRedirectPool().execute(this);
+    }
     
     public synchronized void stop() {
         stateHolder.set(State.STOPPING);

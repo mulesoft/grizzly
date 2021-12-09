@@ -120,6 +120,7 @@ public abstract class NIOTransport extends AbstractTransport
     private boolean optimizedForMultiplexing = DEFAULT_OPTIMIZED_FOR_MULTIPLEXING;
 
     protected SelectorRunner[] selectorRunners;
+
     protected NIOChannelDistributor nioChannelDistributor;
 
     protected SelectorProvider selectorProvider = SelectorProvider.provider();
@@ -137,6 +138,10 @@ public abstract class NIOTransport extends AbstractTransport
      * ExecutorService hosting shutdown listener threads.
      */
     protected ExecutorService shutdownService;
+
+    protected SelectorRunner[] selectorRunnersForRedirect;
+    protected ExecutorService redirectPool;
+
 
     public NIOTransport(final String name) {
         super(name);
@@ -287,6 +292,23 @@ public abstract class NIOTransport extends AbstractTransport
             selectorRunners[i] = runner;
         }
     }
+
+    protected synchronized void startSelectorRunnersForRedirect() throws IOException {
+        selectorRunnersForRedirect = new SelectorRunner[selectorRunnersCount];
+        for (int i = 0; i < selectorRunnersCount; i++) {
+            final SelectorRunner runner = SelectorRunner.create(this);
+            runner.startRedirect();
+            selectorRunnersForRedirect[i] = runner;
+        }
+    }
+
+    public void setRedirectPool(ExecutorService redirectPool) {
+        this.redirectPool = redirectPool;
+    }
+
+    public ExecutorService getRedirectPool() {
+        return redirectPool;
+    }
     
     protected synchronized void stopSelectorRunners() {
         if (selectorRunners == null) {
@@ -302,6 +324,22 @@ public abstract class NIOTransport extends AbstractTransport
         }
 
         selectorRunners = null;
+    }
+
+    protected synchronized void stopSelectorRunnersForRedirect() {
+        if (selectorRunnersForRedirect == null) {
+            return;
+        }
+
+        for (int i = 0; i < selectorRunnersForRedirect.length; i++) {
+            SelectorRunner runner = selectorRunnersForRedirect[i];
+            if (runner != null) {
+                runner.stop();
+                selectorRunnersForRedirect[i] = null;
+            }
+        }
+
+        selectorRunnersForRedirect = null;
     }
 
     public NIOChannelDistributor getNIOChannelDistributor() {
@@ -326,7 +364,7 @@ public abstract class NIOTransport extends AbstractTransport
     }
 
     protected SelectorRunner[] getSelectorRunnersForRedirect() {
-        return selectorRunners;
+        return selectorRunnersForRedirect;
     }
 
     /**
@@ -506,6 +544,9 @@ public abstract class NIOTransport extends AbstractTransport
                                               selectorPoolSize));
 
             startSelectorRunners();
+            if (redirectPool != null) {
+                startSelectorRunnersForRedirect();
+            }
 
             listen();
 
@@ -625,6 +666,7 @@ public abstract class NIOTransport extends AbstractTransport
 
         notifyProbesBeforeStop(this);
         stopSelectorRunners();
+        stopSelectorRunnersForRedirect();
 
         if (workerThreadPool != null && managedWorkerPool) {
             workerThreadPool.shutdown();
