@@ -75,7 +75,7 @@ import org.glassfish.grizzly.nio.tmpselectors.TemporarySelectorsEnabledTransport
  * @author Alexey Stashok
  * @author Jean-Francois Arcand
  */
-public final class TCPNIOTransport extends NIOTransport implements
+public class TCPNIOTransport extends NIOTransport implements
         AsyncQueueEnabledTransport, FilterChainEnabledTransport,
         TemporarySelectorsEnabledTransport {
 

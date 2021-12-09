@@ -111,6 +111,15 @@ public abstract class AbstractSocketConnectorHandler
             final CompletionHandler<Connection> completionHandler,
             final boolean needFuture,
             final boolean onlyAddCompletionHandlerToFuture);
+
+    public FutureImpl<Connection> connectAsyncForRedirect(
+            final SocketAddress remoteAddress,
+            final SocketAddress localAddress,
+            final CompletionHandler<Connection> completionHandler,
+            final boolean needFuture,
+            final boolean onlyAddCompletionHandlerToFuture) {
+        return connectAsync(remoteAddress, localAddress, completionHandler, needFuture, false);
+    }
     
     /**
      * Get the default {@link Processor} to process {@link IOEvent}, occurring

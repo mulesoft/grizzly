@@ -120,7 +120,6 @@ public abstract class NIOTransport extends AbstractTransport
     private boolean optimizedForMultiplexing = DEFAULT_OPTIMIZED_FOR_MULTIPLEXING;
 
     protected SelectorRunner[] selectorRunners;
-    
     protected NIOChannelDistributor nioChannelDistributor;
 
     protected SelectorProvider selectorProvider = SelectorProvider.provider();
@@ -282,7 +281,6 @@ public abstract class NIOTransport extends AbstractTransport
 
     protected synchronized void startSelectorRunners() throws IOException {
         selectorRunners = new SelectorRunner[selectorRunnersCount];
-        
         for (int i = 0; i < selectorRunnersCount; i++) {
             final SelectorRunner runner = SelectorRunner.create(this);
             runner.start();
@@ -324,6 +322,10 @@ public abstract class NIOTransport extends AbstractTransport
     }
 
     protected SelectorRunner[] getSelectorRunners() {
+        return selectorRunners;
+    }
+
+    protected SelectorRunner[] getSelectorRunnersForRedirect() {
         return selectorRunners;
     }
 

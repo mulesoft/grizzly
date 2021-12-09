@@ -56,7 +56,7 @@ import org.glassfish.grizzly.Connection;
 public final class RoundRobinConnectionDistributor
         extends AbstractNIOConnectionDistributor {
     private final Iterator it;
-    
+    private final Iterator redirectIt;
     public RoundRobinConnectionDistributor(final NIOTransport transport) {
         this(transport, false, false);
     }
@@ -84,6 +84,9 @@ public final class RoundRobinConnectionDistributor
         this.it = useDedicatedAcceptor ?
                 (isServerOnly ? new ServDedicatedIterator() : new DedicatedIterator()) :
                 (isServerOnly ? new ServSharedIterator() : new SharedIterator());
+        this.redirectIt = useDedicatedAcceptor ?
+                (isServerOnly ? new ServDedicatedIteratorForRedirect() : new DedicatedIteratorForRedirect()) :
+                (isServerOnly ? new ServSharedIteratorForRedirect() : new SharedIteratorForRedirect());
     }
     
     @Override
@@ -103,11 +106,20 @@ public final class RoundRobinConnectionDistributor
     }
 
     @Override
+    public void registerChannelAsyncForRedirect(
+            final SelectableChannel channel, final int interestOps,
+            final Object attachment,
+            final CompletionHandler<RegisterChannelResult> completionHandler) {
+        transport.getSelectorHandler().registerChannelAsync(
+                redirectIt.next(), channel, interestOps, attachment, completionHandler);
+    }
+
+    @Override
     public void registerServiceChannelAsync(
             final SelectableChannel channel, final int interestOps,
             final Object attachment,
             final CompletionHandler<RegisterChannelResult> completionHandler) {
-        
+
         transport.getSelectorHandler().registerChannelAsync(
                 it.nextService(), channel, interestOps,
                 attachment, completionHandler);
@@ -120,14 +132,14 @@ public final class RoundRobinConnectionDistributor
     
     private final class DedicatedIterator implements Iterator {
         private final AtomicInteger counter = new AtomicInteger();
-        
+
         @Override
         public SelectorRunner next() {
             final SelectorRunner[] runners = getTransportSelectorRunners();
             if (runners.length == 1) {
                 return runners[0];
             }
-            
+
             return runners[((counter.getAndIncrement() & 0x7fffffff) % (runners.length - 1)) + 1];
         }
 
@@ -146,7 +158,7 @@ public final class RoundRobinConnectionDistributor
             if (runners.length == 1) {
                 return runners[0];
             }
-            
+
             return runners[(counter.getAndIncrement() & 0x7fffffff) % runners.length];
         }
 
@@ -155,17 +167,17 @@ public final class RoundRobinConnectionDistributor
             return next();
         }
     }
-    
+
     private final class ServDedicatedIterator implements Iterator {
         private int counter;
-        
+
         @Override
         public SelectorRunner next() {
             final SelectorRunner[] runners = getTransportSelectorRunners();
             if (runners.length == 1) {
                 return runners[0];
             }
-            
+
             return runners[((counter++ & 0x7fffffff) % (runners.length - 1)) + 1];
         }
 
@@ -184,7 +196,7 @@ public final class RoundRobinConnectionDistributor
             if (runners.length == 1) {
                 return runners[0];
             }
-            
+
             return runners[(counter++ & 0x7fffffff) % runners.length];
         }
 
@@ -193,4 +205,85 @@ public final class RoundRobinConnectionDistributor
             return next();
         }
     }
+
+    private final class DedicatedIteratorForRedirect implements Iterator {
+        private final AtomicInteger counter = new AtomicInteger();
+
+        @Override
+        public SelectorRunner next() {
+            final SelectorRunner[] runners = getTransportSelectorRunnersForRedirect();
+            if (runners.length == 1) {
+                return runners[0];
+            }
+
+            return runners[((counter.getAndIncrement() & 0x7fffffff) % (runners.length - 1)) + 1];
+        }
+
+        @Override
+        public SelectorRunner nextService() {
+            return getTransportSelectorRunners()[0];
+        }
+    }
+
+    private final class SharedIteratorForRedirect implements Iterator {
+        private final AtomicInteger counter = new AtomicInteger();
+
+        @Override
+        public SelectorRunner next() {
+            final SelectorRunner[] runners = getTransportSelectorRunnersForRedirect();
+            if (runners.length == 1) {
+                return runners[0];
+            }
+
+            return runners[(counter.getAndIncrement() & 0x7fffffff) % runners.length];
+        }
+
+        @Override
+        public SelectorRunner nextService() {
+            return next();
+        }
+    }
+
+    private final class ServDedicatedIteratorForRedirect implements Iterator {
+        private int counter;
+
+        @Override
+        public SelectorRunner next() {
+            final SelectorRunner[] runners = getTransportSelectorRunnersForRedirect();
+            if (runners.length == 1) {
+                return runners[0];
+            }
+
+            return runners[((counter++ & 0x7fffffff) % (runners.length - 1)) + 1];
+        }
+
+        @Override
+        public SelectorRunner nextService() {
+            return getTransportSelectorRunners()[0];
+        }
+    }
+
+    private final class ServSharedIteratorForRedirect implements Iterator {
+        private int counter;
+
+        @Override
+        public SelectorRunner next() {
+            final SelectorRunner[] runners = getTransportSelectorRunnersForRedirect();
+            if (runners.length == 1) {
+                return runners[0];
+            }
+
+            return runners[(counter++ & 0x7fffffff) % runners.length];
+        }
+
+        @Override
+        public SelectorRunner nextService() {
+            return next();
+        }
+    }
+
+    private SelectorRunner[] getTransportSelectorRunnersForRedirect() {
+        return transport.getSelectorRunnersForRedirect();
+    }
+
 }

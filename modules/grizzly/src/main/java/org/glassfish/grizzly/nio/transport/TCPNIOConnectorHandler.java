@@ -339,7 +339,7 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
 	
 
 	@Override
-	protected FutureImpl<Connection> connectAsync(SocketAddress remoteAddress, SocketAddress localAddress,
+	public FutureImpl<Connection> connectAsync(SocketAddress remoteAddress, SocketAddress localAddress,
 			CompletionHandler<Connection> completionHandler, boolean needFuture,
 			boolean onlyAddCompletionHandlerToFuture) {
         final TCPNIOTransport nioTransport = (TCPNIOTransport) transport;
@@ -431,4 +431,99 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             return needFuture ? ReadyFutureImpl.<Connection>create(e) : null;
         }
 	}
+
+    @Override
+    public FutureImpl<Connection> connectAsyncForRedirect(SocketAddress remoteAddress, SocketAddress localAddress,
+                                                  CompletionHandler<Connection> completionHandler, boolean needFuture,
+                                                  boolean onlyAddCompletionHandlerToFuture) {
+        final TCPNIOTransport nioTransport = (TCPNIOTransport) transport;
+        TCPNIOConnection newConnection = null;
+        try {
+            final SocketChannel socketChannel =
+                    nioTransport.getSelectorProvider().openSocketChannel();
+
+            newConnection = nioTransport.obtainNIOConnection(socketChannel);
+
+            final TCPNIOConnection finalConnection = newConnection;
+
+            final Socket socket = socketChannel.socket();
+
+            nioTransport.getChannelConfigurator().preConfigure(
+                    nioTransport, socketChannel);
+
+            final boolean reuseAddr = isReuseAddress;
+            if (reuseAddr != nioTransport.isReuseAddress()) {
+                socket.setReuseAddress(reuseAddr);
+            }
+
+            if (localAddress != null) {
+                socket.bind(localAddress);
+            }
+
+            preConfigure(finalConnection);
+
+            finalConnection.setProcessor(getProcessor());
+            finalConnection.setProcessorSelector(getProcessorSelector());
+            finalConnection.getAttributes().setAttribute("Redirect", true);
+
+            final boolean isConnected = socketChannel.connect(remoteAddress);
+
+
+            final CompletionHandler<Connection> completionHandlerToPass;
+            final FutureImpl<Connection> futureToReturn;
+
+            if (needFuture) {
+                futureToReturn = makeCancellableFuture(finalConnection);
+                completionHandlerToPass = resolveFutureAndCompletionHandler(completionHandler,
+                        onlyAddCompletionHandlerToFuture, futureToReturn);
+            } else {
+                completionHandlerToPass = completionHandler;
+                futureToReturn = null;
+            }
+
+            newConnection.setConnectResultHandler(
+                    new TCPNIOConnection.ConnectResultHandler() {
+                        @Override
+                        public void connected() throws IOException {
+                            onConnectedAsync(finalConnection, completionHandlerToPass);
+                        }
+
+                        @Override
+                        public void failed(Throwable throwable) {
+                            abortConnection(finalConnection,
+                                    completionHandlerToPass, throwable);
+                        }
+                    });
+
+            final NIOChannelDistributor nioChannelDistributor =
+                    nioTransport.getNIOChannelDistributor();
+
+            if (nioChannelDistributor == null) {
+                throw new IllegalStateException(
+                        "NIOChannelDistributor is null. Is Transport running?");
+            }
+
+            if (isConnected) {
+                nioChannelDistributor.registerChannelAsyncForRedirect(
+                        socketChannel, 0, newConnection,
+                        instantConnectHandler);
+            } else {
+                nioChannelDistributor.registerChannelAsyncForRedirect(
+                        socketChannel, SelectionKey.OP_CONNECT, newConnection,
+                        new RegisterChannelCompletionHandler(newConnection));
+            }
+
+            return futureToReturn;
+        } catch (Exception e) {
+            if (newConnection != null) {
+                newConnection.closeSilently();
+            }
+
+            if (completionHandler != null) {
+                completionHandler.failed(e);
+            }
+
+            return needFuture ? ReadyFutureImpl.<Connection>create(e) : null;
+        }
+    }
 }

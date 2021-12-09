@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,47 +38,51 @@
  * holder.
  */
 
-package org.glassfish.grizzly.nio;
+package org.glassfish.grizzly.nio.transport;
 
-import java.io.IOException;
-import java.nio.channels.SelectableChannel;
-import org.glassfish.grizzly.CompletionHandler;
-import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.NIOTransportBuilder;
+import org.glassfish.grizzly.nio.NIOTransport;
 
 /**
+ * {@link NIOTransportBuilder} implementation for <code>TCP</code>.
  *
- * @author Alexey Stashok
+ * @since 2.0
  */
-public interface NIOChannelDistributor {
-    void registerChannel(SelectableChannel channel)
-            throws IOException;
-    
-    void registerChannel(SelectableChannel channel,
-                         int interestOps) throws IOException;
-    
-    void registerChannel(SelectableChannel channel,
-                         int interestOps, Object attachment) throws IOException;
+@SuppressWarnings("ALL")
+public class TCPNIOTransportBuilderForRedirect extends TCPNIOTransportBuilder {
 
-    GrizzlyFuture<RegisterChannelResult> registerChannelAsync(
-            SelectableChannel channel);
-    
-    GrizzlyFuture<RegisterChannelResult> registerChannelAsync(
-            SelectableChannel channel, int interestOps);
-    
-    GrizzlyFuture<RegisterChannelResult> registerChannelAsync(
-            SelectableChannel channel, int interestOps, Object attachment);
+    // ------------------------------------------------------------ Constructors
 
-    void registerChannelAsync(
-            SelectableChannel channel, int interestOps, Object attachment,
-            CompletionHandler<RegisterChannelResult> completionHandler);
-
-    default void registerChannelAsyncForRedirect(
-            SelectableChannel channel, int interestOps, Object attachment,
-            CompletionHandler<RegisterChannelResult> completionHandler) {
-        registerChannelAsync(channel, interestOps, attachment, completionHandler);
+    protected TCPNIOTransportBuilderForRedirect(Class<? extends TCPNIOTransportForRedirect> transportClass) {
+        super(transportClass);
     }
 
-    void registerServiceChannelAsync(
-            SelectableChannel channel, int interestOps, Object attachment,
-            CompletionHandler<RegisterChannelResult> completionHandler);    
+    // ---------------------------------------------------------- Public Methods
+
+    public static TCPNIOTransportBuilderForRedirect newInstance() {
+        return new TCPNIOTransportBuilderForRedirect(TCPNIOTransportForRedirect.class);
+    }
+
+    @Override
+    public TCPNIOTransportForRedirect build() {
+        TCPNIOTransportForRedirect transport = (TCPNIOTransportForRedirect) super.build();
+        transport.setKeepAlive(keepAlive);
+        transport.setLinger(linger);
+        transport.setServerConnectionBackLog(serverConnectionBackLog);
+        transport.setTcpNoDelay(tcpNoDelay);
+        transport.setServerSocketSoTimeout(serverSocketSoTimeout);
+        return transport;
+    }
+
+    // ------------------------------------------------------- Protected Methods
+
+    @Override
+    protected TCPNIOTransportBuilderForRedirect getThis() {
+        return this;
+    }
+
+    @Override
+    protected NIOTransport create(final String name) {
+        return new TCPNIOTransportForRedirect(name);
+    }
 }
