@@ -788,7 +788,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
             case 0: { // parsing initial line
                 if (!decodeInitialLineFromBytes(ctx, httpPacket, parsingState, input, end)) {
                     parsingState.checkOverflow(inputBuffer.limit(),
-                            "HTTP packet intial line is too large");
+                            "HTTP packet initial line is too large");
                     return false;
                 }
 
@@ -1100,7 +1100,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
             case 0: { // parsing initial line
                 if (!decodeInitialLineFromBuffer(ctx, httpPacket, parsingState, input)) {
                     parsingState.checkOverflow(input.limit(),
-                            "HTTP packet intial line is too large");
+                            "HTTP packet initial line is too large");
                     return false;
                 }
 
