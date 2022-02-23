@@ -57,11 +57,11 @@ import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
 import org.glassfish.grizzly.utils.DelayedExecutor;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.grizzly.ThreadCache;
-
 import static org.glassfish.grizzly.http.Method.PayloadExpectation;
 import static org.glassfish.grizzly.http.util.HttpCodecUtils.*;
 import org.glassfish.grizzly.http.util.HttpUtils;
@@ -79,6 +79,8 @@ import org.glassfish.grizzly.http.util.HttpUtils;
  * @author Alexey Stashok
  */
 public class HttpServerFilter extends HttpCodecFilter {
+    private final static Logger LOGGER = Grizzly.logger(HttpServerFilter.class);
+    
     public static final String HTTP_SERVER_REQUEST_ATTR_NAME =
             HttpServerFilter.class.getName() + ".HttpRequest";
 
@@ -796,6 +798,7 @@ public class HttpServerFilter extends HttpCodecFilter {
 
         if (t instanceof HttpErrorException) {
             sendErrorResponse(ctx, response, ((HttpErrorException) t).getStatusCode());
+            LOGGER.log(Level.FINE, "{0}", response.toString());
         } else {
             sendBadRequestResponse(ctx, response);
         }
