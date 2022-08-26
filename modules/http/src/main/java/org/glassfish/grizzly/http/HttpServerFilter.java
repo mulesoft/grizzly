@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.glassfish.grizzly.ThreadCache;
 
+import static org.glassfish.grizzly.http.HttpProbeNotifier.notifyDataSent;
 import static org.glassfish.grizzly.http.Method.PayloadExpectation;
 import static org.glassfish.grizzly.http.util.HttpCodecUtils.*;
 import org.glassfish.grizzly.http.util.HttpUtils;
@@ -791,7 +792,7 @@ public class HttpServerFilter extends HttpCodecFilter {
                                final FilterChainContext ctx,
                                final Throwable t) throws IOException {
 
-        final ServerHttpRequestImpl request = (ServerHttpRequestImpl) httpHeader;
+        final HttpRequestPacket request = (HttpRequestPacket) httpHeader;
         final HttpResponsePacket response = request.getResponse();
 
         if (t instanceof HttpErrorException) {
@@ -1212,12 +1213,13 @@ public class HttpServerFilter extends HttpCodecFilter {
 
 
     /*
-     * caller has the responsibility to set the status of th response.
+     * caller has the responsibility to set the status of the response.
      */
     private void commitAndCloseAsError(FilterChainContext ctx, HttpResponsePacket response) {
         final HttpContent errorHttpResponse = customizeErrorResponse(response);
         final Buffer resBuf = encodeHttpPacket(ctx, errorHttpResponse);
         ctx.write(resBuf);
+        notifyDataSent(this, ctx.getConnection(), resBuf);
         response.getProcessingState().getHttpContext().close();
     }
 
