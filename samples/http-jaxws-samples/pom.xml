@@ -94,5 +94,10 @@
             <artifactId>grizzly-http-server-jaxws</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>jakarta.jws</groupId>
+            <artifactId>jakarta.jws-api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
     </dependencies>
 </project>
