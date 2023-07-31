@@ -41,6 +41,7 @@ package org.glassfish.grizzly.connectionpool;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Set;
@@ -80,7 +81,7 @@ import static org.junit.Assert.*;
 public class SingleEndPointPoolTest {
     private static final int THREAD_COUNT = 1000;
 
-    private static final int PORT = 18333;
+    private static final int PORT = findFreePort();
     
     private final Set<Connection> serverSideConnections =
             Collections.newSetFromMap(
@@ -622,5 +623,17 @@ public class SingleEndPointPoolTest {
             pool.close();
             transport.shutdownNow();
         }
-    }    
+    }
+
+    private static int findFreePort() {
+        try {
+            ServerSocket dummySocket = new ServerSocket(0);
+            int freePort = dummySocket.getLocalPort();
+            dummySocket.setReuseAddress(true);
+            dummySocket.close();
+            return freePort;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

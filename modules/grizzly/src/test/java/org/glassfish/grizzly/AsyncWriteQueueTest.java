@@ -74,6 +74,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.streams.StreamReader;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.EchoFilter;
+import org.glassfish.grizzly.utils.FreePortFinder;
 import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.grizzly.utils.StringFilter;
 import org.junit.Test;
@@ -81,6 +82,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -92,7 +94,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 @RunWith(Parameterized.class)
 public class AsyncWriteQueueTest {
-    public static final int PORT = 7781;
+    public static final int PORT = findFreePort();
 
     private static final Logger LOGGER = Grizzly.logger(AsyncWriteQueueTest.class);
 
