@@ -64,6 +64,7 @@
     </modules>
 
     <properties>
+        <javaModuleName>grizzly.bundles</javaModuleName>
         <findbugs.skip>true</findbugs.skip>
     </properties>
 </project>

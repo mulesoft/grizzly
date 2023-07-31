@@ -56,6 +56,10 @@
 
     <packaging>pom</packaging>
 
+    <properties>
+        <javaModuleName>grizzly.comet.samples</javaModuleName>
+    </properties>
+
     <modules>
         <module>comet-counter</module>
     </modules>

@@ -238,6 +238,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
+                            <Automatic-Module-Name>${javaModuleName}</Automatic-Module-Name>
                             <mode>development</mode>
                             <url>${project.url}</url>
                             <implementation-version>${project.version}
@@ -280,6 +281,15 @@
         </plugins>
     </build>
     <profiles>
+        <profile>
+            <id>java-8-api</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>${javaReleaseVersion}</maven.compiler.release>
+            </properties>
+        </profile>
         <profile>
             <id>release-sign-artifacts</id>
             <activation>
@@ -511,6 +521,7 @@
         </dependency>
     </dependencies>
     <properties>
+        <javaReleaseVersion>8</javaReleaseVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit-version>4.7</junit-version>
         <maven-plugin.version>1.0.0</maven-plugin.version>

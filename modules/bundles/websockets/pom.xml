@@ -193,6 +193,7 @@
     </dependencies>
 
     <properties>
+        <javaModuleName>grizzly.websockets.server</javaModuleName>
         <findbugs.skip>true</findbugs.skip>
     </properties>
 </project>

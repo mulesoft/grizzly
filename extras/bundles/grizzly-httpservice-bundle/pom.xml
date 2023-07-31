@@ -214,6 +214,7 @@
     </dependencies>
 
     <properties>
+        <javaModuleName>grizzly.httpservice.bundle</javaModuleName>
         <findbugs.skip>true</findbugs.skip>
     </properties>
 

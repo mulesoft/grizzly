@@ -54,6 +54,9 @@
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <groupId>org.glassfish.grizzly.osgi</groupId>
     <artifactId>grizzly-httpservice</artifactId>
+    <properties>
+        <javaModuleName>grizzly.httpservice</javaModuleName>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>

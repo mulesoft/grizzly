@@ -182,6 +182,7 @@
     </dependencies>
 
     <properties>
+        <javaModuleName>grizzly.core</javaModuleName>
         <findbugs.skip>true</findbugs.skip>
     </properties>
 </project>

@@ -54,6 +54,9 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-tls-sni-samples</name>
+    <properties>
+        <javaModuleName>grizzly.tls.sni.samples</javaModuleName>
+    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <resources>

@@ -54,6 +54,9 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-portunif-samples</name>
+    <properties>
+        <javaModuleName>grizzly.portunif.samples</javaModuleName>
+    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <resources>

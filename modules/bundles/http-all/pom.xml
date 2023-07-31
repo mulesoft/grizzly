@@ -198,6 +198,7 @@
     </dependencies>
 
     <properties>
+        <javaModuleName>grizzly.all</javaModuleName>
         <findbugs.skip>true</findbugs.skip>
     </properties>
 </project>

@@ -54,6 +54,9 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>connection-pool-samples</name>
+    <properties>
+        <javaModuleName>grizzly.connection.pool.samples</javaModuleName>
+    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>

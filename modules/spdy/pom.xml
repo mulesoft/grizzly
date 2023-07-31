@@ -53,6 +53,9 @@
     <!--<packaging>bundle</packaging>-->
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-spdy</name>
+    <properties>
+        <javaModuleName>grizzly.spdy</javaModuleName>
+    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>

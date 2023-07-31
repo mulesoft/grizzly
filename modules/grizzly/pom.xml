@@ -55,6 +55,7 @@
     <name>grizzly-framework</name>
 
     <properties>
+        <javaModuleName>grizzly.framework</javaModuleName>
         <mockitoVersion>4.11.0</mockitoVersion>
     </properties>
 

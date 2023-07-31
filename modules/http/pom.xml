@@ -55,6 +55,7 @@
     <name>grizzly-http</name>
 
     <properties>
+        <javaModuleName>grizzly.http</javaModuleName>
         <mockitoVersion>4.11.0</mockitoVersion>
     </properties>
 

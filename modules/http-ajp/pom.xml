@@ -54,6 +54,9 @@
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-http-ajp</name>
     <url>http://grizzly.java.net</url>
+    <properties>
+        <javaModuleName>grizzly.http.ajp</javaModuleName>
+    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <resources>

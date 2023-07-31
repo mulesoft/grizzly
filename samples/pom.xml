@@ -54,6 +54,9 @@
     <packaging>pom</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-samples</name>
+    <properties>
+        <javaModuleName>grizzly.samples</javaModuleName>
+    </properties>
     <modules>
         <module>framework-samples</module>
         <module>http-samples</module>

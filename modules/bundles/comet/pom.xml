@@ -183,6 +183,7 @@
     </dependencies>
 
     <properties>
+        <javaModuleName>grizzly.comet.server</javaModuleName>
         <findbugs.skip>true</findbugs.skip>
     </properties>
 </project>
