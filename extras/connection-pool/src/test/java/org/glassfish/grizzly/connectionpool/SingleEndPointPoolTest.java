@@ -81,7 +81,7 @@ import static org.junit.Assert.*;
 public class SingleEndPointPoolTest {
     private static final int THREAD_COUNT = 1000;
 
-    private static final int PORT = findFreePort();
+    private int PORT;
     
     private final Set<Connection> serverSideConnections =
             Collections.newSetFromMap(
@@ -91,6 +91,7 @@ public class SingleEndPointPoolTest {
     
     @Before
     public void init() throws IOException {
+        PORT = findFreePort();
         final FilterChain filterChain = FilterChainBuilder.stateless()
                 .add(new TransportFilter())
                 .add(new BaseFilter() {
