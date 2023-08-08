@@ -53,9 +53,6 @@
     <packaging>pom</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-modules</name>
-    <properties>
-        <javaModuleName>grizzly.modules</javaModuleName>
-    </properties>
     <profiles>
         <profile>
             <id>coverage</id>

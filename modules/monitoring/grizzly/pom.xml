@@ -53,9 +53,6 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-framework-monitoring</name>
-    <properties>
-        <javaModuleName>grizzly.framework.monitoring</javaModuleName>
-    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <resources>

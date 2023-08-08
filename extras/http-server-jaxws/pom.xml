@@ -53,9 +53,6 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-http-server-jaxws</name>
-    <properties>
-        <javaModuleName>grizzly.http.server.jaxws</javaModuleName>
-    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>

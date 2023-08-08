@@ -55,9 +55,6 @@
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-comet-counter</name>
     <url>https://grizzly.java.net</url>
-    <properties>
-        <javaModuleName>grizzly.comet.counter</javaModuleName>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.mule.glassfish.grizzly</groupId>

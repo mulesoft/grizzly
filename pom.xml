@@ -238,7 +238,6 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>${javaModuleName}</Automatic-Module-Name>
                             <mode>development</mode>
                             <url>${project.url}</url>
                             <implementation-version>${project.version}

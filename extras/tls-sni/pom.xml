@@ -53,9 +53,6 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>tls-sni</name>
-    <properties>
-        <javaModuleName>grizzly.tls.sni</javaModuleName>
-    </properties>
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>
