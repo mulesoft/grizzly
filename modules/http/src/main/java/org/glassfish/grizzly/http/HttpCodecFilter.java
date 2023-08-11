@@ -1047,7 +1047,11 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
         } else if (size == Header.Expect.getLowerCaseBytes().length) {
             if (ByteChunk.equalsIgnoreCaseLowerCase(input, start, end,
                     Header.Expect.getLowerCaseBytes())) {
-                ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
+                if (httpHeader.isRequest()) {
+                    ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
+                } else {
+                    LOGGER.warning("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
+                }
             }
         }
     }
@@ -1322,7 +1326,11 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
         } else if (size == Header.Expect.getLowerCaseBytes().length) {
             if (BufferChunk.equalsIgnoreCaseLowerCase(input, start, end,
                     Header.Expect.getLowerCaseBytes())) {
-                ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
+                if (httpHeader.isRequest()) {
+                    ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
+                } else {
+                    LOGGER.warning("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
+                }
             }
         }
     }
