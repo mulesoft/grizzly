@@ -1050,7 +1050,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 if (httpHeader.isRequest()) {
                     ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
                 } else {
-                    LOGGER.warning("asdf");
+                    LOGGER.warning("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
                 }
             }
         }
@@ -1329,7 +1329,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 if (httpHeader.isRequest()) {
                     ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
                 } else {
-                    LOGGER.warning("asdf");
+                    LOGGER.warning("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
                 }
             }
         }
