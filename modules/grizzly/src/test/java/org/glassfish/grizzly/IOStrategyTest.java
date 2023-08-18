@@ -71,6 +71,8 @@ import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.StringFilter;
 import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -81,7 +83,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 @SuppressWarnings("unchecked")
 public class IOStrategyTest {
-    private static final int PORT = 7789;
+    private final int PORT = findFreePort();
     private static final Logger LOGGER = Grizzly.logger(IOStrategyTest.class);
     
     private final IOStrategy strategy;
