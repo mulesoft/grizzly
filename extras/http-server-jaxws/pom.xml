@@ -152,10 +152,5 @@
             <artifactId>streambuffer</artifactId>
             <version>1.5.9</version>
         </dependency>
-        <dependency>
-            <groupId>jakarta.xml.ws</groupId>
-            <artifactId>jakarta.xml.ws-api</artifactId>
-            <version>2.3.3</version>
-        </dependency>
     </dependencies>
 </project>

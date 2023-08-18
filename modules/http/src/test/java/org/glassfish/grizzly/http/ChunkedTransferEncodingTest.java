@@ -81,7 +81,7 @@ import org.glassfish.grizzly.utils.Pair;
 
 import org.junit.Test;
 
-import static org.glassfish.grizzly.http.util.FreePortFinder.findFreePort;
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

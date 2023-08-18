@@ -41,7 +41,6 @@ package org.glassfish.grizzly.connectionpool;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Set;
@@ -71,7 +70,14 @@ import org.glassfish.grizzly.utils.DataStructures;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * The {@link SingleEndpointPool} tests.
@@ -81,17 +87,16 @@ import static org.junit.Assert.*;
 public class SingleEndPointPoolTest {
     private static final int THREAD_COUNT = 1000;
 
-    private int PORT;
+    private int PORT = findFreePort();
     
     private final Set<Connection> serverSideConnections =
             Collections.newSetFromMap(
-            DataStructures.<Connection, Boolean>getConcurrentMap());
+            DataStructures.getConcurrentMap());
     
     private TCPNIOTransport transport;
     
     @Before
     public void init() throws IOException {
-        PORT = findFreePort();
         final FilterChain filterChain = FilterChainBuilder.stateless()
                 .add(new TransportFilter())
                 .add(new BaseFilter() {
@@ -111,7 +116,7 @@ public class SingleEndPointPoolTest {
         
         transport = TCPNIOTransportBuilder.newInstance().build();
         transport.setProcessor(filterChain);
-        
+
         transport.bind(PORT);
         transport.start();
     }
@@ -623,18 +628,6 @@ public class SingleEndPointPoolTest {
         } finally {
             pool.close();
             transport.shutdownNow();
-        }
-    }
-
-    private static int findFreePort() {
-        try {
-            ServerSocket dummySocket = new ServerSocket(0);
-            int freePort = dummySocket.getLocalPort();
-            dummySocket.setReuseAddress(true);
-            dummySocket.close();
-            return freePort;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

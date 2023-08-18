@@ -74,7 +74,6 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.streams.StreamReader;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.EchoFilter;
-import org.glassfish.grizzly.utils.FreePortFinder;
 import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.grizzly.utils.StringFilter;
 import org.junit.Test;
