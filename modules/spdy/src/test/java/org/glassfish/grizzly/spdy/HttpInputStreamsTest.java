@@ -76,6 +76,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -85,8 +86,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class HttpInputStreamsTest extends AbstractSpdyTest {
 
-    private static final int PORT = 18300;
-
+    private final int PORT = findFreePort();
 
     private final SpdyVersion spdyVersion;
     private final SpdyMode spdyMode;

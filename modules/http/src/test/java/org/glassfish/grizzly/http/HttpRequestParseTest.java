@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.http;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -80,7 +82,7 @@ import org.glassfish.grizzly.utils.Pair;
  */
 public class HttpRequestParseTest extends TestCase {
 
-    public static final int PORT = 19000;
+    public static final int PORT = findFreePort();
 
     public void testCustomMethod() throws Exception {
         doHttpRequestTest("TAKE", "/index.html", "HTTP/1.0", Collections.<String, Pair<String, String>>emptyMap(), "\r\n");
