@@ -82,7 +82,7 @@ import org.glassfish.grizzly.utils.Pair;
  */
 public class HttpRequestParseTest extends TestCase {
 
-    public static final int PORT = findFreePort();
+    public final int PORT = findFreePort();
 
     public void testCustomMethod() throws Exception {
         doHttpRequestTest("TAKE", "/index.html", "HTTP/1.0", Collections.<String, Pair<String, String>>emptyMap(), "\r\n");
