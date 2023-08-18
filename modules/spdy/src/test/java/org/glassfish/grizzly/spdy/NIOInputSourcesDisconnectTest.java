@@ -40,6 +40,7 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -82,7 +83,7 @@ import org.junit.runners.Parameterized;
 public class NIOInputSourcesDisconnectTest extends AbstractSpdyTest {
 
     private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int PORT = 18302;
+    private final int PORT = findFreePort();
 
     private final SpdyVersion spdyVersion;
     private final SpdyMode spdyMode;
