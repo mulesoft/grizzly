@@ -313,7 +313,7 @@ public class StaticHttpHandlerTest {
         return transport;
     }
     
-    private static HttpServer createServer(
+    private HttpServer createServer(
             boolean isFileSendEnabled, boolean isSslEnabled,
             MemoryManager<?> memoryManager) throws Exception {
         
