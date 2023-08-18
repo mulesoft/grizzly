@@ -40,6 +40,7 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -92,7 +93,7 @@ public class SSLAttributesTest {
     private static final byte[] PAYLOAD_BYTES = "Hello world".getBytes(Charsets.ASCII_CHARSET);
     private static final String NULL = "null";
     
-    public static final int PORT = 18890;
+    public final int PORT = findFreePort();
     private HttpServer httpServer;
 
     

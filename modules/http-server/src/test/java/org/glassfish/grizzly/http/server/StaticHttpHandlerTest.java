@@ -75,6 +75,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -84,7 +86,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(Parameterized.class)
 public class StaticHttpHandlerTest {
-    private static final int PORT = 18900;
+    private final int PORT = findFreePort();
     private static final Logger LOGGER = Grizzly.logger(StaticHttpHandlerTest.class);
 
     @Parameterized.Parameters

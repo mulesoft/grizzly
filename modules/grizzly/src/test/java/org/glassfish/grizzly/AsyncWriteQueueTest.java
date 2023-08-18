@@ -93,7 +93,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 @RunWith(Parameterized.class)
 public class AsyncWriteQueueTest {
-    public static final int PORT = findFreePort();
+    public final int PORT = findFreePort();
 
     private static final Logger LOGGER = Grizzly.logger(AsyncWriteQueueTest.class);
 
