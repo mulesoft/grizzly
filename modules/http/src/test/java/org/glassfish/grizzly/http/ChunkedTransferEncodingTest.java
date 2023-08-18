@@ -95,7 +95,7 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Parameterized.class)
 public class ChunkedTransferEncodingTest {
-    public static final int PORT = findFreePort();
+    public final int PORT = findFreePort();
 
     private final String eol;
     private final boolean isChunkWhenParsing;
