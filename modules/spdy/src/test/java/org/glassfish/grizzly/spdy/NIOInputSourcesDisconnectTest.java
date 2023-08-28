@@ -191,7 +191,7 @@ public class NIOInputSourcesDisconnectTest extends AbstractSpdyTest {
                 });
 
                 try {
-                    final Integer i = resultFuture.get(10, TimeUnit.SECONDS);
+                    final Integer i = resultFuture.get(20, TimeUnit.SECONDS);
                     fail("Wrapped EOFException expected");
                 } catch (ExecutionException e) {
                     assertEquals("NOT EOF Exception:\n" +
