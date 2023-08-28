@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
@@ -64,7 +66,6 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.Charsets;
 import org.junit.Test;
 
-import static org.glassfish.grizzly.spdy.AbstractSpdyTest.createClientFilterChainAsBuilder;
 import static org.junit.Assert.*;
 /**
  * {@link NetworkListener} tests.
@@ -73,7 +74,7 @@ import static org.junit.Assert.*;
  */
 @SuppressWarnings("unchecked")
 public class NetworkListenerTest extends AbstractSpdyTest {
-    public static final int PORT = 18897;
+    public final int PORT = findFreePort();
 
     @Test
     public void testGracefulShutdown() throws Exception {

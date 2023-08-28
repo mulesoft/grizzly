@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.http;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Collections;
@@ -83,7 +85,7 @@ import org.glassfish.grizzly.utils.Pair;
 public class HttpResponseParseTest extends TestCase {
     private static final Logger logger = Grizzly.logger(HttpResponseParseTest.class);
     
-    public static final int PORT = 19001;
+    public final int PORT = findFreePort();
 
     public void testHeaderlessResponseLine() throws Exception {
         doHttpResponseTest("HTTP/1.0", 200, "OK", Collections.<String, Pair<String, String>>emptyMap(), "\r\n");

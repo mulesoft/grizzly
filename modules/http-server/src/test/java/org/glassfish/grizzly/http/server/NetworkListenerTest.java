@@ -40,12 +40,13 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,7 +66,7 @@ import static org.junit.Assert.*;
  * @author Alexey Stashok
  */
 public class NetworkListenerTest {
-    public static final int PORT = 18897;
+    public final int PORT = findFreePort();
 
     @Test
     public void testSetPort() throws IOException {

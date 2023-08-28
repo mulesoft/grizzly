@@ -102,5 +102,12 @@
             <artifactId>grizzly-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule.glassfish.grizzly</groupId>
+            <artifactId>grizzly-framework</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

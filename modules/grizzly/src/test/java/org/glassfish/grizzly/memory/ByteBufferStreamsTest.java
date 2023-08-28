@@ -40,11 +40,12 @@
 
 package org.glassfish.grizzly.memory;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import java.util.List;
 import java.util.ArrayList;
-
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -86,7 +87,7 @@ import org.glassfish.grizzly.utils.DataStructures;
  **/
 public class ByteBufferStreamsTest extends GrizzlyTestCase {
 
-    public static final int PORT = 7778;
+    public final int PORT = findFreePort();
     private static final Logger LOGGER = Grizzly.logger(ByteBufferStreamsTest.class);
     private final FutureImpl<Boolean> poisonFuture = SafeFutureImpl.create();
     private Connection clientconnection = null;
