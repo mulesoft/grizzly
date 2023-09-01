@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import org.glassfish.grizzly.asyncqueue.WritableMessage;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChain;
@@ -72,7 +74,7 @@ import org.glassfish.grizzly.utils.DataStructures;
  */
 @SuppressWarnings("unchecked")
 public class FilterChainReadTest extends TestCase {
-    public static final int PORT = 7785;
+    public final int PORT = findFreePort();
 
     private static final Logger logger = Grizzly.logger(FilterChainReadTest.class);
 

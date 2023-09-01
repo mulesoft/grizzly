@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.sni;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,7 @@ import static org.junit.Assert.*;
  */
 @SuppressWarnings("unchecked")
 public class SNITest {
-    public static final int PORT = 19283;
+    public final int PORT = findFreePort();
     private static final boolean JDK7_OR_HIGHER = JdkVersion.getJdkVersion()
             .compareTo(JdkVersion.parseVersion("1.7")) >= 0;
     

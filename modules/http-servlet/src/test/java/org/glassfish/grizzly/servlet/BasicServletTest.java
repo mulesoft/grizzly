@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.servlet;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +82,7 @@ import org.junit.Test;
  */
 public class BasicServletTest extends HttpServerAbstractTest {
 
-    public static final int PORT = 18890;
+    public static final int PORT = findFreePort();
     private static final Logger LOGGER = Grizzly.logger(BasicServletTest.class);
     private final String header = "text/html;charset=utf8";
 

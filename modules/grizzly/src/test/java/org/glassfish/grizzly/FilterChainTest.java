@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -82,7 +84,7 @@ import org.glassfish.grizzly.utils.StringFilter;
  */
 @SuppressWarnings("unchecked")
 public class FilterChainTest extends TestCase {
-    private static final int PORT = 7788;
+    private final int PORT = findFreePort();
     
     private static final Attribute<AtomicInteger> counterAttr =
             Grizzly.DEFAULT_ATTRIBUTE_BUILDER.createAttribute(

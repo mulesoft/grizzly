@@ -72,6 +72,8 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.ssl.SSLFilter;
 import org.glassfish.grizzly.utils.Futures;
 import org.junit.After;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
@@ -92,7 +94,7 @@ public class SuspendTest {
 
     private static final Logger LOGGER = Grizzly.logger(SuspendTest.class);
     
-    public static final int PORT = 18890;
+    public final int PORT = findFreePort();
     private ScheduledThreadPoolExecutor scheduledThreadPool;
     private final String testString = "blabla test.";
     private final byte[] testData = testString.getBytes();
@@ -625,7 +627,7 @@ public class SuspendTest {
         }
 
         builder.add(new HttpClientFilter());
-        builder.add(new ClientFilter(testString, checkResponse, resultFuture));
+        builder.add(new ClientFilter(testString, checkResponse, resultFuture, PORT));
 
         SocketConnectorHandler connectorHandler = TCPNIOConnectorHandler.builder(
                 httpServer.getListener("grizzly").getTransport())
@@ -710,12 +712,14 @@ public class SuspendTest {
         private final String testString;
         private final boolean checkResponse;
         private final FutureImpl<Boolean> resultFuture;
+        private final int port;
 
         public ClientFilter(String testString, boolean checkResponse,
-                FutureImpl<Boolean> resultFuture) {
+                FutureImpl<Boolean> resultFuture, int port) {
             this.testString = testString;
             this.checkResponse = checkResponse;
             this.resultFuture = resultFuture;
+            this.port = port;
         }
 
         @Override
@@ -724,7 +728,7 @@ public class SuspendTest {
                     .method("GET")
                     .uri("/non-static")
                     .protocol("HTTP/1.1")
-                    .header("Host", "localhost:" + PORT)
+                    .header("Host", "localhost:" + port)
                     .build();
 
             ctx.write(request);

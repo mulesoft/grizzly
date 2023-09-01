@@ -53,13 +53,18 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-framework</name>
+
+    <properties>
+        <mockitoVersion>4.11.0</mockitoVersion>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
-        </dependency>    
+            <version>${mockitoVersion}</version>
+        </dependency>
     </dependencies>
     <build>
         <defaultGoal>install</defaultGoal>

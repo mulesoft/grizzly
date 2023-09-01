@@ -80,7 +80,13 @@ import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.Pair;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Chunked Transfer-Encoding tests.
@@ -89,7 +95,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(Parameterized.class)
 public class ChunkedTransferEncodingTest {
-    public static final int PORT = 19007;
+    public final int PORT = findFreePort();
 
     private final String eol;
     private final boolean isChunkWhenParsing;

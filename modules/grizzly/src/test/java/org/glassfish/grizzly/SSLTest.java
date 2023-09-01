@@ -105,6 +105,8 @@ import org.glassfish.grizzly.utils.Futures;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -120,7 +122,7 @@ public class SSLTest {
 
     private final static Logger logger = Grizzly.logger(SSLTest.class);
     
-    public static final int PORT = 7779;
+    public final int PORT = findFreePort();
 
     private final boolean isLazySslInit;
     private final MemoryManager manager;

@@ -70,6 +70,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -79,7 +80,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Parameterized.class)
 public class GZipTest {
-    private static final int PORT = 7786;
+    private final int PORT = findFreePort();
     private final MemoryManager manager;
 
     public GZipTest(MemoryManager manager) {

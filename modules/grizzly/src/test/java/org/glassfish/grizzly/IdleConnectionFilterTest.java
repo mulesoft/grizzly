@@ -40,6 +40,7 @@
 
 package org.glassfish.grizzly;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -72,7 +73,8 @@ import org.mockito.stubbing.Answer;
  * @author Alexey Stashok
  */
 public class IdleConnectionFilterTest extends GrizzlyTestCase {
-    public static final int PORT = 7782;
+
+    public int PORT = findFreePort();
 
     public void testAcceptedConnectionIdleTimeout() throws Exception {
         Connection connection = null;

@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +74,7 @@ import static org.junit.Assert.*;
  */
 @SuppressWarnings("unchecked")
 public class ContextPathTest {
-    public static final int PORT = 18896;
+    public final int PORT = findFreePort();
 
     private HttpServer httpServer;
 

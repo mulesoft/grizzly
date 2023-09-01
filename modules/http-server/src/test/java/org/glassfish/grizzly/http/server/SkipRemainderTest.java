@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.BlockingQueue;
 import org.glassfish.grizzly.http.HttpRequestPacket.Builder;
@@ -91,7 +93,7 @@ import static org.junit.Assert.*;
 
 @SuppressWarnings("unchecked")
 public class SkipRemainderTest {
-    public static final int PORT = 18892;
+    public final int PORT = findFreePort();
 
     private HttpServer httpServer;
 

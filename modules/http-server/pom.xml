@@ -53,6 +53,11 @@
     <packaging>bundle</packaging>
     <version>2.3.36-MULE-026-SNAPSHOT</version>
     <name>grizzly-http-server</name>
+
+    <properties>
+        <mockitoVersion>4.11.0</mockitoVersion>
+    </properties>
+
     <build>
         <defaultGoal>install</defaultGoal>
         <resources>
@@ -106,6 +111,13 @@
             <artifactId>grizzly-http</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.mule.glassfish.grizzly</groupId>
+            <artifactId>grizzly-framework</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal-api-only</artifactId>
             <scope>provided</scope>
@@ -119,9 +131,9 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
+            <version>${mockitoVersion}</version>
         </dependency>
     </dependencies>
 </project>

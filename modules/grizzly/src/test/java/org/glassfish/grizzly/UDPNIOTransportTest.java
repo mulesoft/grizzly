@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
@@ -60,7 +62,7 @@ import static org.junit.Assert.*;
  * @author Alexey Stashok
  */
 public class UDPNIOTransportTest {
-    public static final int PORT = 7777;
+    public final int PORT = findFreePort();
 
     @Before
     public void setUp() throws Exception {

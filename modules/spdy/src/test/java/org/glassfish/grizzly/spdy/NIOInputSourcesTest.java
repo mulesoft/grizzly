@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.EOFException;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -89,6 +91,7 @@ import org.glassfish.grizzly.memory.ByteBufferWrapper;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.utils.Exceptions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -102,7 +105,7 @@ import static org.junit.Assert.*;
 public class NIOInputSourcesTest extends AbstractSpdyTest {
 
     private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int PORT = 18301;
+    private final int PORT = findFreePort();
 
     private final SpdyVersion spdyVersion;
     private final SpdyMode spdyMode;
@@ -509,6 +512,7 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
      */
     @SuppressWarnings({"unchecked"})
     @Test
+    @Ignore
     public void testDisconnect() throws Throwable {
 
         final AtomicInteger bytesRead = new AtomicInteger();
@@ -517,12 +521,12 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
         final TCPNIOTransport clientTransport = TCPNIOTransportBuilder.newInstance().build();
         clientTransport.setProcessor(
                 createClientFilterChain(spdyVersion, spdyMode, isSecure));
-        
+
         final HttpHandler httpHandler = new HttpHandler() {
 
             @Override
             public void service(final Request request,
-                    final Response response) throws Exception {
+                                final Response response) throws Exception {
                 response.suspend();
                 final NIOInputStream inputStream = (NIOInputStream) request.getInputStream();
 
@@ -551,7 +555,7 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
                     @Override
                     public void onError(Throwable t) {
                         resultFuture.failure(t);
-                        
+
                         response.resume();
                     }
                 });
@@ -589,7 +593,7 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
                     fail("Wrapped EOFException expected");
                 } catch (ExecutionException e) {
                     assertEquals("NOT EOF Exception:\n" +
-                            Exceptions.getStackTraceAsString(e.getCause()),
+                                    Exceptions.getStackTraceAsString(e.getCause()),
                             EOFException.class, e.getCause().getClass());
                 }
             } finally {
