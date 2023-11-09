@@ -39,6 +39,8 @@
  */
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import org.glassfish.grizzly.http.HttpProbe;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.ConnectionProbe;
@@ -104,7 +106,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 public class FileCacheTest extends AbstractSpdyTest {
 
-    public static final int PORT = 18891;
+    public final int PORT = findFreePort();
     private HttpServer httpServer;
 
     private final SpdyVersion spdyVersion;

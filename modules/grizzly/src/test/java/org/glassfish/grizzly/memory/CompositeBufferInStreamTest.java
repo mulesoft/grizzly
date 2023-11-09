@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.memory;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
@@ -65,7 +67,7 @@ import org.glassfish.grizzly.StandaloneProcessor;
  */
 public class CompositeBufferInStreamTest extends GrizzlyTestCase {
 
-    public static final int PORT = 7783;
+    public final int PORT = findFreePort();
     private static final Logger LOGGER = Grizzly.logger(CompositeBufferInStreamTest.class);
 
     @SuppressWarnings("unchecked")

@@ -40,7 +40,6 @@
 package org.glassfish.grizzly.jaxws;
 
 
-import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.server.InstanceResolver;
@@ -264,7 +263,7 @@ public class JaxwsHandler extends HttpHandler {
     /**
      * Gets WSDL from @WebService or @WebServiceProvider
      */
-    private @Nullable SDDocumentSource getPrimaryWsdl(final Object implementor) {
+    private SDDocumentSource getPrimaryWsdl(final Object implementor) {
         Class implType = implementor.getClass();
         // Takes care of @WebService, @WebServiceProvider's wsdlLocation
         EndpointFactory.verifyImplementorClass(implType);

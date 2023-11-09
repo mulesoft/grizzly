@@ -54,21 +54,15 @@ import org.glassfish.grizzly.Grizzly;
  * @author gustav trede
  */
 public class DataStructures {
-    private final static boolean USE_CUSTOM_CHM8;
     private final static Class<?> LTQclass;
 
     static {
         String className = null;
-        boolean useCustomCHM8 = false;
-        
+
         Class<?> c;
         try {
             final JdkVersion jdkVersion = JdkVersion.getJdkVersion();
-            final JdkVersion jdk18Version = JdkVersion.parseVersion("1.8.0");
-            
-            useCustomCHM8 = jdkVersion.isUnsafeSupported() &&
-                    jdk18Version.compareTo(jdkVersion) > 0;
-            
+
             final JdkVersion jdk17Version = JdkVersion.parseVersion("1.7.0");
             className = (jdk17Version.compareTo(jdkVersion) <= 0)
                     ? "java.util.concurrent.LinkedTransferQueue"
@@ -85,7 +79,6 @@ public class DataStructures {
         }
         
         LTQclass = c;
-        USE_CUSTOM_CHM8 = useCustomCHM8;
     }
 
     private static Class<?> getAndVerify(String cname) throws Throwable {
@@ -117,23 +110,19 @@ public class DataStructures {
      * @since 2.3.5
      */
     public static <K, V> ConcurrentMap<K, V> getConcurrentMap() {
-        return USE_CUSTOM_CHM8 ?
-                new ConcurrentHashMapV8<K, V>() :
-                new ConcurrentHashMap<K, V>();
+        return new ConcurrentHashMap<>();
     }
     
     /**
      * Creates a new map with the same mappings as the given map.
      *
-     * @param m the map
+     * @param map the map
      * 
      * @since 2.3.5
      */
     public static <K, V> ConcurrentMap<K, V> getConcurrentMap(
             final Map<? extends K, ? extends V> map) {
-        return USE_CUSTOM_CHM8 ?
-                new ConcurrentHashMapV8<K, V>(map) :
-                new ConcurrentHashMap<K, V>(map);
+        return new ConcurrentHashMap<>(map);
     }
     
     /**
@@ -150,9 +139,7 @@ public class DataStructures {
      */
     public static <K, V> ConcurrentMap<K, V> getConcurrentMap(
             final int initialCapacity) {
-        return USE_CUSTOM_CHM8 ?
-                new ConcurrentHashMapV8<K, V>(initialCapacity) :
-                new ConcurrentHashMap<K, V>(initialCapacity);
+        return new ConcurrentHashMap<>(initialCapacity);
     }
     
     /**
@@ -178,8 +165,6 @@ public class DataStructures {
     public static <K, V> ConcurrentMap<K, V> getConcurrentMap(
             final int initialCapacity, final float loadFactor,
             final int concurrencyLevel) {
-        return USE_CUSTOM_CHM8 ?
-                new ConcurrentHashMapV8<K, V>(initialCapacity, loadFactor, concurrencyLevel) :
-                new ConcurrentHashMap<K, V>(initialCapacity, loadFactor, concurrencyLevel);
+        return new ConcurrentHashMap<>(initialCapacity, loadFactor, concurrencyLevel);
     }
 }

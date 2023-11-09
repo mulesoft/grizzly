@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.servlet;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -79,20 +81,19 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
  */
 public class HttpServerTest extends HttpServerAbstractTest {
 
-    public static final int PORT = 18890+10;
+    public int PORT = findFreePort();
     private static final Logger logger = Grizzly.logger(HttpServerTest.class);
 
     public void testAddHttpHandlerAfterStart() throws IOException {
         System.out.println("testAddHttpHandlerAfterStart");
         try {
-            final int port = PORT + 1;
-            startHttpServer(port);
+            startHttpServer(PORT);
             String alias = "/1";
             WebappContext ctx = new WebappContext("Test");
 
             addServlet(ctx, alias);
             ctx.deploy(httpServer);
-            HttpURLConnection conn = getConnection(alias, port);
+            HttpURLConnection conn = getConnection(alias, PORT);
             assertEquals(HttpServletResponse.SC_OK,
                     getResponseCodeFromAlias(conn));
             assertEquals(alias, readResponse(conn));
@@ -104,8 +105,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
     public void testMultipleAddHttpHandlerAfterStart() throws IOException {
         System.out.println("testMultipleAddHttpHandlerAfterStart");
         try {
-            final int port = PORT + 2;
-            startHttpServer(port);
+            startHttpServer(PORT);
             String[] aliases = new String[]{"/1", "/2", "/3"};
             WebappContext ctx = new WebappContext("Test");
             for (String alias : aliases) {
@@ -113,7 +113,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             }
             ctx.deploy(httpServer);
             for (String alias : aliases) {
-                HttpURLConnection conn = getConnection(alias, port);
+                HttpURLConnection conn = getConnection(alias, PORT);
                 assertEquals(HttpServletResponse.SC_OK,
                         getResponseCodeFromAlias(conn));
                 assertEquals(alias, readResponse(conn));
@@ -126,8 +126,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
     public void testOverlapingAddHttpHandlerAfterStart() throws IOException {
         System.out.println("testOverlapingAddHttpHandlerAfterStart");
         try {
-            final int port = PORT + 3;
-            startHttpServer(port);
+            startHttpServer(PORT);
             WebappContext ctx = new WebappContext("Test");
             String[] aliases = new String[]{"/1", "/2", "/2/1", "/1/2/3/4/5"};
             for (String alias : aliases) {
@@ -135,7 +134,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             }
             ctx.deploy(httpServer);
             for (String alias : aliases) {
-                HttpURLConnection conn = getConnection(alias, port);
+                HttpURLConnection conn = getConnection(alias, PORT);
                 assertEquals(HttpServletResponse.SC_OK,
                         getResponseCodeFromAlias(conn));
                 if (alias.startsWith(readResponse(conn))){
@@ -184,18 +183,17 @@ public class HttpServerTest extends HttpServerAbstractTest {
     public void testStartContract() throws IOException {
         System.out.println("testStartContract");
         // lock port
-        int port = PORT + 5;
         ServerSocket soc = null;
         try {
-            soc = new ServerSocket(port);
+            soc = new ServerSocket(PORT);
         } catch (IOException e) {
-            fail("Could not bind to port: " + port + ". " + e.getMessage());
+            fail("Could not bind to port: " + PORT + ". " + e.getMessage());
         }
 
-        System.out.println("Bound to port: " + port);
+        System.out.println("Bound to port: " + PORT);
 
         try {
-            httpServer = HttpServer.createSimpleServer(".", port);
+            httpServer = HttpServer.createSimpleServer(".", PORT);
             httpServer.getListener("grizzly").getTransport().setReuseAddress(false);
             httpServer.start();
             fail("Should throw exception that can't bind to port.");
@@ -226,8 +224,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
         } else {
             fail("Couldn't find keystore");
         }
-        final int port = PORT + 7;
-        httpServer = HttpServer.createSimpleServer(".", port);
+        httpServer = HttpServer.createSimpleServer(".", PORT);
 
         httpServer.getListener("grizzly").setSecure(true);
         httpServer.getListener("grizzly").setSSLEngineConfig(
@@ -250,7 +247,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             httpServer.start();
         } catch (IOException e) {
             e.printStackTrace();
-            fail("Could not bind to port: " + port + ". " + e.getMessage());
+            fail("Could not bind to port: " + PORT + ". " + e.getMessage());
         } catch (RuntimeException e) {
             fail("Should be able to start in secure mode.");
         }
@@ -276,7 +273,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
                 }
             });
             HttpURLConnection conn =
-                    (HttpURLConnection) new URL("https", "localhost", port, "/sec").openConnection();
+                    (HttpURLConnection) new URL("https", "localhost", PORT, "/sec").openConnection();
             assertEquals(HttpServletResponse.SC_OK, getResponseCodeFromAlias(conn));
             assertEquals(encMsg, readResponse(conn));
         } finally {
@@ -290,9 +287,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
      * @throws IOException Couldn't start {@link HttpServer}.
      */
     public void testFilterLifecycle() throws IOException {
-
-        final int port = PORT + 8;
-        httpServer = HttpServer.createSimpleServer(".", port);
+        httpServer = HttpServer.createSimpleServer(".", PORT);
         final boolean init[] = new boolean[]{false};
         final boolean filter[] = new boolean[]{false};
         final boolean destroy[] = new boolean[]{false};
@@ -326,7 +321,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
 
         httpServer.start();
         HttpURLConnection conn =
-                    (HttpURLConnection) new URL("http", "localhost", port, "/foo").openConnection();
+                    (HttpURLConnection) new URL("http", "localhost", PORT, "/foo").openConnection();
             assertEquals(HttpServletResponse.SC_NOT_FOUND, getResponseCodeFromAlias(conn));
         ctx.undeploy();
         httpServer.shutdownNow();
@@ -336,9 +331,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
     }
 
     public void testFilterLifecycleByServletName() throws IOException {
-
-        final int port = PORT + 8;
-        httpServer = HttpServer.createSimpleServer(".", port);
+        httpServer = HttpServer.createSimpleServer(".", PORT);
         final boolean init[] = new boolean[]{false};
         final boolean filter[] = new boolean[]{false};
         final boolean destroy[] = new boolean[]{false};
@@ -371,7 +364,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
 
         httpServer.start();
         HttpURLConnection conn =
-                (HttpURLConnection) new URL("http", "localhost", port, "/test").openConnection();
+                (HttpURLConnection) new URL("http", "localhost", PORT, "/test").openConnection();
         assertEquals(HttpServletResponse.SC_OK, getResponseCodeFromAlias(conn));
         ctx.undeploy();
         httpServer.shutdownNow();
@@ -388,8 +381,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
     public void testAddHttpHandlerBeforeAndAfterStart() throws IOException {
         System.out.println("testAddHttpHandlerBeforeAndAfterStart");
         try {
-            final int port = PORT + 9;
-            httpServer = HttpServer.createSimpleServer(".", port);
+            httpServer = HttpServer.createSimpleServer(".", PORT);
             WebappContext ctx = new WebappContext("Test");
             String[] aliases = new String[]{"/1"};
             for (String alias : aliases) {
@@ -398,7 +390,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             ctx.deploy(httpServer);
             httpServer.start();
             for (String alias : aliases) {
-                HttpURLConnection conn = getConnection(alias, port);
+                HttpURLConnection conn = getConnection(alias, PORT);
                 assertEquals(HttpServletResponse.SC_OK,
                         getResponseCodeFromAlias(conn));
                 assertEquals(alias, readResponse(conn));
@@ -409,7 +401,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             addServlet(ctx2, alias);
             ctx2.deploy(httpServer);
 
-            HttpURLConnection conn = getConnection(context + alias, port);
+            HttpURLConnection conn = getConnection(context + alias, PORT);
             assertEquals(HttpServletResponse.SC_OK,
                     getResponseCodeFromAlias(conn));
             assertEquals(alias, readResponse(conn));
@@ -421,8 +413,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
     public void testMultipleAddHttpHandlerBeforeStartAndOneAfter() throws IOException {
         System.out.println("testMultipleAddHttpHandlerBeforeStartAndOneAfter");
         try {
-            final int port = PORT + 10;
-            httpServer = HttpServer.createSimpleServer(".", port);
+            httpServer = HttpServer.createSimpleServer(".", PORT);
             WebappContext ctx = new WebappContext("Test");
             String[] aliases = new String[]{"/1", "/2", "/3"};
             for (String alias : aliases) {
@@ -431,7 +422,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             ctx.deploy(httpServer);
             httpServer.start();
             for (String alias : aliases) {
-                HttpURLConnection conn = getConnection(alias, port);
+                HttpURLConnection conn = getConnection(alias, PORT);
                 assertEquals(HttpServletResponse.SC_OK,
                         getResponseCodeFromAlias(conn));
                 assertEquals(alias, readResponse(conn));
@@ -442,7 +433,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
             addServlet(ctx2, alias);
             ctx2.deploy(httpServer);
 
-            HttpURLConnection conn = getConnection(context + alias, port);
+            HttpURLConnection conn = getConnection(context + alias, PORT);
             assertEquals(HttpServletResponse.SC_OK,
                     getResponseCodeFromAlias(conn));
             assertEquals(alias, readResponse(conn));

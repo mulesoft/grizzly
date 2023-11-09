@@ -39,7 +39,6 @@
  */
 package org.glassfish.grizzly.jaxws;
 
-import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -89,7 +88,7 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
 
     @Override
     @Property({MessageContext.HTTP_REQUEST_HEADERS, Packet.INBOUND_TRANSPORT_HEADERS})
-    public @NotNull Map<String, List<String>> getRequestHeaders() {
+    public Map<String, List<String>> getRequestHeaders() {
         if (requestHeaders == null) {
             requestHeaders = new Headers();
             for (String headerName : request.getHeaderNames()) {
@@ -117,7 +116,7 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
     }
 
     @Override
-    public List<String> getRequestHeaderValues(@NotNull String headerName) {
+    public List<String> getRequestHeaderValues(String headerName) {
         return getRequestHeaders().get(headerName);
     }
 
@@ -176,7 +175,7 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
     }    
     
     @Override
-    public void setContentTypeResponseHeader(@NotNull String value) {
+    public void setContentTypeResponseHeader(String value) {
         response.setContentType(value);
     }
 
@@ -191,13 +190,11 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
         return status;
     }
 
-    @NotNull
     @Override
     public InputStream getInput() throws IOException {
         return request.getInputStream();
     }
 
-    @NotNull
     @Override
     public OutputStream getOutput() throws IOException {
         response.setStatus(status);
@@ -219,7 +216,6 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
         return response.getOutputStream();
     }
 
-    @NotNull
     @Override
     public WebServiceContextDelegate getWebServiceContextDelegate() {
         return this;
@@ -235,7 +231,6 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
         return false;
     }
 
-    @NotNull
     @Override
     public String getEPRAddress(Packet p, WSEndpoint endpoint) {
         PortAddressResolver resolver = httpAdapter.owner.createPortAddressResolver(getBaseAddress(), endpoint.getImplementationClass());
@@ -247,19 +242,17 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
     }
 
     @Override
-    public String getWSDLAddress(@NotNull Packet request, @NotNull WSEndpoint endpoint) {
+    public String getWSDLAddress(Packet request, WSEndpoint endpoint) {
         String eprAddress = getEPRAddress(request, endpoint);
         return eprAddress + "?wsdl";
     }
 
-    @NotNull
     @Override
     public String getBaseAddress() {
         return getBaseAddress(request);
     }
 
-    static @NotNull
-    String getBaseAddress(Request request) {
+    static String getBaseAddress(Request request) {
         StringBuilder buf = new StringBuilder();
         buf.append(request.getScheme());
         buf.append("://");
@@ -278,8 +271,7 @@ final class JaxwsConnection extends WSHTTPConnection implements WebServiceContex
 
     @Override
     @Property(MessageContext.HTTP_REQUEST_METHOD)
-    public @NotNull
-    String getRequestMethod() {
+    public String getRequestMethod() {
         return request.getMethod().getMethodString();
     }
 

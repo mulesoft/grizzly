@@ -128,4 +128,9 @@ public class DefaultWorkerThread extends Thread implements WorkerThread {
         this.transactionTimeoutMillis =
                 TimeUnit.MILLISECONDS.convert(timeout, timeunit);
     }
+
+    @Override
+    public void destroy() {
+        // Since JDK 11, Thread doesn't have a destroy method.
+    }
 }

@@ -70,7 +70,14 @@ import org.glassfish.grizzly.utils.DataStructures;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * The {@link SingleEndpointPool} tests.
@@ -80,11 +87,11 @@ import static org.junit.Assert.*;
 public class SingleEndPointPoolTest {
     private static final int THREAD_COUNT = 1000;
 
-    private static final int PORT = 18333;
+    private int PORT = findFreePort();
     
     private final Set<Connection> serverSideConnections =
             Collections.newSetFromMap(
-            DataStructures.<Connection, Boolean>getConcurrentMap());
+            DataStructures.getConcurrentMap());
     
     private TCPNIOTransport transport;
     
@@ -109,7 +116,7 @@ public class SingleEndPointPoolTest {
         
         transport = TCPNIOTransportBuilder.newInstance().build();
         transport.setProcessor(filterChain);
-        
+
         transport.bind(PORT);
         transport.start();
     }
@@ -622,5 +629,5 @@ public class SingleEndPointPoolTest {
             pool.close();
             transport.shutdownNow();
         }
-    }    
+    }
 }

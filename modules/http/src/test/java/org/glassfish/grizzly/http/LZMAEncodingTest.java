@@ -74,12 +74,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class LZMAEncodingTest {
 
-    public static final int PORT = 19200;
+    public int PORT = findFreePort();
 
     private final FutureImpl<Throwable> exception = SafeFutureImpl.create();
 

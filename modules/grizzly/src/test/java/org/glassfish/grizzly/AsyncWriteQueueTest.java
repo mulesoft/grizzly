@@ -81,6 +81,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -92,7 +93,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 @RunWith(Parameterized.class)
 public class AsyncWriteQueueTest {
-    public static final int PORT = 7781;
+    public final int PORT = findFreePort();
 
     private static final Logger LOGGER = Grizzly.logger(AsyncWriteQueueTest.class);
 

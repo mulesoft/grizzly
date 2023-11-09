@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import org.glassfish.grizzly.filterchain.Filter;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChain;
@@ -68,7 +70,7 @@ import org.glassfish.grizzly.utils.DataStructures;
 @SuppressWarnings("unchecked")
 public class ProtocolChainCodecTest extends GrizzlyTestCase {
     private static final Logger logger = Grizzly.logger(ProtocolChainCodecTest.class);
-    public static final int PORT = 7784;
+    public final int PORT = findFreePort();
     
     public void testSyncSingleStringEcho() throws Exception {
         doTestStringEcho(true, 1);

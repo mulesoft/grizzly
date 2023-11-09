@@ -9,8 +9,16 @@ package org.glassfish.grizzly.utils;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+/**
+ * Utility class useful for find a dynamic port in test cases.
+ * Use {@link #findFreePort()} for that purpose.
+ */
 public class FreePortFinder {
 
+    /**
+     * Finds a port number safe to be bound without getting an "AddressAlreadyInUse" error.
+     * @return the free port number.
+     */
     public static int findFreePort() {
         try {
             ServerSocket dummySocket = new ServerSocket(0);

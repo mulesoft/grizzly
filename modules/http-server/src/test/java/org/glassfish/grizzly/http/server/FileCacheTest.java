@@ -97,6 +97,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 import static org.junit.Assert.*;
 
 /**
@@ -108,7 +110,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 public class FileCacheTest {
 
-    public static final int PORT = 18891;
+    public final int PORT = findFreePort();
     private HttpServer httpServer;
     private final boolean isSslEnabled;
 
