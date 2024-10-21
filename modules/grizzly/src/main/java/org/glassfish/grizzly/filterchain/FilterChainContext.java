@@ -76,7 +76,6 @@ import org.glassfish.grizzly.utils.Holder;
 @SuppressWarnings("deprecation")
 public class FilterChainContext implements AttributeStorage {
     private static final Logger logger = Grizzly.logger(FilterChainContext.class);
-    private NextAction onPauseAction;
 
     public enum State {
         RUNNING, SUSPEND
@@ -711,20 +710,6 @@ public class FilterChainContext implements AttributeStorage {
      */
     public NextAction getRerunFilterAction() {
         return RERUN_FILTER_ACTION;
-    }
-
-    public NextAction getPauseAction(NextAction onPauseAction) {
-        this.onPauseAction = onPauseAction;
-        return getSuspendAction();
-    }
-
-    public void resumeFromPause() {
-        if (this.onPauseAction != null) {
-            resume(onPauseAction);
-            this.onPauseAction = null;
-        } else {
-            resume();
-        }
     }
 
     /**
