@@ -1428,18 +1428,27 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
             if (isLast) {
                 onHttpPacketParsed(httpHeader, ctx);
             }
+
+            NextAction nextAction = null;
             if (decodedContent != null) {
                 HttpProbeNotifier.notifyContentChunkParse(this, connection, decodedContent);
                 ctx.setMessage(decodedContent);
                 // Instruct filterchain to continue the processing.
-                return ctx.getInvokeAction(hasRemainder ? remainderBuffer : null);
+                nextAction = ctx.getInvokeAction(hasRemainder ? remainderBuffer : null);
             } else if (hasRemainder) {
                 final HttpContent emptyContent = HttpContent.create(httpHeader, isLast);
-                
+
                 HttpProbeNotifier.notifyContentChunkParse(this, connection, emptyContent);
                 // Instruct filterchain to continue the processing.
                 ctx.setMessage(emptyContent);
-                return ctx.getInvokeAction(remainderBuffer);
+                nextAction = ctx.getInvokeAction(remainderBuffer);
+            }
+            if (nextAction != null) {
+                if (FilterChainContext.State.SUSPEND == ctx.state()) {
+                    return ctx.getPauseAction(nextAction);
+                } else {
+                    return nextAction;
+                }
             }
         }
 
