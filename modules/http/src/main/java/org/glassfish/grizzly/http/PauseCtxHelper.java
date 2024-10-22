@@ -1,43 +1,64 @@
 package org.glassfish.grizzly.http;
 
+import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 
 public final class PauseCtxHelper {
 
     public static void requirePause(FilterChainContext ctx) {
-        PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
-        if (pauseContext == null) {
-            setPauseCtxAttribute(ctx, new PauseContext(null));
-        } else {
-            throw new IllegalStateException("Can't pause an already paused context");
+        synchronized (ctx) {
+            PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
+            if (pauseContext == null) {
+                setPauseCtxAttribute(ctx, new PauseContext(null));
+            } else {
+                throw new IllegalStateException("Can't pause an already paused context");
+            }
         }
     }
 
     public static boolean isPauseRequired(FilterChainContext ctx) {
-        PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
-        if (pauseContext == null) {
-            return false;
+        synchronized (ctx) {
+            PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
+            if (pauseContext == null) {
+                return false;
+            }
+            return pauseContext.getPausedAction() == null;
         }
-        return pauseContext.getPausedAction() == null;
     }
 
     public static void savePausedAction(FilterChainContext ctx, NextAction pausedAction) {
-        PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
-        if (pauseContext != null && pauseContext.getPausedAction() != null) {
-            throw new IllegalStateException("Can't override a paused action");
-        }
+        synchronized (ctx) {
+            PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
+            if (pauseContext != null && pauseContext.getPausedAction() != null) {
+                throw new IllegalStateException("Can't override a paused action");
+            }
 
-        setPauseCtxAttribute(ctx, new PauseContext(pausedAction));
+            if (pauseContext == null) {
+                // it was resumed
+                return;
+            }
+
+            setPauseCtxAttribute(ctx, new PauseContext(pausedAction));
+        }
     }
 
     public static void resumeFromPausedAction(FilterChainContext ctx) {
-        PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
-        if (pauseContext == null) {
-            throw new IllegalStateException("Can't resume a non-paused context");
+        synchronized (ctx) {
+            PauseContext pauseContext = getPauseCtxFromAttribute(ctx);
+            if (pauseContext == null) {
+                throw new IllegalStateException("Can't resume a non-paused context");
+            }
+
+            removePauseCtxAttribute(ctx);
+
+            if (pauseContext.getPausedAction() == null) {
+                // resuming before actually pausing
+                return;
+            }
+
+            ctx.resume(pauseContext.getPausedAction());
         }
-        removePauseCtxAttribute(ctx);
-        ctx.resume(pauseContext.getPausedAction());
     }
 
     private static void removePauseCtxAttribute(FilterChainContext ctx) {
