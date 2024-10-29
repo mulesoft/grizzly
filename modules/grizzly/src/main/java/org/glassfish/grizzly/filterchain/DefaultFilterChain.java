@@ -154,8 +154,7 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
                 }
             } while (prepareRemainder(ctx, filtersState));
         } catch (Throwable e) {
-            LOGGER.log(e instanceof IOException ? Level.FINE : Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_FILTERCHAIN_EXCEPTION(), e);
+            System.out.println(LogMessages.WARNING_GRIZZLY_FILTERCHAIN_EXCEPTION() + e);
             throwChain(ctx, executor, e);
             ctx.getCloseable().closeWithReason(Exceptions.makeIOException(e));
 
@@ -276,17 +275,14 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
 
         NextAction nextNextAction;
         do {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINE, "Execute filter. filter={0} context={1}",
-                        new Object[]{currentFilter, ctx});
-            }
+
+            System.out.println(String.format("Execute filter. filter=%s context=%s",
+                        currentFilter, ctx));
             // execute the task
             nextNextAction = executor.execute(currentFilter, ctx);
 
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINE, "after execute filter. filter={0} context={1} nextAction={2}",
-                        new Object[]{currentFilter, ctx, nextNextAction});
-            }
+            System.out.println(String.format("after execute filter. filter={0} context={1} nextAction={2}",
+                    currentFilter, ctx, nextNextAction));
         } while (nextNextAction.type() == RerunFilterAction.TYPE);
 
         return nextNextAction;

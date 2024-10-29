@@ -194,8 +194,8 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             try {
                 connection.onConnect();
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Exception happened, when "
-                        + "trying to connect the channel", e);
+                System.out.println("Exception happened, when "
+                        + "trying to connect the channel" + e);
             }
         }
     }
