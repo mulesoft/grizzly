@@ -40,17 +40,17 @@
 
 package org.glassfish.grizzly.utils;
 
-import org.glassfish.grizzly.attributes.AttributeStorage;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+
 import org.glassfish.grizzly.AbstractTransformer;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.TransformationException;
 import org.glassfish.grizzly.TransformationResult;
 import org.glassfish.grizzly.attributes.Attribute;
-
-
+import org.glassfish.grizzly.attributes.AttributeStorage;
+import org.slf4j.Logger;
 
 /**
  * String decoder, which decodes {@link Buffer} to {@link String}
@@ -123,9 +123,8 @@ public class StringDecoder extends AbstractTransformer<Buffer, String> {
             final AttributeStorage storage, final Buffer input) {
         Integer stringSize = lengthAttribute.get(storage);
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "StringDecoder decode stringSize={0} buffer={1} content={2}",
-                    new Object[]{stringSize, input, input.toStringContent()});
+        if (logger.isDebugEnabled()) {
+            logger.debug("StringDecoder decode stringSize={} buffer={} content={}", stringSize, input, input.toStringContent());
         }
 
         if (stringSize == null) {

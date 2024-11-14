@@ -39,11 +39,13 @@
  */
 package org.glassfish.grizzly.nio;
 
-import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.IOEvent;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.util.Arrays;
+
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.IOEvent;
+import org.slf4j.Logger;
 
 
 
@@ -91,14 +93,14 @@ public final class DefaultSelectionKeyHandler implements SelectionKeyHandler {
     @Override
     public void onKeyRegistered(SelectionKey key) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.log(Level.FINE, "KEY IS REGISTERED: {0}", key);
+            LOGGER.debug("KEY IS REGISTERED: {}", key);
         }
     }
 
     @Override
     public void onKeyDeregistered(SelectionKey key) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.log(Level.FINE, "KEY IS DEREGISTERED: {0}", key);
+            LOGGER.debug("KEY IS DEREGISTERED: {}", key);
         }
     }
 

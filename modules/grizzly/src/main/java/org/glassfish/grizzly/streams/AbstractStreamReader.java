@@ -43,7 +43,7 @@ package org.glassfish.grizzly.streams;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
-
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
@@ -57,7 +57,7 @@ import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.utils.CompletionHandlerAdapter;
 import org.glassfish.grizzly.utils.ResultAware;
 import org.glassfish.grizzly.utils.conditions.Condition;
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
 
 /**
  * Each method reads data from the current ByteBuffer.  If not enough data
@@ -87,7 +87,7 @@ public abstract class AbstractStreamReader implements StreamReader {
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
     
     private static void msg(final String msg) {
-        LOGGER.log(Level.INFO, "READERSTREAM:DEBUG:{0}", msg);
+        LOGGER.info("READERSTREAM:DEBUG:{}", msg);
     }
 
     private static void displayBuffer(final String str,

@@ -41,12 +41,13 @@ package org.glassfish.grizzly.strategies;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.IOEvent;
 import org.glassfish.grizzly.IOEventLifeCycleListener;
 import org.glassfish.grizzly.Processor;
-
+import org.slf4j.Logger;
 
 /**
  * {@link org.glassfish.grizzly.IOStrategy}, which executes {@link Processor}s in worker thread.
@@ -57,7 +58,7 @@ public final class WorkerThreadIOStrategy extends AbstractIOStrategy {
 
     private static final WorkerThreadIOStrategy INSTANCE = new WorkerThreadIOStrategy();
 
-    private static final Logger logger = Grizzly.logger(WorkerThreadIOStrategy.class);
+    private static final Logger LOGGER = Grizzly.logger(WorkerThreadIOStrategy.class);
 
 
     // ------------------------------------------------------------ Constructors
@@ -114,7 +115,7 @@ public final class WorkerThreadIOStrategy extends AbstractIOStrategy {
                              final IOEvent ioEvent,
                              final IOEventLifeCycleListener lifeCycleListener) {
 
-        fireIOEvent(connection, ioEvent, lifeCycleListener, logger);
+        fireIOEvent(connection, ioEvent, lifeCycleListener, LOGGER);
 
     }
     

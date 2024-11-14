@@ -103,6 +103,7 @@ import org.glassfish.grizzly.ssl.SSLConnectionContext.Allocator;
 import org.glassfish.grizzly.ssl.SSLConnectionContext.SslResult;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 /**
  * SSL {@link Filter} to operate with SSL encrypted data.
@@ -359,9 +360,7 @@ public class SSLBaseFilter extends BaseFilter {
                 sslCtx.setNewConnectionFilterChain(null);
                 if (connectionFilterChain != null) {
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.log(Level.FINE, "Applying new FilterChain after"
-                                + "SSLHandshake. Connection={0} filterchain={1}",
-                                new Object[]{connection, connectionFilterChain});
+                        LOGGER.debug("Applying new FilterChain after SSLHandshake. Connection={} filterchain={}", connection, connectionFilterChain);
                     }
                     
                     connection.setProcessor(connectionFilterChain);
@@ -672,15 +671,14 @@ public class SSLBaseFilter extends BaseFilter {
             while (true) {
 
                 if (isLoggingFinest) {
-                    LOGGER.log(Level.FINEST, "Loop Engine: {0} handshakeStatus={1}",
-                            new Object[]{sslCtx.getSslEngine(), sslCtx.getSslEngine().getHandshakeStatus()});
+                    LOGGER.trace("Loop Engine: {} handshakeStatus={}", sslCtx.getSslEngine(), sslCtx.getSslEngine().getHandshakeStatus());
                 }
 
                 switch (handshakeStatus) {
                     case NEED_UNWRAP: {
 
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_UNWRAP Engine: {0}", sslCtx.getSslEngine());
+                            LOGGER.trace("NEED_UNWRAP Engine: {}", sslCtx.getSslEngine());
                         }
 
                         if (inputBuffer == null || !inputBuffer.hasRemaining()) {
@@ -718,7 +716,7 @@ public class SSLBaseFilter extends BaseFilter {
 
                     case NEED_WRAP: {
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_WRAP Engine: {0}", sslCtx.getSslEngine());
+                            LOGGER.trace("NEED_WRAP Engine: {}", sslCtx.getSslEngine());
                         }
 
                         tmpNetBuffer = handshakeWrap(
@@ -730,7 +728,7 @@ public class SSLBaseFilter extends BaseFilter {
 
                     case NEED_TASK: {
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_TASK Engine: {0}", sslCtx.getSslEngine());
+                            LOGGER.trace("NEED_TASK Engine: {}", sslCtx.getSslEngine());
                         }
                         executeDelegatedTask(sslCtx.getSslEngine());
                         handshakeStatus = sslCtx.getSslEngine().getHandshakeStatus();
@@ -818,8 +816,8 @@ public class SSLBaseFilter extends BaseFilter {
             // of an obscure exception stack trace in the server's log.
             // Note that this probably will only work on Oracle's VM.
             if (e.toString().toLowerCase().contains("insecure renegotiation")) {
-                if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.severe("Secure SSL/TLS renegotiation is not "
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error("Secure SSL/TLS renegotiation is not "
                             + "supported by the peer.  This is most likely due"
                             + " to the peer using an older SSL/TLS "
                             + "implementation that does not implement RFC 5746.");
@@ -849,7 +847,7 @@ public class SSLBaseFilter extends BaseFilter {
                     sslCtx, context, null, handshakeTimeoutMillis);
         } catch (Throwable t) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "Error during graceful ssl connection close", t);
+                LOGGER.debug("Error during graceful ssl connection close", t);
             }
             
             if (t instanceof SSLException) {
@@ -877,7 +875,7 @@ public class SSLBaseFilter extends BaseFilter {
             notifyHandshakeFailed(c, t);
             
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "Error during re-handshaking", t);
+                LOGGER.debug("Error during re-handshaking", t);
             }
             
             if (t instanceof SSLException) {
@@ -1008,15 +1006,13 @@ public class SSLBaseFilter extends BaseFilter {
                     x509Certs[i] = (X509Certificate)
                     cf.generateCertificate(stream);
                 } catch(Exception ex) {
-                    LOGGER.log(Level.INFO,
-                               "Error translating cert " + certs[i],
-                               ex);
+                    LOGGER.info("Error translating cert {}", certs[i], ex);
                     return null;
                 }
             }
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "Cert #{0} = {1}", new Object[] {i, x509Certs[i]});
+                LOGGER.debug("Cert #{} = {}", i, x509Certs[i]);
             }
         }
         return x509Certs;
@@ -1027,7 +1023,7 @@ public class SSLBaseFilter extends BaseFilter {
             return sslCtx.getSslEngine().getSession().getPeerCertificates();
         } catch( Throwable t ) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE,"Error getting client certs", t);
+                LOGGER.debug("Error getting client certs", t);
             }
             return null;
         }

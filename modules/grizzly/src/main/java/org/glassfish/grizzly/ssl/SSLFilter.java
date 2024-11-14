@@ -65,6 +65,7 @@ import org.glassfish.grizzly.utils.Exceptions;
 
 import static org.glassfish.grizzly.ssl.SSLUtils.*;
 import org.glassfish.grizzly.utils.JdkVersion;
+import org.slf4j.Logger;
 
 /**
  * SSL {@link Filter} to operate with SSL encrypted data.
@@ -429,8 +430,7 @@ public class SSLFilter extends SSLBaseFilter {
                     resumePendingWrites();
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.FINE,
-                        "Unexpected SSLHandshakeContext.completed() error", e);
+                LOGGER.debug("Unexpected SSLHandshakeContext.completed() error", e);
                 failed(e);
             }
         }

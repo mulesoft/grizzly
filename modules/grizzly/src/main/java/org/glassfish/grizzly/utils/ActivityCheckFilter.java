@@ -65,8 +65,7 @@ import org.glassfish.grizzly.filterchain.NextAction;
  * @author Alexey Stashok
  */
 public class ActivityCheckFilter extends BaseFilter {
-    private static final Logger LOGGER = Grizzly.logger(ActivityCheckFilter.class);
-    
+
     public static final String ACTIVE_ATTRIBUTE_NAME = "connection-active-attribute";
     private static final Attribute<ActiveRecord> IDLE_ATTR =
             Grizzly.DEFAULT_ATTRIBUTE_BUILDER.createAttribute(

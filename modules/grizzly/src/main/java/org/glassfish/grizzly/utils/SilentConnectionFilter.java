@@ -40,14 +40,15 @@
 
 package org.glassfish.grizzly.utils;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.attributes.Attribute;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -58,7 +59,6 @@ import java.util.concurrent.TimeUnit;
  * @author Alexey Stashok
  */
 public final class SilentConnectionFilter extends BaseFilter {
-    private static final Logger LOGGER = Grizzly.logger(SilentConnectionFilter.class);
 
     public static final long UNLIMITED_TIMEOUT = -1;
     public static final long UNSET_TIMEOUT = 0;

@@ -40,9 +40,7 @@
 package org.glassfish.grizzly.nio;
 
 import org.glassfish.grizzly.Grizzly;
-
-
-
+import org.slf4j.Logger;
 
 class SelectionKeyHandlerInitializer {
     
@@ -61,13 +59,11 @@ class SelectionKeyHandlerInitializer {
                                       SelectionKeyHandler.class.getClassLoader());
                 return handlerClass.newInstance();
             } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Unable to load or create a new instance of SelectionKeyHandler {0}.  Cause: {1}",
-                            new Object[]{className, e.getMessage()});
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error("Unable to load or create a new instance of SelectionKeyHandler {}.  Cause: {}", className, e.getMessage());
                 }
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE, e.toString(), e);
+                    LOGGER.debug(e.toString(), e);
                 }
                 return new DefaultSelectionKeyHandler();
             }

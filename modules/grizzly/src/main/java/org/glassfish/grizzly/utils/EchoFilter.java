@@ -40,15 +40,16 @@
 
 package org.glassfish.grizzly.utils;
 
-import org.glassfish.grizzly.Buffer;
-import org.glassfish.grizzly.filterchain.BaseFilter;
-import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.filterchain.NextAction;
 import java.io.IOException;
 import java.util.logging.Filter;
 
+import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.slf4j.Logger;
 
 
 /**
@@ -67,9 +68,8 @@ public class EchoFilter extends BaseFilter {
         final Connection connection = ctx.getConnection();
         final Object address = ctx.getAddress();
 
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "EchoFilter. connection={0} dstAddress={1} message={2}",
-                    new Object[]{connection, address, message});
+        if (logger.isTraceEnabled()) {
+            logger.trace("EchoFilter. connection={} dstAddress={} message={}", connection, address, message);
         }
         
         if (message instanceof Buffer) {
