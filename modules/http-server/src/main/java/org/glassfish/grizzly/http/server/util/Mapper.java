@@ -61,7 +61,7 @@ package org.glassfish.grizzly.http.server.util;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.util.Constants;
 import java.io.IOException;
-import java.util.logging.Level;
+
 
 import org.glassfish.grizzly.Grizzly;
 
@@ -69,7 +69,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.http.server.naming.DirContext;
 import org.glassfish.grizzly.http.server.naming.NamingContext;
 import org.glassfish.grizzly.http.server.naming.NamingException;

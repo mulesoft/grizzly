@@ -41,8 +41,8 @@ package org.glassfish.grizzly.http.server;
 
 import java.io.File;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.Header;
@@ -235,7 +235,7 @@ public class StaticHttpHandler extends StaticHttpHandlerBase {
         }
 
         if (!found) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "File not found {0}", resource);
             }
             return false;
@@ -245,7 +245,7 @@ public class StaticHttpHandler extends StaticHttpHandlerBase {
         
         // If it's not HTTP GET - return method is not supported status
         if (!Method.GET.equals(request.getMethod())) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "File found {0}, but HTTP method {1} is not allowed",
                         new Object[] {resource, request.getMethod()});
             }

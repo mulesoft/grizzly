@@ -42,7 +42,7 @@ package org.glassfish.grizzly.strategies;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
-import java.util.logging.Logger;
+
 
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;

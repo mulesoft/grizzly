@@ -44,12 +44,17 @@ import java.io.IOException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+
+import org.glassfish.grizzly.CloseReason;
+import org.glassfish.grizzly.Closeable;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.Processor;
+import org.glassfish.grizzly.ProcessorSelector;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.nio.RegisterChannelResult;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 /**
  * Server {@link org.glassfish.grizzly.Connection} implementation
@@ -114,8 +119,8 @@ public class UDPNIOServerConnection extends UDPNIOConnection {
     @Override
     protected void terminate0(final CompletionHandler<Closeable> completionHandler,
             final CloseReason closeReason) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("UDPNIOServerConnection might be only closed by calling unbind().");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("UDPNIOServerConnection might be only closed by calling unbind().");
         }
 
         if (completionHandler != null) {

@@ -43,8 +43,8 @@ package org.glassfish.grizzly.http.server.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyFuture;
 import org.glassfish.grizzly.http.server.Request;
@@ -79,7 +79,7 @@ public class RequestUtils {
                 // TODO: make the timeout configurable
                 certificates = certFuture.get(30, TimeUnit.SECONDS);
             } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE,
                                "Unable to obtain certificates from peer.",
                                e);
@@ -112,7 +112,7 @@ public class RequestUtils {
                     request.setAttribute(SSLSupport.SESSION_ID_KEY, sslO);
                 }
             } catch (Exception ioe) {
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE,
                             "Unable to populate SSL attributes",
                             ioe);

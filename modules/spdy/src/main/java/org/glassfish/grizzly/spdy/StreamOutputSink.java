@@ -43,8 +43,8 @@ package org.glassfish.grizzly.spdy;
 import org.glassfish.grizzly.spdy.utils.ChunkedCompletionHandler;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Grizzly;

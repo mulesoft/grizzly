@@ -46,15 +46,21 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.CloseReason;
+import org.glassfish.grizzly.Closeable;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.WriteHandler;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueWriter;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.nio.NIOConnection;
 import org.glassfish.grizzly.nio.SelectorRunner;
 import org.glassfish.grizzly.utils.Holder;
 import org.glassfish.grizzly.utils.NullaryFunction;
+import org.slf4j.Logger;
 
 /**
  * {@link org.glassfish.grizzly.Connection} implementation
@@ -168,9 +174,7 @@ public class TCPNIOConnection extends NIOConnection {
         try {
             readBufferSize = ((SocketChannel) channel).socket().getReceiveBufferSize();
         } catch (IOException e) {
-            LOGGER.log(Level.FINE,
-                    LogMessages.WARNING_GRIZZLY_CONNECTION_GET_READBUFFER_SIZE_EXCEPTION(),
-                    e);
+            LOGGER.debug(LogMessages.WARNING_GRIZZLY_CONNECTION_GET_READBUFFER_SIZE_EXCEPTION(), e);
             readBufferSize = 0;
         }
 
@@ -191,9 +195,7 @@ public class TCPNIOConnection extends NIOConnection {
                 
                 this.readBufferSize = readBufferSize;
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_CONNECTION_SET_READBUFFER_SIZE_EXCEPTION(),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_CONNECTION_SET_READBUFFER_SIZE_EXCEPTION(), e);
             }
         }
     }
@@ -210,9 +212,7 @@ public class TCPNIOConnection extends NIOConnection {
         try {
             writeBufferSize = ((SocketChannel) channel).socket().getSendBufferSize();
         } catch (IOException e) {
-            LOGGER.log(Level.FINE,
-                    LogMessages.WARNING_GRIZZLY_CONNECTION_GET_WRITEBUFFER_SIZE_EXCEPTION(),
-                    e);
+            LOGGER.debug(LogMessages.WARNING_GRIZZLY_CONNECTION_GET_WRITEBUFFER_SIZE_EXCEPTION(), e);
             writeBufferSize = 0;
         }
 
@@ -232,9 +232,7 @@ public class TCPNIOConnection extends NIOConnection {
                 }
                 this.writeBufferSize = writeBufferSize;
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_CONNECTION_SET_WRITEBUFFER_SIZE_EXCEPTION(),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_CONNECTION_SET_WRITEBUFFER_SIZE_EXCEPTION(), e);
             }
         }
     }

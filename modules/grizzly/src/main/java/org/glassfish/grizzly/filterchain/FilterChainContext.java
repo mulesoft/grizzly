@@ -43,8 +43,6 @@ package org.glassfish.grizzly.filterchain;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.Appendable;
 import org.glassfish.grizzly.Appender;
 import org.glassfish.grizzly.Buffer;
@@ -64,6 +62,7 @@ import org.glassfish.grizzly.attributes.AttributeStorage;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.utils.Holder;
+import org.slf4j.Logger;
 
 /**
  * {@link FilterChain} {@link Context} implementation.
@@ -201,7 +200,7 @@ public class FilterChainContext implements AttributeStorage {
 
                     ProcessorExecutor.execute(FilterChainContext.this.internalContext);
                 } catch (Exception e) {
-                    logger.log(Level.FINE, "Exception during running Processor", e);
+                    logger.debug("Exception during running Processor", e);
                 }
             }
         };
@@ -252,7 +251,7 @@ public class FilterChainContext implements AttributeStorage {
             predefinedNextAction = nextAction;
             ProcessorExecutor.execute(internalContext);
         } catch (Exception e) {
-            logger.log(Level.FINE, "Exception during running Processor", e);
+            logger.debug("Exception during running Processor", e);
         }
     }
 
@@ -285,7 +284,7 @@ public class FilterChainContext implements AttributeStorage {
             predefinedNextAction = getForkAction(nextAction);
             ProcessorExecutor.execute(internalContext);
         } catch (Exception e) {
-            logger.log(Level.FINE, "Exception during running Processor", e);
+            logger.debug("Exception during running Processor", e);
         }
     }
 

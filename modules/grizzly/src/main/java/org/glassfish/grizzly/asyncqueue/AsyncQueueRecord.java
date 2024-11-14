@@ -40,14 +40,13 @@
 
 package org.glassfish.grizzly.asyncqueue;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.Cacheable;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.DebugPoint;
+import org.slf4j.Logger;
 
 /**
  * {@link AsyncQueue} element unit
@@ -57,7 +56,7 @@ import org.glassfish.grizzly.utils.DebugPoint;
  * @author Alexey Stashok
  */
 public abstract class AsyncQueueRecord<R> implements Cacheable {
-    private final static Logger LOGGER = Grizzly.logger(AsyncQueue.class);
+    private static final Logger LOGGER = Grizzly.logger(AsyncQueue.class);
     
     protected Connection connection;
     protected Object message;
@@ -109,9 +108,8 @@ public abstract class AsyncQueueRecord<R> implements Cacheable {
         if (completionHandler != null) {
             completionHandler.failed(e);
         } else {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE,
-                        LogMessages.FINE_GRIZZLY_ASYNCQUEUE_ERROR_NOCALLBACK_ERROR(e));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(LogMessages.FINE_GRIZZLY_ASYNCQUEUE_ERROR_NOCALLBACK_ERROR(e));
             }
         }
     }

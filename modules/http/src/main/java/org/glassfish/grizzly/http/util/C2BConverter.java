@@ -66,8 +66,8 @@ import java.nio.CharBuffer;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /** Efficient conversion of character to bytes.
  *

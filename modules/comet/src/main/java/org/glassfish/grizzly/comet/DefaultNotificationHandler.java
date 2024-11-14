@@ -43,8 +43,8 @@ package org.glassfish.grizzly.comet;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /**
  * Default NotificationHandler that uses a thread pool dedicated to the CometEngine to execute the notification

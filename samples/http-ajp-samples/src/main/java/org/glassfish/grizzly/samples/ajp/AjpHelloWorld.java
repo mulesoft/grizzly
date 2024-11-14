@@ -42,8 +42,8 @@ package org.glassfish.grizzly.samples.ajp;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.ajp.AjpAddOn;
 import org.glassfish.grizzly.http.server.HttpHandler;

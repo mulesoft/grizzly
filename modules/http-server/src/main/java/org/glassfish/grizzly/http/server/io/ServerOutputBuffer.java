@@ -48,7 +48,7 @@ import org.glassfish.grizzly.http.server.Response;
 
 import java.io.File;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
+
 import org.glassfish.grizzly.localization.LogMessages;
 
 public class ServerOutputBuffer extends OutputBuffer {

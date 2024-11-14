@@ -56,8 +56,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.SocketFactory;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContextEvent;

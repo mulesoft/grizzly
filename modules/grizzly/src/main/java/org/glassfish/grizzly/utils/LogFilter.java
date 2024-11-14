@@ -47,8 +47,8 @@ import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /**
  * Simple log {@link Filter}

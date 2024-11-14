@@ -57,8 +57,8 @@ import org.glassfish.grizzly.ssl.SSLUtils;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 
 import javax.net.ssl.SSLEngine;
@@ -281,7 +281,7 @@ public class SpdyAddOn implements AddOn {
 
         @Override
         public LinkedHashSet<String> supportedProtocols(final SSLEngine engine) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "NPN supportedProtocols. Connection={0} sslEngine={1} supportedProtocols={2}",
                         new Object[]{NextProtoNegSupport.getConnection(engine), engine, supportedProtocols});
             }
@@ -292,7 +292,7 @@ public class SpdyAddOn implements AddOn {
         public void onSuccess(final SSLEngine engine, final String protocol) {
 
             final Connection connection = NextProtoNegSupport.getConnection(engine);
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "NPN onSuccess. Connection={0} sslEngine={1} protocol={2}",
                         new Object[]{connection, engine, protocol});
             }
@@ -313,7 +313,7 @@ public class SpdyAddOn implements AddOn {
         public void onNoDeal(final SSLEngine engine) {
             final Connection connection = NextProtoNegSupport.getConnection(engine);
             // Default to the transport FilterChain.
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "NPN onNoDeal. Connection={0} sslEngine={1}",
                         new Object[]{connection, engine});
             }

@@ -74,8 +74,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.CloseListener;
 import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.Closeable;
@@ -516,7 +516,7 @@ public class Response {
         try {
             outputBuffer.endRequest();
         } catch (IOException e) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINEST,
                         LogMessages.WARNING_GRIZZLY_HTTP_SERVER_RESPONSE_FINISH_ERROR(), e);
             }

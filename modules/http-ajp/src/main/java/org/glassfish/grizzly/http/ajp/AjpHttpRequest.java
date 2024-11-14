@@ -44,8 +44,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.http.HttpRequestPacket;
@@ -191,7 +191,7 @@ public final class AjpHttpRequest extends HttpRequestPacket {
                         remoteAddr().toString()).
                         getHostName());
             } catch (IOException iex) {
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "Unable to resolve {0}", remoteAddr());
                 }
             }

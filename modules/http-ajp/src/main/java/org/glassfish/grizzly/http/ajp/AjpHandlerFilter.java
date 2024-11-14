@@ -44,8 +44,8 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Properties;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;

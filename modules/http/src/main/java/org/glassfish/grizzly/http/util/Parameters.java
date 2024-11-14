@@ -65,8 +65,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 
 import org.glassfish.grizzly.Grizzly;
@@ -122,7 +122,7 @@ public final class Parameters {
 
     public void setEncoding(final Charset encoding) {
         this.encoding = encoding;
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST, "Set encoding to {0}", encoding);
         }
     }
@@ -133,7 +133,7 @@ public final class Parameters {
     
     public void setQueryStringEncoding(final Charset queryStringEncoding) {
         this.queryStringEncoding = queryStringEncoding;
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST, "Set query string encoding to {0}",
                        queryStringEncoding);
         }
@@ -268,7 +268,7 @@ public final class Parameters {
      */
     private void merge() {
         // recursive
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST, "Before merging {0} {1} {2}",
                        new Object[]{this, parent, didMerge});
             LOGGER.log(Level.FINEST, paramsAsString());
@@ -294,7 +294,7 @@ public final class Parameters {
         // END PWC 6057385
         merge2(paramHashValues, parentProps);
         didMerge = true;
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST, "After {0}", paramsAsString());
         }
     }
@@ -324,7 +324,7 @@ public final class Parameters {
         if (queryDC == null || queryDC.isNull()) {
             return;
         }
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST, "Decoding query {0} {1}",
                        new Object[]{queryDC, queryStringEncoding});
         }
@@ -421,7 +421,7 @@ public final class Parameters {
     public void processParameters(final Buffer buffer, final int start, final int len,
         final Charset enc) {
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST,
                        "Process parameters. Buffer: {0} start={1} len={2} content={3}",
                        new Object[]{
@@ -499,7 +499,7 @@ public final class Parameters {
                 }
             }
 
-            if (LOGGER.isLoggable(Level.FINEST) && valueStart == -1) {
+            if (LOGGER.isTraceEnabled() && valueStart == -1) {
                 LOGGER.log(Level.FINEST,
                            LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_NOEQUAL(
                                    nameStart,
@@ -527,7 +527,7 @@ public final class Parameters {
             // Take copies as if anything goes wrong originals will be
             // corrupted. This means original values can be logged.
             // For performance - only done for debug
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 origName.setBufferChunk(buffer, nameStart, nameEnd);
                 origValue.setBufferChunk(buffer, valueStart, valueEnd);
             }
@@ -555,7 +555,7 @@ public final class Parameters {
                 addParameter(name, value);
             } catch (Exception e) {
                 decodeFailCount++;
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                    LOGGER.log(Level.FINEST,
                             LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(
                             origName.toString(), origValue.toString()));
@@ -578,7 +578,7 @@ public final class Parameters {
 
         }
 
-        if (!LOGGER.isLoggable(Level.FINEST) && decodeFailCount > 1) {
+        if (!LOGGER.isTraceEnabled() && decodeFailCount > 1) {
             LOGGER.info(LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_MULTIPLE_DECODING_FAIL(decodeFailCount));
         }
     }
@@ -619,7 +619,7 @@ public final class Parameters {
         int pos = start;
         int decodeFailCount = 0;
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST,
                        "Process parameters. chars: {0} start={1} len={2} content={3}",
                        new Object[]{
@@ -649,7 +649,7 @@ public final class Parameters {
                 noEq = true;
                 valStart = nameEnd;
                 valEnd = nameEnd;
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "no equal {0} {1} {2}",
                                new Object[]{
                                        nameStart,
@@ -679,7 +679,7 @@ public final class Parameters {
             try {
                 tmpNameC.append(chars, nameStart, nameEnd - nameStart);
                 tmpValueC.append(chars, valStart, valEnd - valStart);
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "{0}= {1}",
                                new Object[]{tmpNameC, tmpValueC});
                 }
@@ -687,14 +687,14 @@ public final class Parameters {
                                   queryStringEncoding.name());
                 URLDecoder.decode(tmpValueC, tmpValueC, true,
                                   queryStringEncoding.name());
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "{0}= {1}",
                                new Object[]{tmpNameC, tmpValueC});
                 }
                 addParameter(tmpNameC.toString(), tmpValueC.toString());
             } catch (Exception e) {
                 decodeFailCount++;
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST,
                                LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(
                                        origName.toString(),
@@ -719,7 +719,7 @@ public final class Parameters {
 
         } while (pos < end);
 
-        if (!LOGGER.isLoggable(Level.FINEST) && decodeFailCount > 1) {
+        if (!LOGGER.isTraceEnabled() && decodeFailCount > 1) {
             LOGGER.info(
                     LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_MULTIPLE_DECODING_FAIL(
                             decodeFailCount));
@@ -779,7 +779,7 @@ public final class Parameters {
         int pos = 0;
         int decodeFailCount = 0;
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST,
                        "Process parameters. String: {0}",
                        str);
@@ -806,7 +806,7 @@ public final class Parameters {
                 noEq = true;
                 valStart = nameEnd;
                 valEnd = nameEnd;
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "no equal {0} {1} {2}",
                                new Object[]{
                                        nameStart,
@@ -829,27 +829,27 @@ public final class Parameters {
             if (nameEnd <= nameStart) {
                 continue;
             }
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINEST, "XXX {0} {1} {2} {3}",
                            new Object[]{nameStart, nameEnd, valStart, valEnd});
             }
             try {
                 tmpNameC.append(str, nameStart, nameEnd - nameStart);
                 tmpValueC.append(str, valStart, valEnd - valStart);
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "{0}= {1}",
                                new Object[]{tmpNameC, tmpValueC});
                 }
                 URLDecoder.decode(tmpNameC, true);
                 URLDecoder.decode(tmpValueC, true);
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST, "{0}= {1}",
                                new Object[]{tmpNameC, tmpValueC});
                 }
                 addParameter(tmpNameC.toString(), tmpValueC.toString());
             } catch (Exception e) {
                 decodeFailCount++;
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST,
                                LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(
                                        origName.toString(),
@@ -873,7 +873,7 @@ public final class Parameters {
             }
         } while (pos < end);
 
-        if (!LOGGER.isLoggable(Level.FINEST) && decodeFailCount > 1) {
+        if (!LOGGER.isTraceEnabled() && decodeFailCount > 1) {
             LOGGER.info(
                     LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_MULTIPLE_DECODING_FAIL(
                             decodeFailCount));

@@ -42,8 +42,8 @@ package org.glassfish.grizzly.portunif;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Context;

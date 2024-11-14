@@ -42,8 +42,8 @@ package org.glassfish.grizzly.websockets;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -153,7 +153,7 @@ public abstract class BaseWebSocketFilter extends BaseFilter {
         // Try to obtain associated WebSocket
         final WebSocketHolder holder = WebSocketHolder.get(connection);
         WebSocket ws = getWebSocket(connection);
-        if (LOGGER.isLoggable(Level.FINE)) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.log(Level.FINE, "handleRead websocket: {0} content-size={1} headers=\n{2}",
                 new Object[]{ws, message.getContent().remaining(), header});
         }
@@ -169,7 +169,7 @@ public abstract class BaseWebSocketFilter extends BaseFilter {
                 // Handle handshake
                 return handleHandshake(ctx, message);
             } catch (HandshakeException e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE, "Handshake error. Code: {0} Msg:{1}",
                         new Object[]{e.getCode(), e.getMessage()});
                 }

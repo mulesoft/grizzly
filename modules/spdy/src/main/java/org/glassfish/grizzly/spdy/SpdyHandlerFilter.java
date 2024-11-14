@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -235,7 +235,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                 try {
                     processInFrame(spdySession, ctx, frame);
                 } catch (SpdyStreamException e) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
+                    if (LOGGER.isDebugEnabled()) {
                         LOGGER.log(Level.FINE, "SpdyStreamException occurred on connection=" +
                                 ctx.getConnection() + " during SpdyFrame processing", e);
                     }
@@ -257,7 +257,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                         try {
                             processInFrame(spdySession, ctx, framesList.get(i));
                         } catch (SpdyStreamException e) {
-                            if (LOGGER.isLoggable(Level.FINE)) {
+                            if (LOGGER.isDebugEnabled()) {
                                 LOGGER.log(Level.FINE, "SpdyStreamException occurred on connection=" +
                                         ctx.getConnection() + " during SpdyFrame processing", e);
                             }
@@ -285,7 +285,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
             }
             streamsToFlushInput.clear();
         } catch (SpdySessionException e) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "SpdySessionException occurred on connection=" +
                         ctx.getConnection() + " during SpdyFrame processing", e);
             }
@@ -294,7 +294,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                     e.getGoAwayStatus(), e.getRstReason());            
             return ctx.getSuspendAction();
         } catch (IOException e) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "IOException occurred on connection=" +
                         ctx.getConnection() + " during SpdyFrame processing", e);
             }
@@ -558,7 +558,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
             if (stream != null) {
                 stream.getOutputSink().onPeerWindowUpdate(delta);
             } else {
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     final StringBuilder sb = new StringBuilder(64);
                     sb.append("\nStream id=")
                             .append(streamId)
@@ -1256,7 +1256,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
 
         if (spdyStream == null) {
 
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Data frame received for non-existent stream: connection={0}, frame={1}, stream={2}",
                         new Object[]{context.getConnection(), dataFrame, dataFrame.getHeader().getStreamId()});
             }
@@ -1351,7 +1351,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
         
         @Override
         public boolean wantNegotiate(final SSLEngine engine) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "NPN wantNegotiate. Connection={0}",
                         new Object[]{NextProtoNegSupport.getConnection(engine)});
             }
@@ -1361,7 +1361,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
         @Override
         public String selectProtocol(final SSLEngine engine,
                                      final LinkedHashSet<String> protocols) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "NPN selectProtocol. Connection={0}, protocols={1}",
                         new Object[]{NextProtoNegSupport.getConnection(engine), protocols});
             }
@@ -1382,7 +1382,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
 
         @Override
         public void onNoDeal(final SSLEngine engine) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "NPN onNoDeal. Connection={0}",
                         new Object[]{NextProtoNegSupport.getConnection(engine)});
             }

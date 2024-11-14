@@ -45,7 +45,7 @@ import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import java.io.IOException;
-import java.util.logging.Logger;
+
 
 /**
  * Simple filter, which prints out the server echo message.

@@ -43,8 +43,8 @@ package org.glassfish.grizzly.servlet;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionAttributeListener;

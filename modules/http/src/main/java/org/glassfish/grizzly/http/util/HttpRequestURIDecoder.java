@@ -42,8 +42,8 @@ package org.glassfish.grizzly.http.util;
 import java.io.CharConversionException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import static org.glassfish.grizzly.utils.Charsets.*;

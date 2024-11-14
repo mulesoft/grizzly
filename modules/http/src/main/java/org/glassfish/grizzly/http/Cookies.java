@@ -59,8 +59,8 @@
 package org.glassfish.grizzly.http;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.util.BufferChunk;
 import org.glassfish.grizzly.http.util.ByteChunk;

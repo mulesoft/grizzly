@@ -50,7 +50,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
  
 import junit.framework.TestCase;
 import org.glassfish.grizzly.Grizzly;

@@ -42,7 +42,7 @@ package org.glassfish.grizzly.sni;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.logging.Logger;
+
 import javax.net.ssl.SSLEngine;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;

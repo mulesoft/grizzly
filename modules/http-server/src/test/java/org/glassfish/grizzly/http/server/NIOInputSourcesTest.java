@@ -75,8 +75,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.Transport;
 import org.glassfish.grizzly.WriteResult;

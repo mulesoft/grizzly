@@ -42,7 +42,7 @@ package org.glassfish.grizzly.ssl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Logger;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import org.glassfish.grizzly.Grizzly;

@@ -50,7 +50,7 @@ import org.glassfish.grizzly.utils.DelayedExecutor;
 import org.glassfish.grizzly.utils.IdleTimeoutFilter;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 
 /**
  * Simple HTTP (Web) server, which listens on a specific TCP port and shares

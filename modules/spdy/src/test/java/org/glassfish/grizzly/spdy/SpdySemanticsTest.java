@@ -52,7 +52,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import java.util.zip.Deflater;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CloseListener;

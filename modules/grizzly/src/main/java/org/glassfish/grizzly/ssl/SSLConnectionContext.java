@@ -40,8 +40,6 @@
 package org.glassfish.grizzly.ssl;
 
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.Status;
@@ -54,6 +52,7 @@ import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.ByteBufferArray;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.slf4j.Logger;
 
 import static org.glassfish.grizzly.ssl.SSLUtils.*;
 
@@ -175,9 +174,8 @@ public class SSLConnectionContext {
             
         output = ensureBufferSize(output, appBufferSize, allocator);
 
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "unwrap engine: {0} input: {1} output: {2}",
-                    new Object[] {sslEngine, input, output});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("unwrap engine: {} input: {} output: {}", sslEngine, input, output);
         }
         
         final int inPos = input.position();
@@ -224,9 +222,8 @@ public class SSLConnectionContext {
         input.position(inPos + inputByteBuffer.position() - initPosition); // GRIZZLY-1827 input.position(inPos + sslEngineResult.bytesConsumed());
         output.position(outPos + sslEngineResult.bytesProduced());
 
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "unwrap done engine: {0} result: {1} input: {2} output: {3}",
-                    new Object[] {sslEngine, sslEngineResult, input, output});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("unwrap done engine: {} result: {} input: {} output: {}", sslEngine, sslEngineResult, input, output);
         }
         
         return new SslResult(output, sslEngineResult);
@@ -291,9 +288,8 @@ public class SSLConnectionContext {
             
         output = ensureBufferSize(output, netBufferSize, allocator);
 
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "wrap engine: {0} input: {1} output: {2}",
-                    new Object[] {sslEngine, input, output});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("wrap engine: {} input: {} output: {}", sslEngine, input, output);
         }
         
         final int inPos = input.position();
@@ -331,9 +327,8 @@ public class SSLConnectionContext {
 
         lastOutputBuffer = output;
         
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "wrap done engine: {0} result: {1} input: {2} output: {3}",
-                    new Object[] {sslEngine, sslEngineResult, input, output});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("wrap done engine: {} result: {} input: {} output: {}", sslEngine, sslEngineResult, input, output);
         }
         
         return new SslResult(output, sslEngineResult);
@@ -344,9 +339,8 @@ public class SSLConnectionContext {
             
         output = ensureBufferSize(output, netBufferSize, allocator);
 
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "wrap engine: {0} input: {1} output: {2}",
-                    new Object[] {sslEngine, input, output});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("wrap engine: {} input: {} output: {}", sslEngine, input, output);
         }
         
         final int inPos = input.position();
@@ -395,9 +389,8 @@ public class SSLConnectionContext {
 
         lastOutputBuffer = output;
         
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "wrap done engine: {0} result: {1} input: {2} output: {3}",
-                    new Object[] {sslEngine, sslEngineResult, input, output});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("wrap done engine: {} result: {} input: {} output: {}", sslEngine, sslEngineResult, input, output);
         }
         
         return new SslResult(output, sslEngineResult);

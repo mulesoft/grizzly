@@ -64,8 +64,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import java.util.zip.GZIPOutputStream;
 import org.glassfish.grizzly.http.CompressionConfig;
 import org.glassfish.grizzly.http.Method;

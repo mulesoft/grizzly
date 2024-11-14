@@ -46,10 +46,10 @@ import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import java.io.IOException;
 import java.util.logging.Filter;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
-import java.util.logging.Level;
+
 
 /**
  * Echo {@link Filter} implementation

@@ -43,7 +43,7 @@ package org.glassfish.grizzly.websockets;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.logging.Logger;
+
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.PortRange;

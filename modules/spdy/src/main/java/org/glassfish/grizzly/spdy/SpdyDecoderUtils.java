@@ -39,8 +39,8 @@
  */
 package org.glassfish.grizzly.spdy;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Cacheable;
 import org.glassfish.grizzly.Grizzly;

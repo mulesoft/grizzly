@@ -50,7 +50,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 /**
  * Server implementation, which echoes message, only if client was authenticated :)

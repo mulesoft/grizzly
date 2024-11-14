@@ -44,8 +44,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.memory.BufferArray;
 import org.glassfish.grizzly.memory.Buffers;
@@ -87,7 +87,7 @@ public class TCPNIOUtils {
                     ? flushByteBuffers(socketChannel, ioRecord.getArray(), 0, arraySize)
                     : flushByteBuffer(socketChannel, ioRecord.getArray()[0]);
 
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (composite) write {1} bytes", new Object[]{
                             connection, written
                         });
@@ -137,7 +137,7 @@ public class TCPNIOUtils {
         }
 
         Buffers.setPositionLimit(buffer, oldPos + written, oldLim);
-        if(LOGGER.isLoggable(Level.FINE))
+        if(LOGGER.isDebugEnabled())
             LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (plain) write {1} bytes", new Object[] {
                 connection, written
             });
@@ -271,7 +271,7 @@ public class TCPNIOUtils {
             buffer = Buffers.EMPTY_BUFFER;
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (allocated) read {1} bytes", new Object[]{
                         connection, read
                     });
@@ -305,7 +305,7 @@ public class TCPNIOUtils {
             buffer.position(oldPos + read);
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (nonallocated, composite) read {1} bytes", new Object[]{
                         connection, read
                     });
@@ -329,7 +329,7 @@ public class TCPNIOUtils {
             buffer.position(oldPos + read);
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (nonallocated, simple) read {1} bytes", new Object[]{
                         connection, read
                     });

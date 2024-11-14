@@ -50,8 +50,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
@@ -267,7 +267,7 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
         }
        
         if (!found) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Resource not found {0}", resourcePath);
             }
             return false;
@@ -277,7 +277,7 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
         
         // If it's not HTTP GET - return method is not supported status
         if (!Method.GET.equals(request.getMethod())) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Resource found {0}, but HTTP method {1} is not allowed",
                         new Object[] {resourcePath, request.getMethod()});
             }
@@ -319,7 +319,7 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
     private URL lookupResource(String resourcePath) {
         final String[] docRootsLocal = docRoots.getArray();
         if (docRootsLocal == null || docRootsLocal.length == 0) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "No doc roots registered -> resource {0} is not found ", resourcePath);
             }
             

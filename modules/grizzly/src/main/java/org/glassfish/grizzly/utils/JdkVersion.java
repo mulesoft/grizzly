@@ -39,11 +39,12 @@
  */
 package org.glassfish.grizzly.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 /**
  *
@@ -104,12 +105,10 @@ public class JdkVersion implements Comparable<JdkVersion> {
                         parseInt(matcher.group(7)));
             }
             
-            LOGGER.log(Level.FINE,
-                    "Can't parse the JDK version {0}", versionString);
+            LOGGER.debug("Can't parse the JDK version {}", versionString);
             
         } catch (Exception e) {
-            LOGGER.log(Level.FINE,
-                    "Error parsing the JDK version " + versionString, e);
+            LOGGER.debug("Error parsing the JDK version {}", versionString, e);
         }
 
         return UNKNOWN_VERSION;

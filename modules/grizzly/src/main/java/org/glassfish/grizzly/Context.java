@@ -43,7 +43,7 @@ package org.glassfish.grizzly;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.asyncqueue.MessageCloner;
 import org.glassfish.grizzly.attributes.AttributeHolder;
 import org.glassfish.grizzly.attributes.AttributeStorage;
@@ -56,7 +56,6 @@ import org.glassfish.grizzly.attributes.AttributeStorage;
 @SuppressWarnings("deprecation")
 public class Context implements AttributeStorage, Cacheable {
 
-    private static final Logger LOGGER = Grizzly.logger(Context.class);
     private static final Processor NULL_PROCESSOR = new NullProcessor();
     private static final ThreadCache.CachedTypeIndex<Context> CACHE_IDX =
             ThreadCache.obtainIndex(Context.class, 4);

@@ -45,7 +45,7 @@ import static java.util.logging.Level.WARNING;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Logger;
+
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;

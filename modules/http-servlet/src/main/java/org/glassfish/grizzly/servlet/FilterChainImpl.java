@@ -52,8 +52,8 @@ import javax.servlet.ServletRequestListener;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.EventListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /**
  * Implementation of <code>javax.servlet.FilterChain</code> used to manage

@@ -51,8 +51,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import junit.framework.Assert;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
@@ -135,13 +135,13 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
         }
 
         public void wmsg() {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.SEVERE, "Write:{0}", toString());
             }
         }
 
         public void rmsg() {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.SEVERE, "ReadAndCheck:{0}", toString());
             }
         }
@@ -1270,7 +1270,7 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
                                     return;
                                 }
 
-                                if (LOGGER.isLoggable(Level.FINEST)) {
+                                if (LOGGER.isTraceEnabled()) {
                                     LOGGER.log(Level.FINEST, "reader.availableDataSize():{0},{1}",
                                             new Object[]{reader.available(), checker.byteSize()});
                                 }

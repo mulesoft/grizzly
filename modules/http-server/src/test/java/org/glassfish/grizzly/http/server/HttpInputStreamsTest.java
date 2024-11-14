@@ -67,8 +67,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
 import org.glassfish.grizzly.utils.DataStructures;
@@ -1452,7 +1452,7 @@ public class HttpInputStreamsTest {
 
             final Buffer buffer = httpContent.getContent();
 
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
             }
 

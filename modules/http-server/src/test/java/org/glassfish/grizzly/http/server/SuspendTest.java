@@ -49,7 +49,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Logger;
+
 
 import junit.framework.AssertionFailedError;
 import org.glassfish.grizzly.Connection;

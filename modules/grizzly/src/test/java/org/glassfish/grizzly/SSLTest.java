@@ -89,8 +89,8 @@ import org.glassfish.grizzly.utils.EchoFilter;
 import org.glassfish.grizzly.utils.StringFilter;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

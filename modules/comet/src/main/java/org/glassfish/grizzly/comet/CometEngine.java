@@ -43,8 +43,8 @@ package org.glassfish.grizzly.comet;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.DataStructures;

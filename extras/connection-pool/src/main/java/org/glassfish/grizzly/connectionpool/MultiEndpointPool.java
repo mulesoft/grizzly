@@ -43,8 +43,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -628,7 +628,7 @@ public class MultiEndpointPool<E> {
     public boolean release(final Connection connection) {
         final ConnectionInfo<E> info = connectionToSubPoolMap.get(connection);
         if (info != null) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE,
                            "Returning {0} to endpoint pool {1}",
                            new Object[] {connection, info.endpointPool});
@@ -636,7 +636,7 @@ public class MultiEndpointPool<E> {
             // optimize release() call to avoid redundant map lookup
             return info.endpointPool.release0(info);
         } else {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE,
                            "No ConnectionInfo available for {0}.  Closing connection.",
                            connection);
@@ -665,7 +665,7 @@ public class MultiEndpointPool<E> {
             throws IOException {
 
         final SingleEndpointPool<E> sePool = obtainSingleEndpointPool(endpoint);
-        if (LOGGER.isLoggable(Level.FINE)) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.log(Level.FINE,
                        "Associating foreign connection with pool {0} using endpoint key {1}.",
                        new Object[] {sePool, endpoint});
@@ -688,7 +688,7 @@ public class MultiEndpointPool<E> {
      */
     public boolean detach(final Connection connection) {
         final ConnectionInfo<E> info = connectionToSubPoolMap.get(connection);
-        if (info != null && LOGGER.isLoggable(Level.FINE)) {
+        if (info != null && LOGGER.isDebugEnabled()) {
             LOGGER.log(Level.FINE,
                        "Detaching {0} from endpoint pool {1}.",
                        new Object[] { connection, info.endpointPool});
@@ -708,7 +708,7 @@ public class MultiEndpointPool<E> {
     public void close(final Endpoint<E> endpoint) {
         final SingleEndpointPool<E> sePool = endpointToPoolMap.remove(endpoint);
         if (sePool != null) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE,
                            "Closing pool associated with endpoint key {0}",
                            endpoint);
@@ -729,7 +729,7 @@ public class MultiEndpointPool<E> {
             if (isClosed) {
                 return;
             }
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.fine("Shutting down. Closing all pools; shutting down executors as needed.");
             }
             isClosed = true;
@@ -782,14 +782,14 @@ public class MultiEndpointPool<E> {
                 
                 sePool = endpointToPoolMap.get(endpoint);
                 if (sePool == null) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
+                    if (LOGGER.isDebugEnabled()) {
                         LOGGER.log(Level.FINE,
                                    "Creating new endpoint pool for key {0}",
                                    endpoint);
                     }
                     sePool = createSingleEndpointPool(endpoint);
                     endpointToPoolMap.put(endpoint, sePool);
-                } else if (LOGGER.isLoggable(Level.FINE)) {
+                } else if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE,
                                "Returning existing pool {0} for key {1}",
                                new Object[]{sePool, endpoint});

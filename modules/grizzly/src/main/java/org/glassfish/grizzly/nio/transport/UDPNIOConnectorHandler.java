@@ -44,9 +44,18 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.*;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.glassfish.grizzly.AbstractSocketConnectorHandler;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.IOEventLifeCycleListener;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.ReadyFutureImpl;
 import org.glassfish.grizzly.nio.NIOChannelDistributor;
@@ -59,8 +68,6 @@ import org.glassfish.grizzly.utils.Futures;
  * @author Alexey Stashok
  */
 public class UDPNIOConnectorHandler extends AbstractSocketConnectorHandler {
-
-    private static final Logger LOGGER = Grizzly.logger(UDPNIOConnectorHandler.class);
 
     protected boolean isReuseAddress;
     protected volatile long connectionTimeoutMillis = DEFAULT_CONNECTION_TIMEOUT;

@@ -42,7 +42,7 @@ package org.glassfish.grizzly.comet.concurrent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.logging.Logger;
+
 
 import org.glassfish.grizzly.comet.CometContext;
 import org.glassfish.grizzly.comet.CometEvent;

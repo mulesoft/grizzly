@@ -41,8 +41,8 @@ package org.glassfish.grizzly.samples.httpserver.priorities;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;

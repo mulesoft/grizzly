@@ -66,8 +66,8 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.HttpBrokenContentException;
 import org.glassfish.grizzly.memory.Buffers;
@@ -1431,7 +1431,7 @@ public class InputBuffer {
     private static void log(final String message, Object... params) {
         final String preparedMsg = String.format(message, params);
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST, preparedMsg, new Exception("Logged at"));
         } else {
             LOGGER.log(LOGGER_LEVEL, preparedMsg);

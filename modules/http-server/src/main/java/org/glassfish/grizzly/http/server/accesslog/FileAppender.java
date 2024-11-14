@@ -43,7 +43,7 @@ package org.glassfish.grizzly.http.server.accesslog;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
+
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;

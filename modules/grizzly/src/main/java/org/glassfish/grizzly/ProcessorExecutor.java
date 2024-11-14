@@ -41,8 +41,8 @@
 package org.glassfish.grizzly;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.localization.LogMessages;
 
 /**
@@ -62,7 +62,7 @@ public final class ProcessorExecutor {
    
     @SuppressWarnings("unchecked")
     public static void execute(Context context) {
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.log(Level.FINEST,
                     "executing connection ({0}). IOEvent={1} processor={2}",
                     new Object[]{context.getConnection(), context.getIoEvent(),

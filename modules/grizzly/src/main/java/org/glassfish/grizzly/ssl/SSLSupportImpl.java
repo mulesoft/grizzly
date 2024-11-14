@@ -62,8 +62,8 @@ import org.glassfish.grizzly.Connection;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
 import javax.security.cert.X509Certificate;

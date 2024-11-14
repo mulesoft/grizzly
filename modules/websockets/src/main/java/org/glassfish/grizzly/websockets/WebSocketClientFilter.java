@@ -45,8 +45,8 @@ import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpResponsePacket;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 

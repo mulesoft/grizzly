@@ -42,7 +42,7 @@ package org.glassfish.grizzly.http.server;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Level;
+
 import junit.framework.TestCase;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -73,7 +73,7 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.http.CompressionConfig.CompressionMode;
 
 public class SendFileTest extends TestCase {

@@ -44,9 +44,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.logging.Formatter;
-import java.util.logging.Level;
+
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+
 
 /**
  *

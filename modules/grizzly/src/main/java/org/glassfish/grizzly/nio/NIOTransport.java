@@ -49,8 +49,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.AbstractTransport;
 import org.glassfish.grizzly.Connection;
@@ -74,6 +72,7 @@ import org.glassfish.grizzly.threadpool.AbstractThreadPool;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 /**
  *
@@ -417,8 +416,7 @@ public abstract class NIOTransport extends AbstractTransport
         try {
             State currentState = state.getState();
             if (currentState != State.STOPPED) {
-                LOGGER.log(Level.WARNING,
-                           LogMessages.WARNING_GRIZZLY_TRANSPORT_NOT_STOP_STATE_EXCEPTION());
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_NOT_STOP_STATE_EXCEPTION());
                 return;
             }
 
@@ -455,9 +453,7 @@ public abstract class NIOTransport extends AbstractTransport
                             .setMaxPoolSize(selectorRunnersCnt)
                             .setPoolName("grizzly-nio-kernel");
                 } else if (kernelPoolConfig.getMaxPoolSize() < selectorRunnersCnt) {
-                    LOGGER.log(Level.INFO, "Adjusting kernel thread pool to max "
-                            + "size {0} to handle configured number of SelectorRunners",
-                            selectorRunnersCnt);
+                    LOGGER.info("Adjusting kernel thread pool to max size {} to handle configured number of SelectorRunners", selectorRunnersCnt);
                     kernelPoolConfig.setCorePoolSize(selectorRunnersCnt)
                             .setMaxPoolSize(selectorRunnersCnt);
                 }
@@ -656,8 +652,7 @@ public abstract class NIOTransport extends AbstractTransport
         lock.lock();
         try {
             if (state.getState() != State.STARTED) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_TRANSPORT_NOT_START_STATE_EXCEPTION());
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_NOT_START_STATE_EXCEPTION());
                 return;
             }
             state.setState(State.PAUSING);
@@ -682,8 +677,7 @@ public abstract class NIOTransport extends AbstractTransport
         lock.lock();
         try {
             if (state.getState() != State.PAUSED) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_TRANSPORT_NOT_PAUSE_STATE_EXCEPTION());
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_NOT_PAUSE_STATE_EXCEPTION());
                 return;
             }
             state.setState(State.STARTING);

@@ -42,8 +42,8 @@ package org.glassfish.grizzly.strategies;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.*;
 import org.glassfish.grizzly.asyncqueue.AsyncQueue;
 import org.glassfish.grizzly.localization.LogMessages;

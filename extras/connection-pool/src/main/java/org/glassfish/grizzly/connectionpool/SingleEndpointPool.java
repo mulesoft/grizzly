@@ -51,8 +51,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.CloseListener;
 import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.CompletionHandler;
@@ -1252,7 +1252,7 @@ public class SingleEndpointPool<E> {
         
         @Override
         public void completed(final Connection connection) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINEST, "Pool connection is established {0}", connection);
             }
 
@@ -1307,7 +1307,7 @@ public class SingleEndpointPool<E> {
                     // check if there is still a thread(s) waiting for a connection
                     // and reconnect mechanism is enabled
                     if (reconnectQueue != null && !asyncWaitingList.isEmpty()) {
-                        if (LOGGER.isLoggable(Level.FINEST)) {
+                        if (LOGGER.isTraceEnabled()) {
                             LOGGER.log(Level.FINEST, "Pool connect operation failed, schedule reconnect");
                         }
                         if (++failedConnectAttempts > maxReconnectAttempts) {
@@ -1359,7 +1359,7 @@ public class SingleEndpointPool<E> {
 
         @Override
         public boolean doWork(final ConnectTimeoutTask connectTimeoutTask) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINEST, "Pool connect timed out");
             }
             connectTimeoutTask.connectFuture.cancel(false);
@@ -1504,7 +1504,7 @@ public class SingleEndpointPool<E> {
                 }
                 
                 if (removed) {
-                    if (LOGGER.isLoggable(Level.FINEST)) {
+                    if (LOGGER.isTraceEnabled()) {
                         LOGGER.log(Level.FINEST, "Async poll timed out for {0}",
                                 asyncPollLink.getValue());
                     }
@@ -1563,7 +1563,7 @@ public class SingleEndpointPool<E> {
 
         @Override
         public boolean doWork(final ConnectionInfo ci) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINEST, "Connection {0} TTL expired",
                         ci.connection);
             }

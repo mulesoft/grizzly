@@ -39,7 +39,7 @@
  */
 package org.glassfish.grizzly.spdy;
 
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.http.HttpRequestPacket;

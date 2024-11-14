@@ -66,8 +66,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import java.util.zip.GZIPOutputStream;
 import junit.framework.TestCase;
 import org.glassfish.grizzly.memory.Buffers;

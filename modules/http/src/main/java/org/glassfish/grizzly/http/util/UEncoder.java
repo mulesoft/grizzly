@@ -64,8 +64,8 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.BitSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /**
  * Efficient implementation for encoders.

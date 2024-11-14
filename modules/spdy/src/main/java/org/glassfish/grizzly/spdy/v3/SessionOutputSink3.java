@@ -41,8 +41,8 @@
 package org.glassfish.grizzly.spdy.v3;
 
 import org.glassfish.grizzly.spdy.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
 

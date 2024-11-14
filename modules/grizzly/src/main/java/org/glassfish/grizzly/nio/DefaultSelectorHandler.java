@@ -45,16 +45,16 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.*;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.utils.Futures;
-import org.glassfish.grizzly.utils.JdkVersion;
+import org.slf4j.Logger;
 
 /**
  * Default implementation of NIO <code>SelectorHandler</code>
@@ -496,7 +496,7 @@ public class DefaultSelectorHandler implements SelectorHandler {
                     completionHandler.completed(task);
                 }
             } catch (Throwable t) {
-                logger.log(Level.FINEST, "doExecutePendiongIO failed.", t);
+                logger.trace("doExecutePendiongIO failed.", t);
                 
                 if (completionHandler != null) {
                     completionHandler.failed(t);

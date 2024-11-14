@@ -46,7 +46,7 @@ import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.IOEvent;
 import org.glassfish.grizzly.IOEventLifeCycleListener;
 import org.glassfish.grizzly.Processor;
-import java.util.logging.Logger;
+
 
 /**
  * {@link org.glassfish.grizzly.IOStrategy}, which executes {@link Processor}s in worker thread.

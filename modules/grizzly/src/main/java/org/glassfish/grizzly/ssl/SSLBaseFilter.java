@@ -64,8 +64,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Filter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
@@ -358,7 +358,7 @@ public class SSLBaseFilter extends BaseFilter {
                 final FilterChain connectionFilterChain = sslCtx.getNewConnectionFilterChain();
                 sslCtx.setNewConnectionFilterChain(null);
                 if (connectionFilterChain != null) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
+                    if (LOGGER.isDebugEnabled()) {
                         LOGGER.log(Level.FINE, "Applying new FilterChain after"
                                 + "SSLHandshake. Connection={0} filterchain={1}",
                                 new Object[]{connection, connectionFilterChain});
@@ -519,7 +519,7 @@ public class SSLBaseFilter extends BaseFilter {
 //        final SSLEngine sslEngine = sslCtx.getSslEngine();
 //        final Connection connection = ctx.getConnection();
 //
-//        final boolean isLoggingFinest = LOGGER.isLoggable(Level.FINEST);
+//        final boolean isLoggingFinest = LOGGER.isTraceEnabled();
 //        try {
 //            HandshakeStatus handshakeStatus = sslEngine.getHandshakeStatus();
 //
@@ -658,7 +658,7 @@ public class SSLBaseFilter extends BaseFilter {
 
         final Connection connection = ctx.getConnection();
         
-        final boolean isLoggingFinest = LOGGER.isLoggable(Level.FINEST);
+        final boolean isLoggingFinest = LOGGER.isTraceEnabled();
         Buffer tmpInputToDispose = null;
         Buffer tmpNetBuffer = null;
         
@@ -848,7 +848,7 @@ public class SSLBaseFilter extends BaseFilter {
             return doHandshakeSync(
                     sslCtx, context, null, handshakeTimeoutMillis);
         } catch (Throwable t) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Error during graceful ssl connection close", t);
             }
             
@@ -876,7 +876,7 @@ public class SSLBaseFilter extends BaseFilter {
         } catch (Throwable t) {
             notifyHandshakeFailed(c, t);
             
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Error during re-handshaking", t);
             }
             
@@ -1015,7 +1015,7 @@ public class SSLBaseFilter extends BaseFilter {
                 }
             }
 
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Cert #{0} = {1}", new Object[] {i, x509Certs[i]});
             }
         }
@@ -1026,7 +1026,7 @@ public class SSLBaseFilter extends BaseFilter {
         try {
             return sslCtx.getSslEngine().getSession().getPeerCertificates();
         } catch( Throwable t ) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE,"Error getting client certs", t);
             }
             return null;

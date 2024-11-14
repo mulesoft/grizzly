@@ -47,7 +47,7 @@ import java.net.HttpURLConnection;
 import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Logger;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;

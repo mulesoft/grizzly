@@ -42,8 +42,7 @@ package org.glassfish.grizzly.nio;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.AbstractWriter;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -59,6 +58,7 @@ import org.glassfish.grizzly.asyncqueue.PushBackHandler;
 import org.glassfish.grizzly.asyncqueue.RecordWriteResult;
 import org.glassfish.grizzly.asyncqueue.TaskQueue;
 import org.glassfish.grizzly.asyncqueue.WritableMessage;
+import org.slf4j.Logger;
 
 
 /**
@@ -73,7 +73,7 @@ public abstract class AbstractNIOAsyncQueueWriter
         extends AbstractWriter<SocketAddress>
         implements AsyncQueueWriter<SocketAddress> {
 
-    private final static Logger LOGGER = Grizzly.logger(AbstractNIOAsyncQueueWriter.class);
+    private static final Logger LOGGER = Grizzly.logger(AbstractNIOAsyncQueueWriter.class);
 
     protected final NIOTransport transport;
 
@@ -225,7 +225,7 @@ public abstract class AbstractNIOAsyncQueueWriter
         final int pendingBytes = writeTaskQueue.reserveSpace(bytesToReserve);
         final boolean isCurrent = (pendingBytes == bytesToReserve);
 
-        final boolean isLogFine = LOGGER.isLoggable(Level.FINEST);
+        final boolean isLogFine = LOGGER.isTraceEnabled();
 
         if (isLogFine) {
             doFineLog("AsyncQueueWriter.write connection={0}, record={1}, "
@@ -302,9 +302,7 @@ public abstract class AbstractNIOAsyncQueueWriter
             }
         } catch (IOException e) {
             if (isLogFine) {
-                LOGGER.log(Level.FINEST,
-                        "AsyncQueueWriter.write exception. connection=" +
-                        nioConnection + " record=" + queueRecord, e);
+                LOGGER.trace("AsyncQueueWriter.write exception. connection={} record={}", nioConnection, queueRecord, e);
             }
 
             onWriteFailure(nioConnection, queueRecord, e);
@@ -319,7 +317,7 @@ public abstract class AbstractNIOAsyncQueueWriter
      */
     @Override
     public AsyncResult processAsync(final Context context) {
-        final boolean isLogFine = LOGGER.isLoggable(Level.FINEST);
+        final boolean isLogFine = LOGGER.isTraceEnabled();
         final NIOConnection nioConnection = (NIOConnection) context.getConnection();
         if (!nioConnection.isOpen()) {
             return AsyncResult.COMPLETE;
@@ -419,9 +417,7 @@ public abstract class AbstractNIOAsyncQueueWriter
             return result;
         } catch (IOException e) {
             if (isLogFine) {
-                LOGGER.log(Level.FINEST, "AsyncQueueWriter.processAsync "
-                        + "exception connection=" + nioConnection + " peekRecord=" +
-                        queueRecord, e);
+                LOGGER.trace("AsyncQueueWriter.processAsync exception connection={} peekRecord={}", nioConnection, queueRecord, e);
             }
             onWriteFailure(nioConnection, queueRecord, e);
         }
@@ -431,7 +427,7 @@ public abstract class AbstractNIOAsyncQueueWriter
 
     private static void finishQueueRecord(final NIOConnection nioConnection,
             final AsyncWriteQueueRecord queueRecord) {
-        final boolean isLogFine = LOGGER.isLoggable(Level.FINEST);
+        final boolean isLogFine = LOGGER.isTraceEnabled();
         
         if (isLogFine) {
             doFineLog("AsyncQueueWriter.processAsync finished "
@@ -455,10 +451,8 @@ public abstract class AbstractNIOAsyncQueueWriter
             final MessageCloner<WritableMessage> cloner,
             final WritableMessage message) {
         
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST,
-                    "AsyncQueueWriter.write clone. connection={0} cloner={1} size={2}",
-                    new Object[] {connection, cloner, message.remaining()});
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("AsyncQueueWriter.write clone. connection={} cloner={} size={}", connection, cloner, message.remaining());
         }
         
         return cloner == null ? message : cloner.clone(connection, message);
@@ -486,7 +480,7 @@ public abstract class AbstractNIOAsyncQueueWriter
     }
        
     private static void doFineLog(final String msg, final Object... params) {
-        LOGGER.log(Level.FINEST, msg, params);
+        LOGGER.trace(msg, params);
     }
 
     /**

@@ -65,8 +65,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /**
  * This class implements a String cache for ByteChunk and CharChunk.

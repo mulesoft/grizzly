@@ -47,7 +47,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 
 import java.io.IOException;
-import java.util.logging.Logger;
+
 
 /**
  * Simple tunneling server

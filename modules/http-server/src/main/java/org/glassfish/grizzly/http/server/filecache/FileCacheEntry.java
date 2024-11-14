@@ -43,8 +43,8 @@ package org.glassfish.grizzly.http.server.filecache;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.CompressionConfig;
@@ -186,7 +186,7 @@ public final class FileCacheEntry implements Runnable {
     protected void finalize() throws Throwable {
         if (compressedFile != null) {
             if (!compressedFile.delete()) {
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE,
                                "Unable to delete file {0}.  Will try to delete again upon VM exit.",
                                compressedFile.getCanonicalPath());

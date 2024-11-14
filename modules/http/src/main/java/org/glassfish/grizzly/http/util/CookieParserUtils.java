@@ -60,8 +60,8 @@ package org.glassfish.grizzly.http.util;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.Cookie;
@@ -1767,7 +1767,7 @@ public class CookieParserUtils {
     private static int getMaxAgeDelta(long date1, long date2) {
         long result = date1 - date2;
         if (result > Integer.MAX_VALUE) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.fine("Integer overflow when calculating max age delta.  Date: " + date1 + ", current date: " + date2 + ".  Using Integer.MAX_VALUE for further calculation.");
             }
             return Integer.MAX_VALUE;

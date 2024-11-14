@@ -47,8 +47,8 @@ import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -1368,7 +1368,7 @@ public class HttpInputStreamsTest extends AbstractSpdyTest {
         @Override
         public NextAction handleConnect(FilterChainContext ctx)
               throws IOException {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "Connected... Sending the request: {0}", request);
             }
 
@@ -1409,7 +1409,7 @@ public class HttpInputStreamsTest extends AbstractSpdyTest {
 
             final Buffer buffer = httpContent.getContent();
 
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, "HTTP content size: {0}, isLast: {1}", new Object[] {buffer.remaining(), httpContent.isLast()});
             }
 

@@ -43,8 +43,8 @@ package org.glassfish.grizzly.streams;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;

@@ -54,8 +54,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.ConnectionProbe;
 import org.glassfish.grizzly.EmptyCompletionHandler;
@@ -276,7 +276,7 @@ public class HttpServer {
             try {
                 listener.start();
             } catch (IOException ioe) {
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                if (LOGGER.isTraceEnabled()) {
                     LOGGER.log(Level.FINEST,
                             "Failed to start listener [{0}] : {1}",
                             new Object[]{listener.toString(), ioe.toString()});

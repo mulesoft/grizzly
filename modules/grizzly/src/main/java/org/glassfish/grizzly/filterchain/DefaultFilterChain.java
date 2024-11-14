@@ -44,8 +44,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.*;
 import org.glassfish.grizzly.Appendable;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueEnabledTransport;
@@ -276,14 +276,14 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
 
         NextAction nextNextAction;
         do {
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINE, "Execute filter. filter={0} context={1}",
                         new Object[]{currentFilter, ctx});
             }
             // execute the task
             nextNextAction = executor.execute(currentFilter, ctx);
 
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.log(Level.FINE, "after execute filter. filter={0} context={1} nextAction={2}",
                         new Object[]{currentFilter, ctx, nextNextAction});
             }

@@ -48,9 +48,15 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+
+import org.glassfish.grizzly.CloseReason;
+import org.glassfish.grizzly.Closeable;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.IOEvent;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.nio.RegisterChannelResult;
@@ -59,6 +65,7 @@ import org.glassfish.grizzly.utils.CompletionHandlerAdapter;
 import org.glassfish.grizzly.utils.Exceptions;
 import org.glassfish.grizzly.utils.Holder;
 import org.glassfish.grizzly.utils.NullaryFunction;
+import org.slf4j.Logger;
 
 /**
  *
@@ -353,8 +360,7 @@ public final class TCPNIOServerConnection extends TCPNIOConnection {
                     transport.fireIOEvent(IOEvent.ACCEPTED, connection, null);
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Exception happened, when "
-                        + "trying to accept the connection", e);
+                LOGGER.debug("Exception happened, when trying to accept the connection", e);
             }
         }
     }        

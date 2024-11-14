@@ -40,9 +40,9 @@
 
 package org.glassfish.grizzly.portunif.finders;
 
-import java.util.logging.Level;
 
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.SSLException;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;

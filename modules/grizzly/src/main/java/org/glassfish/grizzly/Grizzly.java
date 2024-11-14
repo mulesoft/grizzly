@@ -42,9 +42,12 @@ package org.glassfish.grizzly;
 
 import java.io.IOException;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.glassfish.grizzly.attributes.AttributeBuilder;
 import java.io.InputStream;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,8 +68,8 @@ public class Grizzly {
 
     private static boolean isTrackingThreadCache;
     
-    public static Logger logger(Class clazz) {
-        return Logger.getLogger(clazz.getName());
+    public static Logger logger(Class<?> clazz) {
+        return LoggerFactory.getLogger(clazz);
     }
 
     /** Reads version from properties and parses it. */

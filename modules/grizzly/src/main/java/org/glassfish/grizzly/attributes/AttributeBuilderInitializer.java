@@ -41,8 +41,8 @@ package org.glassfish.grizzly.attributes;
 
 import org.glassfish.grizzly.Grizzly;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 class AttributeBuilderInitializer {
 
@@ -66,7 +66,7 @@ class AttributeBuilderInitializer {
                             "Unable to load or create a new instance of AttributeBuilder {0}.  Cause: {1}",
                             new Object[]{className, e.getMessage()});
                 }
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE, e.toString(), e);
                 }
                 return new DefaultAttributeBuilder();

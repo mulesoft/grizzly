@@ -46,8 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.server.jmxbase.JmxEventListener;
@@ -228,7 +228,7 @@ public class HttpHandlerChain extends HttpHandler implements JmxEventListener {
         } catch (Exception t) {
             try {
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE, "Internal server error", t);
                 }
             } catch (Exception ex2) {

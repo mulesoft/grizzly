@@ -44,8 +44,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.SSLEngine;
 
 import org.glassfish.grizzly.CloseListener;

@@ -40,8 +40,8 @@
 package org.glassfish.grizzly.monitoring;
 
 import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 
 /**

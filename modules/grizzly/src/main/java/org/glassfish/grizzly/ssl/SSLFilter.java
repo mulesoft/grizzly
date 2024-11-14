@@ -45,8 +45,8 @@ import java.net.InetSocketAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Filter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.SSLEngine;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Closeable;

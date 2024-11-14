@@ -42,7 +42,7 @@ package org.glassfish.grizzly.samples.udpecho;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.UDPNIOTransport;

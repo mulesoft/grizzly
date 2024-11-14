@@ -43,7 +43,7 @@ package org.glassfish.grizzly.http.server.accesslog;
 import static java.util.logging.Level.WARNING;
 
 import java.util.Date;
-import java.util.logging.Logger;
+
 
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;

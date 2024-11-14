@@ -73,8 +73,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.security.auth.Subject;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
@@ -144,7 +144,7 @@ public class Request {
                                 Class.forName("org.glassfish.grizzly.http.server.TagLocaleParser");
                 lp = localeParserClazz.newInstance();
             } catch (Throwable e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER.isDebugEnabled()) {
                     LOGGER.log(Level.FINE, "Can't load JDK7 TagLocaleParser", e);
                 }
                 lp = new LegacyLocaleParser();

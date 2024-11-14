@@ -43,12 +43,20 @@ package org.glassfish.grizzly.nio;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+
+import org.glassfish.grizzly.AbstractReader;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.Interceptor;
+import org.glassfish.grizzly.ReadResult;
+import org.glassfish.grizzly.Reader;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueReader;
 import org.glassfish.grizzly.asyncqueue.AsyncReadQueueRecord;
 import org.glassfish.grizzly.asyncqueue.TaskQueue;
+import org.slf4j.Logger;
 
 /**
  * The {@link AsyncQueueReader} implementation, based on the Java NIO
@@ -258,7 +266,7 @@ public abstract class AbstractNIOAsyncQueueReader
             onReadFailure(nioConnection, queueRecord, e);
         } catch (Exception e) {
             String message = "Unexpected exception occurred in AsyncQueueReader";
-            LOGGER.log(Level.SEVERE, message, e);
+            LOGGER.error(message, e);
             IOException ioe = new IOException(e.getClass() + ": " + message);
             onReadFailure(nioConnection, queueRecord, ioe);
         }

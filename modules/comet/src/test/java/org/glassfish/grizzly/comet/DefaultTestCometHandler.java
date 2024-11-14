@@ -40,8 +40,8 @@
 
 package org.glassfish.grizzly.comet;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Grizzly;
 
 import java.io.IOException;

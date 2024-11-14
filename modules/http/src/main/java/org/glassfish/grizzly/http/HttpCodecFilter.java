@@ -48,8 +48,8 @@ import static org.glassfish.grizzly.utils.Charsets.ASCII_CHARSET;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;

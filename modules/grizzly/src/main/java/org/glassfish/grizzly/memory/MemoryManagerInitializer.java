@@ -42,8 +42,8 @@ package org.glassfish.grizzly.memory;
 
 import org.glassfish.grizzly.Grizzly;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import static org.glassfish.grizzly.memory.DefaultMemoryManagerFactory.DMMF_PROP_NAME;
 
@@ -106,7 +106,7 @@ class MemoryManagerInitializer {
                            "Unable to load or create a new instance of Class {0}.  Cause: {1}",
                            new Object[]{className, e.getMessage()});
             }
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.log(Level.FINE, e.toString(), e);
             }
             return null;

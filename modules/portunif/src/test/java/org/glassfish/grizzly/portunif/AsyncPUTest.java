@@ -43,7 +43,7 @@ package org.glassfish.grizzly.portunif;
 import org.glassfish.grizzly.utils.NullaryFunction;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.glassfish.grizzly.attributes.Attribute;
-import java.util.logging.Logger;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import java.util.concurrent.Executors;
