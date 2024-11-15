@@ -43,13 +43,13 @@ package org.glassfish.grizzly.servlet;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpHandlerChain;
+import org.slf4j.Logger;
 
 /**
  * Test {@link HttpHandlerChain} use of the {@link MapperTest}
@@ -296,7 +296,7 @@ public class MapperTest extends HttpServerAbstractTest {
             protected void doGet(
                     HttpServletRequest req, HttpServletResponse resp)
                     throws IOException {
-                LOGGER.log(Level.INFO, "{0} received request {1}", new Object[]{alias, req.getRequestURI()});
+                LOGGER.info("{} received request {}", alias, req.getRequestURI());
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.setHeader("Path-Info", req.getPathInfo());
                 resp.setHeader("Servlet-Path", req.getServletPath());

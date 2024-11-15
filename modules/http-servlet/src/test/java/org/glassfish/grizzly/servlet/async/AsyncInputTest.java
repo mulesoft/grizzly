@@ -48,7 +48,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.util.EnumSet;
 
-
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -60,11 +59,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.servlet.FilterRegistration;
 import org.glassfish.grizzly.servlet.HttpServerAbstractTest;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import org.slf4j.Logger;
 
 /**
  * Basic Servlet 3.1 non-blocking input tests.
@@ -223,7 +224,7 @@ public class AsyncInputTest extends HttpServerAbstractTest {
 
         @Override
         public void onError(Throwable t) {
-            LOGGER.log(Level.WARNING, "Unexpected error", t);
+            LOGGER.warn("Unexpected error", t);
             asyncCtx.complete();
         }
     }

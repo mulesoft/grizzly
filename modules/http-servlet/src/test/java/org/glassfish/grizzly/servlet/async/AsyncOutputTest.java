@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
-
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -59,6 +58,7 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.servlet.FilterRegistration;
@@ -66,6 +66,7 @@ import org.glassfish.grizzly.servlet.HttpServerAbstractTest;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 /**
  * Basic Servlet 3.1 non-blocking output tests.
@@ -317,7 +318,7 @@ public class AsyncOutputTest extends HttpServerAbstractTest {
 
         @Override
         public void onError(final Throwable t) {
-            LOGGER.log(Level.WARNING, "Unexpected error", t);
+            LOGGER.warn("Unexpected error", t);
             asyncCtx.complete();
         }
     }

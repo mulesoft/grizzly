@@ -44,8 +44,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.PortRange;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
@@ -53,7 +51,6 @@ import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 public class WebSocketServer {
-    private static final Logger logger = Grizzly.logger(WebSocketServer.class);
     private static final Object SYNC = new Object();
     private HttpServer httpServer;
 

@@ -47,7 +47,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +56,7 @@ import junit.framework.TestCase;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.Processor;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.slf4j.Logger;
 
 /**
  * {@link HttpServer} tests.
@@ -67,7 +67,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 public class HelloHttpServerTest extends TestCase {
 
     public static final int PORT = 18890 + 11;
-    private static final Logger logger = Grizzly.logger(HelloHttpServerTest.class);
+    private static final Logger LOGGER = Grizzly.logger(HelloHttpServerTest.class);
     private HttpServer httpServer;
 
     public void testNPERegression() throws IOException {
@@ -160,7 +160,7 @@ public class HelloHttpServerTest extends TestCase {
         String line;
 
         while((line = reader.readLine())!=null){
-            logger.log(Level.INFO, "received line {0}", line);
+            LOGGER.info("received line {}", line);
             sb.append(line).append("\n");
         }
 
@@ -168,7 +168,7 @@ public class HelloHttpServerTest extends TestCase {
     }
 
     private HttpURLConnection getConnection(String path) throws IOException {
-        logger.log(Level.INFO, "sending request to {0}", path);
+        LOGGER.info("sending request to {}", path);
         URL url = new URL("http", "localhost", PORT, path);
         HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
         urlConn.connect();

@@ -51,7 +51,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
@@ -72,6 +71,7 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
+import org.slf4j.Logger;
 
 /**
  * {@link HttpServer} tests.
@@ -448,7 +448,7 @@ public class HttpServerTest extends HttpServerAbstractTest {
 
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-                logger.log(Level.INFO, "{0} received request {1}", new Object[]{alias, req.getRequestURI()});
+                logger.info("{} received request {}", alias, req.getRequestURI());
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write(alias);
             }

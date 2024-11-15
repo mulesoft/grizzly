@@ -40,6 +40,12 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -52,8 +58,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
-
 import java.util.zip.Deflater;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CloseListener;
 import org.glassfish.grizzly.CloseType;
@@ -71,7 +77,6 @@ import org.glassfish.grizzly.http.HttpPacket;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.Protocol;
-
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
@@ -97,8 +102,7 @@ import org.glassfish.grizzly.spdy.frames.SynStreamFrame;
 import org.glassfish.grizzly.spdy.frames.WindowUpdateFrame;
 import org.glassfish.grizzly.utils.Futures;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * Set of tests, which have to check Spdy semantics.
@@ -559,7 +563,7 @@ public class SpdySemanticsTest extends AbstractSpdyTest {
                             // closed w/o RST frame - also ok, if the server could no
                             // extract stream-id.
                             // Print a warning just in case
-                            LOGGER.warning("No RST frame");
+                            LOGGER.warn("No RST frame");
                         }
                         assertTrue("No GoAway frame", hasGoAwayCome);
                         

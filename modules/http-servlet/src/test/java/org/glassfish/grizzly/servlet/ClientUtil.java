@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -64,6 +63,7 @@ import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.ChunkingFilter;
+import org.slf4j.Logger;
 
 /**
  * Simple helper for sending a request
@@ -122,7 +122,7 @@ public class ClientUtil {
     }
 
     private static class ClientFilter extends BaseFilter {
-        private final static Logger logger = Grizzly.logger(ClientFilter.class);
+        private final static Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final FutureImpl<HttpContent> testFuture;
 
@@ -145,13 +145,13 @@ public class ClientUtil {
             // Cast message to a HttpContent
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            LOGGER.debug("Got HTTP response chunk");
 
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            if (logger.isDebugEnabled()) {
-                logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("HTTP content size: {}", buffer.remaining());
             }
 
             if (!httpContent.isLast()) {

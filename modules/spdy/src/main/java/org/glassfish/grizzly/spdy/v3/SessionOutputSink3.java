@@ -40,11 +40,10 @@
 
 package org.glassfish.grizzly.spdy.v3;
 
-import org.glassfish.grizzly.spdy.*;
-
-
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
+import org.glassfish.grizzly.spdy.SessionOutputSink;
+import org.glassfish.grizzly.spdy.SpdySession;
+import org.glassfish.grizzly.spdy.SpdyStreamException;
 
 /**
  * Class represents an output sink associated with specific {@link SpdySession}. 
@@ -55,8 +54,6 @@ import org.glassfish.grizzly.WriteHandler;
  * @author Alexey Stashok
  */
 final class SessionOutputSink3 extends SessionOutputSink {
-    private static final Logger LOGGER = Grizzly.logger(SessionOutputSink3.class);
-    private static final Level LOGGER_LEVEL = Level.FINE;
 
     public SessionOutputSink3(final SpdySession session) {
         super(session);

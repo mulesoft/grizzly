@@ -44,10 +44,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-
-
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * Main class allowing Comet support on top of Grizzly Asynchronous Request Processing mechanism. This class is the
@@ -102,7 +102,7 @@ public class CometEngine {
     /**
      * Main logger
      */
-    protected final static Logger logger = Logger.getLogger(CometEngine.class.getName());
+    protected final static Logger LOGGER = Grizzly.logger(CometEngine.class);
     /**
      * The {@link ExecutorService} used to execute
      */
@@ -220,10 +220,8 @@ public class CometEngine {
                     try {
                         notificationHandler = notificationClass.newInstance();
                     } catch (Throwable t) {
-                        if (logger.isLoggable(Level.SEVERE)) {
-                            logger.log(Level.SEVERE,
-                                LogMessages.SEVERE_GRIZZLY_COMET_ENGINE_INVALID_NOTIFICATION_HANDLER_ERROR(
-                                    notificationClass.getName()), t);
+                        if (LOGGER.isErrorEnabled()) {
+                            LOGGER.error(LogMessages.SEVERE_GRIZZLY_COMET_ENGINE_INVALID_NOTIFICATION_HANDLER_ERROR(notificationClass.getName()), t);
                         }
                         notificationHandler = new DefaultNotificationHandler();
                     }
@@ -293,6 +291,6 @@ public class CometEngine {
      * Return the current logger.
      */
     public static Logger logger() {
-        return logger;
+        return LOGGER;
     }
 }

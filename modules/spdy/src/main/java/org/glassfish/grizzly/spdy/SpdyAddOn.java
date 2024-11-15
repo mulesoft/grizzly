@@ -40,6 +40,15 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_INITIAL_WINDOW_SIZE;
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_MAX_CONCURRENT_STREAMS;
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_MAX_FRAME_SIZE;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
+import javax.net.ssl.SSLEngine;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.Transport;
@@ -49,21 +58,13 @@ import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.http.server.AddOn;
 import org.glassfish.grizzly.http.server.HttpServerFilter;
 import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.npn.ServerSideNegotiator;
 import org.glassfish.grizzly.ssl.SSLBaseFilter;
 import org.glassfish.grizzly.ssl.SSLConnectionContext;
 import org.glassfish.grizzly.ssl.SSLFilter;
 import org.glassfish.grizzly.ssl.SSLUtils;
-
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-
-
-import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-
-import javax.net.ssl.SSLEngine;
-
-import static org.glassfish.grizzly.spdy.Constants.*;
+import org.slf4j.Logger;
 
 /**
  * FilterChain after being processed by SpdyAddOn:
@@ -116,12 +117,12 @@ public class SpdyAddOn implements AddOn {
         
         if (mode == SpdyMode.NPN) {
             if (!networkListener.isSecure()) {
-                LOGGER.warning("Can not configure NPN (Next Protocol Negotiation) mode on non-secured NetworkListener. SPDY support will not be enabled.");
+                LOGGER.warn("Can not configure NPN (Next Protocol Negotiation) mode on non-secured NetworkListener. SPDY support will not be enabled.");
                 return;
             }
             
             if (!NextProtoNegSupport.isEnabled()) {
-                LOGGER.warning("TLS NPN (Next Protocol Negotiation) support is not available. SPDY support will not be enabled.");
+                LOGGER.warn("TLS NPN (Next Protocol Negotiation) support is not available. SPDY support will not be enabled.");
                 return;
             }
             
@@ -282,8 +283,8 @@ public class SpdyAddOn implements AddOn {
         @Override
         public LinkedHashSet<String> supportedProtocols(final SSLEngine engine) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "NPN supportedProtocols. Connection={0} sslEngine={1} supportedProtocols={2}",
-                        new Object[]{NextProtoNegSupport.getConnection(engine), engine, supportedProtocols});
+                LOGGER.debug("NPN supportedProtocols. Connection={} sslEngine={} supportedProtocols={}",
+                             NextProtoNegSupport.getConnection(engine), engine, supportedProtocols);
             }
             return supportedProtocols;
         }
@@ -293,8 +294,8 @@ public class SpdyAddOn implements AddOn {
 
             final Connection connection = NextProtoNegSupport.getConnection(engine);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "NPN onSuccess. Connection={0} sslEngine={1} protocol={2}",
-                        new Object[]{connection, engine, protocol});
+                LOGGER.debug("NPN onSuccess. Connection={} sslEngine={} protocol={}",
+                             connection, engine, protocol);
             }
 
             final SpdyVersion spdyVersion = SpdyVersion.fromString(protocol);
@@ -314,8 +315,7 @@ public class SpdyAddOn implements AddOn {
             final Connection connection = NextProtoNegSupport.getConnection(engine);
             // Default to the transport FilterChain.
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "NPN onNoDeal. Connection={0} sslEngine={1}",
-                        new Object[]{connection, engine});
+                LOGGER.debug("NPN onNoDeal. Connection={} sslEngine={}", connection, engine);
             }
             // TODO: Should we consider making this behavior configurable?
             connection.closeSilently();

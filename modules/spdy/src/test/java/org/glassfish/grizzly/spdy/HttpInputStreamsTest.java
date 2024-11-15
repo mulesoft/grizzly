@@ -40,6 +40,13 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -47,7 +54,6 @@ import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -75,9 +81,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * Test cases to validate the behaviors of {@link org.glassfish.grizzly.http.io.NIOInputStream} and
@@ -1369,7 +1373,7 @@ public class HttpInputStreamsTest extends AbstractSpdyTest {
         public NextAction handleConnect(FilterChainContext ctx)
               throws IOException {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "Connected... Sending the request: {0}", request);
+                LOGGER.debug("Connected... Sending the request: {}", request);
             }
 
             if (HttpContent.isContent(request) &&
@@ -1410,7 +1414,7 @@ public class HttpInputStreamsTest extends AbstractSpdyTest {
             final Buffer buffer = httpContent.getContent();
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "HTTP content size: {0}, isLast: {1}", new Object[] {buffer.remaining(), httpContent.isLast()});
+                LOGGER.debug("HTTP content size: {}, isLast: {}", buffer.remaining(), httpContent.isLast());
             }
 
             if (httpContent.isLast()) {

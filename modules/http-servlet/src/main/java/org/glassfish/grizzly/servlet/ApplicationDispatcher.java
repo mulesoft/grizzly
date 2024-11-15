@@ -58,15 +58,15 @@
 
 package org.glassfish.grizzly.servlet;
 
+import static javax.servlet.DispatcherType.INCLUDE;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-
 import javax.servlet.DispatcherType;
-import static javax.servlet.DispatcherType.INCLUDE;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -76,8 +76,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.ServletResponseWrapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.util.Globals;
+import org.slf4j.Logger;
 
 /**
  * Standard implementation of <code>RequestDispatcher</code> that allows a
@@ -224,9 +226,9 @@ final class ApplicationDispatcher implements RequestDispatcher {
         this.queryString = queryString;
         this.name = name;
 
-        if( LOGGER.isLoggable( Level.FINE ) )
-            LOGGER.log(Level.FINE, "servletPath={0}, pathInfo={1}, queryString={2}, name={3}",
-                    new Object[]{this.servletPath, this.pathInfo, queryString, this.name});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("servletPath={}, pathInfo={}, queryString={}, name={}", this.servletPath, this.pathInfo, queryString, this.name);
+        }
     }
     
     /**
@@ -351,16 +353,18 @@ final class ApplicationDispatcher implements RequestDispatcher {
             // Reset any output that has been buffered, but keep
             // headers/cookies
             if( response.isCommitted() ) {
-                if( LOGGER.isLoggable( Level.FINE ) )
-                    LOGGER.fine( "  Forward on committed response --> ISE" );
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("  Forward on committed response --> ISE" );
+                }
                 throw new IllegalStateException( "Cannot forward after response has been committed" );
             }
 
             try {
                 response.resetBuffer();
             } catch (IllegalStateException e) {
-                if(LOGGER.isLoggable( Level.FINE))
-                    LOGGER.log(Level.FINE, "Forward resetBuffer() returned ISE: {0}", e);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Forward resetBuffer() returned ISE: {}", e, e);
+                }
                 throw e;
             }
         }

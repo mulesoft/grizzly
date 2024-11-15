@@ -45,7 +45,6 @@ import java.net.InetAddress;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.http.HttpRequestPacket;
@@ -54,6 +53,7 @@ import org.glassfish.grizzly.http.util.BufferChunk;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.ssl.SSLSupport;
 import org.glassfish.grizzly.utils.BufferInputStream;
+import org.slf4j.Logger;
 
 /**
  * {@link HttpRequestPacket} implementation, which also contains AJP
@@ -114,7 +114,7 @@ public final class AjpHttpRequest extends HttpRequestPacket {
                     jsseCerts = new X509Certificate[1];
                     jsseCerts[0] = cert;
                 } catch (java.security.cert.CertificateException e) {
-                    LOGGER.log(Level.SEVERE, "Certificate convertion failed", e);
+                    LOGGER.error("Certificate convertion failed", e);
                     return null;
                 }
 
@@ -192,7 +192,7 @@ public final class AjpHttpRequest extends HttpRequestPacket {
                         getHostName());
             } catch (IOException iex) {
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "Unable to resolve {0}", remoteAddr());
+                    LOGGER.trace("Unable to resolve {}", remoteAddr());
                 }
             }
         }

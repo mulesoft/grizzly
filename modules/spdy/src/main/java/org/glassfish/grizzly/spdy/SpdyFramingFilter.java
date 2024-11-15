@@ -43,8 +43,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.EmptyCompletionHandler;
@@ -62,6 +60,7 @@ import org.glassfish.grizzly.spdy.frames.GoAwayFrame;
 import org.glassfish.grizzly.spdy.frames.OversizedFrame;
 import org.glassfish.grizzly.spdy.frames.SpdyFrame;
 import org.glassfish.grizzly.utils.NullaryFunction;
+import org.slf4j.Logger;
 
 /**
  * The {@link Filter} responsible for transforming SPDY {@link SpdyFrame}s
@@ -73,7 +72,6 @@ public class SpdyFramingFilter extends BaseFilter {
     private static final int DEFAULT_MAX_FRAME_LENGTH = 1 << 24;
     
     private static final Logger LOGGER = Grizzly.logger(SpdyFramingFilter.class);
-    private static final Level LOGGER_LEVEL = Level.FINE;
 
     static final int HEADER_LEN = 8;
     
@@ -128,10 +126,9 @@ public class SpdyFramingFilter extends BaseFilter {
                 return ctx.getStopAction(remainder);
             }
 
-            final boolean logit = LOGGER.isLoggable(LOGGER_LEVEL);
+            final boolean logit = LOGGER.isDebugEnabled();
             if (logit) {
-                LOGGER.log(LOGGER_LEVEL, "Rx [1]: connection={0}, frame={1}",
-                        new Object[] {connection, frame});
+                LOGGER.debug("Rx [1]: connection={}, frame={}", connection, frame);
             }
 
             if (frame.isService()) {
@@ -160,8 +157,7 @@ public class SpdyFramingFilter extends BaseFilter {
                 }
 
                 if (logit) {
-                    LOGGER.log(LOGGER_LEVEL, "Rx [2]: connection={0}, frame={1}",
-                            new Object[] {connection, frame});
+                    LOGGER.debug("Rx [2]: connection={}, frame={}", connection, frame);
                 }
 
                 frameList.add(frame);
@@ -213,9 +209,8 @@ public class SpdyFramingFilter extends BaseFilter {
     public NextAction handleWrite(final FilterChainContext ctx) throws IOException {
         final Object message = ctx.getMessage();
 
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
-            LOGGER.log(LOGGER_LEVEL, "Tx: connection={0}, frame={1}",
-                    new Object[]{ctx.getConnection(), message});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Tx: connection={}, frame={}", ctx.getConnection(), message);
         }
 
         final MemoryManager memoryManager = ctx.getMemoryManager();
@@ -328,9 +323,8 @@ public class SpdyFramingFilter extends BaseFilter {
                 org.glassfish.grizzly.spdy.frames.SpdyHeader.wrap(message);
         final OversizedFrame oversizedFrame = OversizedFrame.create(spdyHeader);
         
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
-            LOGGER.log(LOGGER_LEVEL, "Rx: oversized frame! connection={0}, header={1}",
-                    new Object[]{ctx.getConnection(), spdyHeader});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Rx: oversized frame! connection={}, header={}", ctx.getConnection(), spdyHeader);
         }
         
         return oversizedFrame;

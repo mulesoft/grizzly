@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-
 import org.glassfish.grizzly.comet.CometContext;
 import org.glassfish.grizzly.comet.CometEvent;
 import org.glassfish.grizzly.comet.CometHandler;
@@ -65,7 +64,6 @@ import org.glassfish.grizzly.http.server.Response;
  * @author Gustav Trede
  */
 public abstract class DefaultConcurrentCometHandler<E> implements CometHandler<E> {
-    protected final static Logger logger = Logger.getLogger(DefaultConcurrentCometHandler.class.getName());
     /**
      * used for preventing the worker threads from the executor event queue from adding events to the comet handlers
      * local queue or starting IO logic after shut down.<br>

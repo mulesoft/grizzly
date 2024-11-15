@@ -40,17 +40,17 @@
 
 package org.glassfish.grizzly.portunif.finders;
 
-
-
+import static org.glassfish.grizzly.ssl.SSLUtils.getSSLPacketSize;
 
 import javax.net.ssl.SSLException;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.portunif.PUContext;
 import org.glassfish.grizzly.portunif.ProtocolFinder;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
-import static org.glassfish.grizzly.ssl.SSLUtils.*;
+import org.slf4j.Logger;
 
 /**
  *
@@ -76,7 +76,7 @@ public class SSLProtocolFinder implements ProtocolFinder {
                 return Result.NEED_MORE_DATA;
             }
         } catch (SSLException e) {
-            LOGGER.log(Level.FINE, "Packet header is not SSL", e);
+            LOGGER.debug("Packet header is not SSL", e);
             return Result.NOT_FOUND;
         }
 

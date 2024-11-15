@@ -46,20 +46,20 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-
-
+import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.Closeable;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.GenericCloseListener;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ReadHandler;
+import org.glassfish.grizzly.http.io.NIOInputStream;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.TimeoutHandler;
-import org.glassfish.grizzly.http.io.NIOInputStream;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * The main object used by {@link CometHandler} and Servlet to push information amongst suspended request/response. The
@@ -105,7 +105,7 @@ public class CometContext<E> {
     protected final static String ALREADY_REMOVED = "CometHandler already been removed or invalid.";
     private final static String COMET_NOT_ENABLED = "Make sure you have enabled Comet or make sure the thread"
         + " invoking that method is the same as the Servlet.service() thread.";
-    protected final static Logger LOGGER = Logger.getLogger(CometContext.class.getName());
+    protected final static Logger LOGGER = Grizzly.logger(CometContext.class);
     private final Map<Object,Object> attributes;
       
     protected final static ThreadLocal<Request> REQUEST_LOCAL = new ThreadLocal<Request>();
@@ -516,7 +516,7 @@ public class CometContext<E> {
         try {
             handler.onEvent(new CometEvent(CometEvent.Type.READ));
         } catch (IOException e) {
-            LOGGER.log(Level.FINE, e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
     }
 
@@ -537,7 +537,7 @@ public class CometContext<E> {
             try {
                 handler.onInterrupt(eventInterrupt);
             } catch (IOException e) {
-                LOGGER.log(Level.FINE, "CometCompletionHandler.failed", e.getMessage());
+                LOGGER.debug("CometCompletionHandler.failed", e);
             }
         }
 
@@ -546,7 +546,7 @@ public class CometContext<E> {
             try {
                 handler.onInterrupt(eventInterrupt);
             } catch (IOException e) {
-                LOGGER.log(Level.FINE, "CometCompletionHandler.completed", e.getMessage());
+                LOGGER.debug("CometCompletionHandler.completed", e);
             }
         }
 
@@ -574,7 +574,7 @@ public class CometContext<E> {
             try {
                 handler.onInterrupt(eventInterrupt);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage());
+                LOGGER.error(e.getMessage());
                 throw new RuntimeException(e.getMessage(), e);
             }
             return true;

@@ -57,7 +57,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.glassfish.grizzly.Grizzly;
+
 import org.glassfish.grizzly.servlet.HttpServerAbstractTest;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
@@ -66,8 +66,7 @@ import org.glassfish.grizzly.servlet.WebappContext;
  * Basic {@link AsyncContext} tests.
  */
 public class AsyncDispatchTest extends HttpServerAbstractTest {
-    private static final Logger LOGGER = Grizzly.logger(AsyncDispatchTest.class);
-    
+
     public static final int PORT = 18890 + 16;
 
     public void testAsyncContextDispatchZeroArg() throws IOException {

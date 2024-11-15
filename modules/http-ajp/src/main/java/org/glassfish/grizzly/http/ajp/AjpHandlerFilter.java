@@ -45,7 +45,6 @@ import java.security.SecureRandom;
 import java.util.Properties;
 import java.util.Queue;
 
-
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -64,6 +63,7 @@ import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * Filter is working as Codec between Ajp and Http packets.
@@ -477,8 +477,7 @@ public class AjpHandlerFilter extends BaseFilter {
             try {
                 handler.onShutdown(connection);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                        "Exception during ShutdownHandler execution", e);
+                LOGGER.warn("Exception during ShutdownHandler execution", e);
             }
         }
 

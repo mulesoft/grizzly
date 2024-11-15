@@ -49,7 +49,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.glassfish.grizzly.Grizzly;
+
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.http.Cookie;
 import org.glassfish.grizzly.http.HttpRequestPacket;
@@ -62,7 +62,6 @@ import org.glassfish.grizzly.websockets.glassfish.GlassfishSupport;
 
 @SuppressWarnings({"StringContatenationInLoop"})
 public class DefaultWebSocket extends SimpleWebSocket {
-    private static final Logger LOGGER = Grizzly.logger(DefaultWebSocket.class);
 
     protected final HttpServletRequest servletRequest;
 

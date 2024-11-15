@@ -57,7 +57,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-
 import javax.net.SocketFactory;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContextEvent;
@@ -66,6 +65,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import junit.framework.AssertionFailedError;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.Request;
@@ -73,6 +73,7 @@ import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.utils.Futures;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 
 /**
@@ -404,7 +405,7 @@ public class BasicServletTest extends HttpServerAbstractTest {
                     assertEquals(param1Value, req.getParameter(param1Name));
                     assertEquals(param2Value, req.getParameter(param2Name));
                 } catch (Throwable t) {
-                    LOGGER.log(Level.SEVERE, "Error", t);
+                    LOGGER.error("Error", t);
                     resp.sendError(500, t.getMessage());
                 }
                 
@@ -521,7 +522,7 @@ public class BasicServletTest extends HttpServerAbstractTest {
             protected void doGet(
                     HttpServletRequest req, HttpServletResponse resp)
                     throws IOException {
-                LOGGER.log(Level.INFO, "{0} received request {1}", new Object[]{alias, req.getRequestURI()});
+                LOGGER.info("{} received request {}", alias, req.getRequestURI());
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.setHeader("Content-Type", header);
                 resp.setHeader("Path-Info", req.getPathInfo());

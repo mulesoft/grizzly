@@ -57,6 +57,7 @@ import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HttpCodecUtils;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
 
 /**
  * SpdyFrames -> HTTP Packet decoder utils.
@@ -224,9 +225,9 @@ class SpdyDecoderUtils {
             }
         }
 
-        LOGGER.log(Level.FINE, "Skipping unknown service header[{0}={1}",
-                new Object[]{new String(headersArray, nameStart - 1, nameSize, Charsets.ASCII_CHARSET),
-                    new String(headersArray, valueStart, valueSize, Charsets.ASCII_CHARSET)});
+        LOGGER.debug("Skipping unknown service header[{}={}",
+                     new String(headersArray, nameStart - 1, nameSize, Charsets.ASCII_CHARSET),
+                     new String(headersArray, valueStart, valueSize, Charsets.ASCII_CHARSET));
 
         return valueEnd;
     }
@@ -303,10 +304,9 @@ class SpdyDecoderUtils {
             }
         }
 
-        LOGGER.log(Level.FINE, "Skipping unknown service header[{0}={1}",
-                new Object[] {
-                    buffer.toStringContent(Charsets.ASCII_CHARSET, nameStart - 1, nameSize),
-                    buffer.toStringContent(Charsets.ASCII_CHARSET, valueStart, valueSize)});
+        LOGGER.debug("Skipping unknown service header[{}={}]",
+                     buffer.toStringContent(Charsets.ASCII_CHARSET, nameStart - 1, nameSize),
+                     buffer.toStringContent(Charsets.ASCII_CHARSET, valueStart, valueSize));
 
         return valueEnd;
     }
@@ -406,9 +406,9 @@ class SpdyDecoderUtils {
             }
         }
 
-        LOGGER.log(Level.FINE, "Skipping unknown service header[{0}={1}",
-                new Object[]{new String(headersArray, nameStart - 1, nameSize, Charsets.ASCII_CHARSET),
-                    new String(headersArray, valueStart, valueSize, Charsets.ASCII_CHARSET)});
+        LOGGER.debug("Skipping unknown service header[{}={}]",
+                     new String(headersArray, nameStart - 1, nameSize, Charsets.ASCII_CHARSET),
+                     new String(headersArray, valueStart, valueSize, Charsets.ASCII_CHARSET));
 
         return valueEnd;
     }
@@ -508,10 +508,9 @@ class SpdyDecoderUtils {
             }
         }
 
-        LOGGER.log(Level.FINE, "Skipping unknown service header[{0}={1}",
-                new Object[] {
-                    buffer.toStringContent(Charsets.ASCII_CHARSET, nameStart - 1, nameSize),
-                    buffer.toStringContent(Charsets.ASCII_CHARSET, valueStart, valueSize)});
+        LOGGER.debug("Skipping unknown service header[{}={}]",
+                     buffer.toStringContent(Charsets.ASCII_CHARSET, nameStart - 1, nameSize),
+                     buffer.toStringContent(Charsets.ASCII_CHARSET, valueStart, valueSize));
 
         return valueEnd;
     }
@@ -577,9 +576,9 @@ class SpdyDecoderUtils {
             }
         }
 
-        LOGGER.log(Level.FINE, "Skipping unknown service header[{0}={1}",
-                new Object[]{new String(headersArray, position, nameSize, Charsets.ASCII_CHARSET),
-                    new String(headersArray, valueStart, valueSize, Charsets.ASCII_CHARSET)});
+        LOGGER.debug("Skipping unknown service header[{}={}]",
+                     new String(headersArray, position, nameSize, Charsets.ASCII_CHARSET),
+                     new String(headersArray, valueStart, valueSize, Charsets.ASCII_CHARSET));
 
         return valueEnd;
     }
@@ -640,9 +639,9 @@ class SpdyDecoderUtils {
             }
         }
 
-        LOGGER.log(Level.FINE, "Skipping unknown service header[{0}={1}",
-                new Object[]{buffer.toStringContent(Charsets.ASCII_CHARSET, position, nameSize),
-                             buffer.toStringContent(Charsets.ASCII_CHARSET, valueStart, valueSize)});
+        LOGGER.debug("Skipping unknown service header[{}={}]",
+                     buffer.toStringContent(Charsets.ASCII_CHARSET, position, nameSize),
+                     buffer.toStringContent(Charsets.ASCII_CHARSET, valueStart, valueSize));
 
         return valueEnd;
     }

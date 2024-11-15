@@ -39,6 +39,22 @@
  */
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.spdy.Constants.CTRL_FRAMES_WITH_STREAM_ID;
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_INITIAL_WINDOW_SIZE;
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_MAX_CONCURRENT_STREAMS;
+import static org.glassfish.grizzly.spdy.Constants.FRAME_TOO_LARGE_TERMINATION;
+import static org.glassfish.grizzly.spdy.Constants.IN_FIN_TERMINATION;
+import static org.glassfish.grizzly.spdy.Constants.OUT_FIN_TERMINATION;
+import static org.glassfish.grizzly.spdy.Constants.SPDY_VERSION;
+import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.processSynReplyHeadersArray;
+import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.processSynReplyHeadersBuffer;
+import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.processSynStreamHeadersArray;
+import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.processSynStreamHeadersBuffer;
+import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.processUSynStreamHeadersArray;
+import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.processUSynStreamHeadersBuffer;
+import static org.glassfish.grizzly.spdy.frames.SettingsFrame.SETTINGS_INITIAL_WINDOW_SIZE;
+import static org.glassfish.grizzly.spdy.frames.SettingsFrame.SETTINGS_MAX_CONCURRENT_STREAMS;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,15 +64,19 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.net.ssl.SSLEngine;
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.IOEvent;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.FilterChainContext.TransportContext;
 import org.glassfish.grizzly.filterchain.FilterChainEvent;
 import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.http.FixedLengthTransferEncoding;
 import org.glassfish.grizzly.http.HttpBaseFilter;
 import org.glassfish.grizzly.http.HttpContent;
@@ -81,8 +101,10 @@ import org.glassfish.grizzly.spdy.frames.DataFrame;
 import org.glassfish.grizzly.spdy.frames.GoAwayFrame;
 import org.glassfish.grizzly.spdy.frames.HeadersFrame;
 import org.glassfish.grizzly.spdy.frames.HeadersProviderFrame;
+import org.glassfish.grizzly.spdy.frames.OversizedFrame;
 import org.glassfish.grizzly.spdy.frames.PingFrame;
 import org.glassfish.grizzly.spdy.frames.RstStreamFrame;
+import org.glassfish.grizzly.spdy.frames.ServiceFrame;
 import org.glassfish.grizzly.spdy.frames.SettingsFrame;
 import org.glassfish.grizzly.spdy.frames.SettingsFrame.SettingsFrameBuilder;
 import org.glassfish.grizzly.spdy.frames.SpdyFrame;
@@ -90,18 +112,7 @@ import org.glassfish.grizzly.spdy.frames.SynReplyFrame;
 import org.glassfish.grizzly.spdy.frames.SynStreamFrame;
 import org.glassfish.grizzly.spdy.frames.WindowUpdateFrame;
 import org.glassfish.grizzly.ssl.SSLFilter;
-
-import javax.net.ssl.SSLEngine;
-import org.glassfish.grizzly.EmptyCompletionHandler;
-import org.glassfish.grizzly.IOEvent;
-import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.spdy.frames.OversizedFrame;
-import org.glassfish.grizzly.spdy.frames.ServiceFrame;
-
-import static org.glassfish.grizzly.spdy.SpdyDecoderUtils.*;
-import static org.glassfish.grizzly.spdy.Constants.*;
-import static org.glassfish.grizzly.spdy.frames.SettingsFrame.SETTINGS_INITIAL_WINDOW_SIZE;
-import static org.glassfish.grizzly.spdy.frames.SettingsFrame.SETTINGS_MAX_CONCURRENT_STREAMS;
+import org.slf4j.Logger;
 
 /**
  * The {@link org.glassfish.grizzly.filterchain.Filter} serves as a bridge
@@ -236,8 +247,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                     processInFrame(spdySession, ctx, frame);
                 } catch (SpdyStreamException e) {
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.log(Level.FINE, "SpdyStreamException occurred on connection=" +
-                                ctx.getConnection() + " during SpdyFrame processing", e);
+                        LOGGER.debug("SpdyStreamException occurred on connection={} during SpdyFrame processing", ctx.getConnection(), e);
                     }
                     
                     final int streamId = e.getStreamId();
@@ -258,8 +268,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                             processInFrame(spdySession, ctx, framesList.get(i));
                         } catch (SpdyStreamException e) {
                             if (LOGGER.isDebugEnabled()) {
-                                LOGGER.log(Level.FINE, "SpdyStreamException occurred on connection=" +
-                                        ctx.getConnection() + " during SpdyFrame processing", e);
+                                LOGGER.debug("SpdyStreamException occurred on connection={} during SpdyFrame processing", ctx.getConnection(), e);
                             }
                             
                             final int streamId = e.getStreamId();
@@ -286,8 +295,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
             streamsToFlushInput.clear();
         } catch (SpdySessionException e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "SpdySessionException occurred on connection=" +
-                        ctx.getConnection() + " during SpdyFrame processing", e);
+                LOGGER.debug("SpdySessionException occurred on connection={} during SpdyFrame processing", ctx.getConnection(), e);
             }
             
             sendGoAwayAndClose(ctx, spdySession, e.getStreamId(),
@@ -295,8 +303,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
             return ctx.getSuspendAction();
         } catch (IOException e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "IOException occurred on connection=" +
-                        ctx.getConnection() + " during SpdyFrame processing", e);
+                LOGGER.debug("IOException occurred on connection={} during SpdyFrame processing", ctx.getConnection(), e);
             }
             
             sendGoAwayAndClose(ctx, spdySession, -1,
@@ -534,11 +541,11 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
             case HeadersFrame.TYPE:
             case CredentialFrame.TYPE: // Will remain unimplemented for the time being.
             default: {
-                LOGGER.log(Level.WARNING, "Unknown or unhandled control-frame [version={0} type={1} flags={2} length={3}]",
-                        new Object[]{frame.getHeader().getVersion(),
-                                     frame.getHeader().getType(),
-                                     frame.getHeader().getFlags(),
-                                     frame.getHeader().getLength()});
+                LOGGER.warn("Unknown or unhandled control-frame [version={} type={} flags={} length={}]",
+                            frame.getHeader().getVersion(),
+                            frame.getHeader().getType(),
+                            frame.getHeader().getFlags(),
+                            frame.getHeader().getLength());
             }
         }
     }
@@ -563,7 +570,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                     sb.append("\nStream id=")
                             .append(streamId)
                             .append(" was not found. Ignoring the message.");
-                    LOGGER.fine(sb.toString());
+                    LOGGER.debug(sb.toString());
                 }
             }
         }
@@ -1257,8 +1264,8 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
         if (spdyStream == null) {
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "Data frame received for non-existent stream: connection={0}, frame={1}, stream={2}",
-                        new Object[]{context.getConnection(), dataFrame, dataFrame.getHeader().getStreamId()});
+                LOGGER.debug("Data frame received for non-existent stream: connection={}, frame={}, stream={}",
+                             context.getConnection(), dataFrame, dataFrame.getHeader().getStreamId());
             }
 
             final int dataSize = data.remaining();
@@ -1333,8 +1340,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
                         
                         pushStream.getOutputSink().writeDownStream(source, ctx);
                     } catch (Exception e) {
-                        LOGGER.log(Level.FINE,
-                                "Can not push: " + entry.getKey(), e);
+                        LOGGER.debug("Can not push: {}", entry.getKey(), e);
                     }
                 }
             } finally {
@@ -1352,8 +1358,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
         @Override
         public boolean wantNegotiate(final SSLEngine engine) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "NPN wantNegotiate. Connection={0}",
-                        new Object[]{NextProtoNegSupport.getConnection(engine)});
+                LOGGER.debug("NPN wantNegotiate. Connection={}", NextProtoNegSupport.getConnection(engine));
             }
             return true;
         }
@@ -1362,8 +1367,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
         public String selectProtocol(final SSLEngine engine,
                                      final LinkedHashSet<String> protocols) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "NPN selectProtocol. Connection={0}, protocols={1}",
-                        new Object[]{NextProtoNegSupport.getConnection(engine), protocols});
+                LOGGER.debug("NPN selectProtocol. Connection={}, protocols={}", NextProtoNegSupport.getConnection(engine), protocols);
             }
             
             for (SpdyVersion version : supportedSpdyVersions) {
@@ -1383,8 +1387,7 @@ public class SpdyHandlerFilter extends HttpBaseFilter {
         @Override
         public void onNoDeal(final SSLEngine engine) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE, "NPN onNoDeal. Connection={0}",
-                        new Object[]{NextProtoNegSupport.getConnection(engine)});
+                LOGGER.debug("NPN onNoDeal. Connection={}", NextProtoNegSupport.getConnection(engine));
             }
         }
     }

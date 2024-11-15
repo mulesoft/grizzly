@@ -43,8 +43,6 @@ package org.glassfish.grizzly.websockets;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-
-
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -59,6 +57,7 @@ import org.glassfish.grizzly.http.HttpHeader;
 import org.glassfish.grizzly.http.HttpServerFilter;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.IdleTimeoutFilter;
+import org.slf4j.Logger;
 
 /**
  * WebSocket {@link Filter} implementation, which supposed to be placed into a {@link FilterChain} right after HTTP
@@ -154,8 +153,7 @@ public abstract class BaseWebSocketFilter extends BaseFilter {
         final WebSocketHolder holder = WebSocketHolder.get(connection);
         WebSocket ws = getWebSocket(connection);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.log(Level.FINE, "handleRead websocket: {0} content-size={1} headers=\n{2}",
-                new Object[]{ws, message.getContent().remaining(), header});
+            LOGGER.debug("handleRead websocket: {} content-size={} headers=\n{}", ws, message.getContent().remaining(), header);
         }
         if (ws == null || !ws.isConnected()) {
             // If websocket is null - it means either non-websocket Connection, or websocket with incomplete handshake
@@ -170,8 +168,7 @@ public abstract class BaseWebSocketFilter extends BaseFilter {
                 return handleHandshake(ctx, message);
             } catch (HandshakeException e) {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE, "Handshake error. Code: {0} Msg:{1}",
-                        new Object[]{e.getCode(), e.getMessage()});
+                    LOGGER.debug("Handshake error. Code: {} Msg:{}", e.getCode(), e.getMessage());
                 }
 
                 onHandshakeFailure(connection, e);

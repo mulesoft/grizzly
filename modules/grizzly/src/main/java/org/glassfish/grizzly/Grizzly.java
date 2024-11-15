@@ -72,6 +72,10 @@ public class Grizzly {
         return LoggerFactory.getLogger(clazz);
     }
 
+    public static Logger logger(String name) {
+        return LoggerFactory.getLogger(name);
+    }
+
     /** Reads version from properties and parses it. */
     static {
         InputStream is = null;

@@ -49,11 +49,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
-
 import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.Processor;
 import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.Processor;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.http.HttpClientFilter;
@@ -62,9 +61,10 @@ import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 public class WebSocketClient extends SimpleWebSocket {
-    private static final Logger logger = Logger.getLogger(Constants.WEBSOCKET);
+    private static final Logger LOGGER = Grizzly.logger(Constants.WEBSOCKET);
     private final Version version;
     private final URI address;
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -196,7 +196,7 @@ public class WebSocketClient extends SimpleWebSocket {
                 try {
                     transport.shutdownNow();
                 } catch (IOException e) {
-                    logger.log(Level.INFO, e.getMessage(), e);
+                    LOGGER.info(e.getMessage(), e);
                 }
             }
         }
