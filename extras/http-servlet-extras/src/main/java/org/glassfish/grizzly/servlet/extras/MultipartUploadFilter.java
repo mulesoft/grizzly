@@ -41,27 +41,6 @@
 package org.glassfish.grizzly.servlet.extras;
 
 
-import org.glassfish.grizzly.Buffer;
-import org.glassfish.grizzly.EmptyCompletionHandler;
-import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.ReadHandler;
-import org.glassfish.grizzly.http.multipart.ContentDisposition;
-import org.glassfish.grizzly.http.multipart.MultipartEntry;
-import org.glassfish.grizzly.http.multipart.MultipartEntryHandler;
-import org.glassfish.grizzly.http.multipart.MultipartScanner;
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.http.io.NIOInputStream;
-import org.glassfish.grizzly.http.io.NIOReader;
-import org.glassfish.grizzly.http.util.Parameters;
-import org.glassfish.grizzly.memory.ByteBufferArray;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -72,9 +51,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.ReadHandler;
+import org.glassfish.grizzly.http.io.NIOInputStream;
+import org.glassfish.grizzly.http.io.NIOReader;
+import org.glassfish.grizzly.http.multipart.ContentDisposition;
+import org.glassfish.grizzly.http.multipart.MultipartEntry;
+import org.glassfish.grizzly.http.multipart.MultipartEntryHandler;
+import org.glassfish.grizzly.http.multipart.MultipartScanner;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.util.Parameters;
+import org.glassfish.grizzly.memory.ByteBufferArray;
 import org.glassfish.grizzly.servlet.HttpServletRequestImpl;
 import org.glassfish.grizzly.servlet.HttpServletResponseImpl;
+import org.slf4j.Logger;
 
 /**
  * <p>
@@ -165,7 +165,7 @@ public class MultipartUploadFilter implements Filter {
                         try {
                             filterChain.doFilter(servletRequest, servletResponse);
                         } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, e.toString(), e);
+                            LOGGER.error(e.toString(), e);
                         } finally {
                             if (deleteAfterRequestEnd) {
                                 clean(dir);
@@ -177,7 +177,7 @@ public class MultipartUploadFilter implements Filter {
                     @Override
                     public void failed(Throwable throwable) {
                         // if failed - log the error
-                        LOGGER.log(Level.SEVERE, "Upload failed.", throwable);
+                        LOGGER.error("Upload failed.", throwable);
                         // Complete the asynchronous HTTP request processing.
                         response.resume();
                     }
@@ -220,8 +220,7 @@ public class MultipartUploadFilter implements Filter {
             if (f.length == 0) {
                 if (!file.delete()) {
                     if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warning(String.format("Unable to delete directory %s.  Will attempt deletion again upon JVM exit.",
-                                file.getAbsolutePath()));
+                        LOGGER.warn("Unable to delete directory {}.  Will attempt deletion again upon JVM exit.", file.getAbsolutePath());
                     }
                 }
             } else {
@@ -232,8 +231,7 @@ public class MultipartUploadFilter implements Filter {
         } else {
             if (!file.delete()) {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warning(String.format("Unable to delete file %s.  Will attempt deletion again upon JVM exit.",
-                                   file.getAbsolutePath()));
+                    LOGGER.warn("Unable to delete file {}.  Will attempt deletion again upon JVM exit.", file.getAbsolutePath());
                 }
                 file.deleteOnExit();
             }
@@ -285,8 +283,7 @@ public class MultipartUploadFilter implements Filter {
                 // Get the NIOInputStream to read the multipart entry content
                 final NIOInputStream inputStream = multipartEntry.getNIOInputStream();
 
-                LOGGER.log(Level.FINE, "Uploading file {0}",
-                        new Object[]{filename});
+                LOGGER.debug("Uploading file {}", filename);
 
                 // start asynchronous non-blocking content read.
                 inputStream.notifyAvailable(
@@ -394,7 +391,7 @@ public class MultipartUploadFilter implements Filter {
          */
         @Override
         public void onError(Throwable t) {
-            LOGGER.log(Level.WARNING, String.format("Upload of file %s failed.", filename), t);
+            LOGGER.warn("Upload of file {} failed.", filename, t);
             // finish the upload
             finish();
         }

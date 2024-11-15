@@ -46,10 +46,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ReadHandler;
+import org.glassfish.grizzly.http.io.NIOInputStream;
 import org.glassfish.grizzly.http.multipart.ContentDisposition;
 import org.glassfish.grizzly.http.multipart.MultipartEntry;
 import org.glassfish.grizzly.http.multipart.MultipartEntryHandler;
@@ -57,7 +57,7 @@ import org.glassfish.grizzly.http.multipart.MultipartScanner;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.http.io.NIOInputStream;
+import org.slf4j.Logger;
 
 /**
  * The Grizzly {@link HttpHandler} implementation, which is responsible for
@@ -89,7 +89,7 @@ public class UploaderHttpHandler extends HttpHandler {
         // assign uploadNumber for this specific upload
         final int uploadNumber = uploadsCounter.getAndIncrement();
 
-        LOGGER.log(Level.INFO, "Starting upload #{0}", uploadNumber);
+        LOGGER.info("Starting upload #{}", uploadNumber);
 
         // Initialize MultipartEntryHandler, responsible for handling
         // multipart entries of this request
@@ -107,9 +107,7 @@ public class UploaderHttpHandler extends HttpHandler {
                 // Upload is complete
                 final int bytesUploaded = uploader.getBytesUploaded();
                 
-                LOGGER.log(Level.INFO, "Upload #{0}: is complete. "
-                        + "{1} bytes uploaded",
-                        new Object[] {uploadNumber, bytesUploaded});
+                LOGGER.info("Upload #{}: is complete. {} bytes uploaded", uploadNumber, bytesUploaded);
 
                 // Compose a server response.
                 try {
@@ -127,7 +125,7 @@ public class UploaderHttpHandler extends HttpHandler {
             @Override
             public void failed(Throwable throwable) {
                 // if failed - log the error
-                LOGGER.log(Level.INFO, "Upload #" + uploadNumber + " failed", throwable);
+                LOGGER.info("Upload #{} failed", uploadNumber, throwable);
                 // Complete the asynchronous HTTP request processing.
                 response.resume();
             }
@@ -172,8 +170,7 @@ public class UploaderHttpHandler extends HttpHandler {
                 // Get the NIOInputStream to read the multipart entry content
                 final NIOInputStream inputStream = multipartEntry.getNIOInputStream();
 
-                LOGGER.log(Level.INFO, "Upload #{0}: uploading file {1}",
-                        new Object[]{uploadNumber, filename});
+                LOGGER.info("Upload #{}: uploading file {}", uploadNumber, filename);
 
                 // start asynchronous non-blocking content read.
                 inputStream.notifyAvailable(
@@ -181,13 +178,11 @@ public class UploaderHttpHandler extends HttpHandler {
                         inputStream, uploadedBytesCounter));
 
             } else if (DESCRIPTION_NAME.equals(name)) { // if multipart entry contains a description field
-                LOGGER.log(Level.INFO, "Upload #{0}: description came. "
-                        + "Skipping...", uploadNumber);
+                LOGGER.info("Upload #{}: description came. Skipping...", uploadNumber);
                 // skip the multipart entry
                 multipartEntry.skip();
             } else { // Unexpected entry?
-                LOGGER.log(Level.INFO, "Upload #{0}: unknown multipart entry. "
-                        + "Skipping...", uploadNumber);
+                LOGGER.info("Upload #{}: unknown multipart entry. Skipping...", uploadNumber);
                 // skip it
                 multipartEntry.skip();
             }
@@ -266,7 +261,7 @@ public class UploaderHttpHandler extends HttpHandler {
          */
         @Override
         public void onError(Throwable t) {
-            LOGGER.log(Level.WARNING, "Upload #" + uploadNumber + ": failed", t);
+            LOGGER.warn("Upload #{}: failed", uploadNumber, t);
             // finish the upload
             finish();
         }

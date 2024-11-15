@@ -42,7 +42,6 @@ package org.glassfish.grizzly.samples.httpserver.priorities;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -51,6 +50,7 @@ import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
+import org.slf4j.Logger;
 
 /**
  * Example of HTTP server, which assigns different priorities (thread-pools)
@@ -135,7 +135,7 @@ public class Server {
             System.out.println("The server is running. Press enter to stop...");
             System.in.read();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             server.shutdownNow();
             // !!! Don't forget to shutdown the custom threads

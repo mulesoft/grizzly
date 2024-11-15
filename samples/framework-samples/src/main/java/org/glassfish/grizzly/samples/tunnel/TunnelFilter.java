@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -55,6 +54,7 @@ import org.glassfish.grizzly.attributes.Attribute;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
+import org.slf4j.Logger;
 
 /**
  * Simple tunneling filter, which maps input of one connection to the output of
@@ -90,8 +90,7 @@ public class TunnelFilter extends BaseFilter {
     @Override
     public NextAction handleRead(final FilterChainContext ctx)
             throws IOException {
-        logger.log(Level.FINEST, "Connection: {0} handleRead: {1}",
-                new Object[]{ctx.getConnection(), ctx.getMessage()});
+        logger.trace("Connection: {} handleRead: {}", ctx.getConnection(), ctx.getMessage());
         
         final Connection connection = ctx.getConnection();
         final Connection peerConnection = peerConnectionAttribute.get(connection);
@@ -177,8 +176,8 @@ public class TunnelFilter extends BaseFilter {
             final Connection peerConnection, Object message) throws IOException {
 
         final Connection srcConnection = context.getConnection();
-        logger.log(Level.FINE, "Redirecting from {0} to {1} message: {2}",
-                new Object[]{srcConnection.getPeerAddress(), peerConnection.getPeerAddress(), message});
+        logger.debug("Redirecting from {} to {} message: {}",
+                     srcConnection.getPeerAddress(), peerConnection.getPeerAddress(), message);
 
         peerConnection.write(message);
     }

@@ -46,7 +46,6 @@ import java.io.InputStreamReader;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyFuture;
@@ -62,6 +61,7 @@ import org.glassfish.grizzly.samples.portunif.addservice.AddClientMessageFilter;
 import org.glassfish.grizzly.samples.portunif.addservice.AddRequestMessage;
 import org.glassfish.grizzly.samples.portunif.addservice.AddResponseMessage;
 import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
 
 /**
  * Client app, which tests deployed ADD-service.
@@ -118,7 +118,7 @@ public class AddClient {
                     value1 = Integer.parseInt(values[0].trim());
                     value2 = Integer.parseInt(values[1].trim());
                 } catch (Exception e) {
-                    LOGGER.warning("Bad format, repeat pls");
+                    LOGGER.warn("Bad format, repeat pls");
                     continue;
                 }
 
@@ -151,7 +151,7 @@ public class AddClient {
             final AddResponseMessage addResponseMessage = ctx.getMessage();
 
             // do output
-            LOGGER.log(Level.INFO, "Result={0}", addResponseMessage.getResult());
+            LOGGER.info("Result={}", addResponseMessage.getResult());
 
             return ctx.getStopAction();
         }

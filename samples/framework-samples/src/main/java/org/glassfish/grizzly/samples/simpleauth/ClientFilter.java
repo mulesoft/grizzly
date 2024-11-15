@@ -40,11 +40,13 @@
 
 package org.glassfish.grizzly.samples.simpleauth;
 
+import java.io.IOException;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
-import java.io.IOException;
+import org.slf4j.Logger;
 
 
 /**
@@ -53,7 +55,7 @@ import java.io.IOException;
  * @author Alexey Stashok
  */
 public class ClientFilter extends BaseFilter {
-    private final static Logger logger = Grizzly.logger(ClientFilter.class);
+    private final static Logger LOGGER = Grizzly.logger(ClientFilter.class);
     
     /**
      * The method is called, when we receive a message from a server.
@@ -69,7 +71,7 @@ public class ClientFilter extends BaseFilter {
         // Get the message
         final MultiLinePacket message = ctx.getMessage();
         
-        logger.info("---------Client got a response:\n" + message);
+        LOGGER.info("---------Client got a response:\n" + message);
         
         return ctx.getStopAction();
     }

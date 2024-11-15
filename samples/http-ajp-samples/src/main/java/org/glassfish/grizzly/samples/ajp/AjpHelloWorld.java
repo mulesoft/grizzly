@@ -43,7 +43,6 @@ package org.glassfish.grizzly.samples.ajp;
 import java.io.IOException;
 import java.io.Writer;
 
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.ajp.AjpAddOn;
 import org.glassfish.grizzly.http.server.HttpHandler;
@@ -52,6 +51,7 @@ import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
+import org.slf4j.Logger;
 
 /**
  * Sample demonstrates how custom {@link HttpHandler}, rigistered on
@@ -101,7 +101,7 @@ public class AjpHelloWorld {
             System.out.println("Press enter to stop...");
             System.in.read();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             server.shutdownNow();
         }

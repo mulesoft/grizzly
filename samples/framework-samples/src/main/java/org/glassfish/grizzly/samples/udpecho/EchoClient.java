@@ -46,6 +46,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
@@ -56,6 +57,7 @@ import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.nio.transport.UDPNIOTransport;
 import org.glassfish.grizzly.nio.transport.UDPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.StringFilter;
+import org.slf4j.Logger;
 
 /**
  * The simple client, which sends a message to the echo server
@@ -63,7 +65,7 @@ import org.glassfish.grizzly.utils.StringFilter;
  * @author Alexey Stashok
  */
 public class EchoClient {
-    private static final Logger logger = Logger.getLogger(EchoClient.class.getName());
+    private static final Logger LOGGER = Grizzly.logger(EchoClient.class);
 
     public static void main(String[] args) throws IOException,
             ExecutionException, InterruptedException, TimeoutException {
@@ -97,7 +99,7 @@ public class EchoClient {
             // check the result
             final boolean isEqual = future.get(10, TimeUnit.SECONDS);
             assert isEqual;
-            logger.info("Echo came successfully");
+            LOGGER.info("Echo came successfully");
         } finally {
             // stop the transport
             transport.shutdownNow();

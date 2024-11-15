@@ -40,13 +40,15 @@
 
 package org.glassfish.grizzly.samples.tunnel;
 
+import java.io.IOException;
+
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-
-import java.io.IOException;
+import org.slf4j.Logger;
 
 
 /**
@@ -55,7 +57,7 @@ import java.io.IOException;
  * @author Alexey Stashok
  */
 public class TunnelServer {
-    private static final Logger logger = Logger.getLogger(TunnelServer.class.getName());
+    private static final Logger LOGGER = Grizzly.logger(TunnelServer.class);
 
     public static final String HOST = "localhost";
     public static final int PORT = 7777;
@@ -89,14 +91,14 @@ public class TunnelServer {
             // start the transport
             transport.start();
 
-            logger.info("Press any key to stop the server...");
+            LOGGER.info("Press any key to stop the server...");
             System.in.read();
         } finally {
-            logger.info("Stopping transport...");
+            LOGGER.info("Stopping transport...");
             // stop the transport
             transport.shutdownNow();
 
-            logger.info("Stopped transport...");
+            LOGGER.info("Stopped transport...");
         }
     }
 }

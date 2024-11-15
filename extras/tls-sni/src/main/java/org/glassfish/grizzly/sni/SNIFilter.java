@@ -59,6 +59,7 @@ import org.glassfish.grizzly.utils.Charsets;
 
 import static org.glassfish.grizzly.ssl.SSLUtils.*;
 import org.glassfish.grizzly.utils.JdkVersion;
+import org.slf4j.Logger;
 
 /**
  * TLS Server Name Indication (SNI) {@link Filter} implementation.
@@ -155,7 +156,7 @@ public class SNIFilter extends SSLFilter {
      */
     public void setClientSSLConfigResolver(final SNIClientConfigResolver resolver) {
         if (!JDK7_OR_HIGHER) {
-            LOGGER.warning("Client side SNI support requires JDK 1.7+");
+            LOGGER.warn("Client side SNI support requires JDK 1.7+");
         }
         
         this.clientResolver = resolver;

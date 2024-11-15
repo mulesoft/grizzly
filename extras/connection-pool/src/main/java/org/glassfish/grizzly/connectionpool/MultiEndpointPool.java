@@ -57,6 +57,8 @@ import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.DelayedExecutor;
 import org.glassfish.grizzly.utils.DelayedExecutor.DelayQueue;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
+
 import static org.glassfish.grizzly.connectionpool.SingleEndpointPool.*;
 
 /**
@@ -629,17 +631,13 @@ public class MultiEndpointPool<E> {
         final ConnectionInfo<E> info = connectionToSubPoolMap.get(connection);
         if (info != null) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE,
-                           "Returning {0} to endpoint pool {1}",
-                           new Object[] {connection, info.endpointPool});
+                LOGGER.debug("Returning {} to endpoint pool {}", connection, info.endpointPool);
             }
             // optimize release() call to avoid redundant map lookup
             return info.endpointPool.release0(info);
         } else {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE,
-                           "No ConnectionInfo available for {0}.  Closing connection.",
-                           connection);
+                LOGGER.debug("No ConnectionInfo available for {}.  Closing connection.", connection);
             }
             connection.closeSilently();
             return false;
@@ -666,9 +664,7 @@ public class MultiEndpointPool<E> {
 
         final SingleEndpointPool<E> sePool = obtainSingleEndpointPool(endpoint);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.log(Level.FINE,
-                       "Associating foreign connection with pool {0} using endpoint key {1}.",
-                       new Object[] {sePool, endpoint});
+            LOGGER.debug("Associating foreign connection with pool {} using endpoint key {}.", sePool, endpoint);
         }
         return sePool.attach(connection);
     }
@@ -689,9 +685,7 @@ public class MultiEndpointPool<E> {
     public boolean detach(final Connection connection) {
         final ConnectionInfo<E> info = connectionToSubPoolMap.get(connection);
         if (info != null && LOGGER.isDebugEnabled()) {
-            LOGGER.log(Level.FINE,
-                       "Detaching {0} from endpoint pool {1}.",
-                       new Object[] { connection, info.endpointPool});
+            LOGGER.debug("Detaching {} from endpoint pool {}.", connection, info.endpointPool);
         }
         return info != null && info.endpointPool.detach(connection);
     }
@@ -709,9 +703,7 @@ public class MultiEndpointPool<E> {
         final SingleEndpointPool<E> sePool = endpointToPoolMap.remove(endpoint);
         if (sePool != null) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.log(Level.FINE,
-                           "Closing pool associated with endpoint key {0}",
-                           endpoint);
+                LOGGER.debug("Closing pool associated with endpoint key {}", endpoint);
             }
             sePool.close();
         }
@@ -730,7 +722,7 @@ public class MultiEndpointPool<E> {
                 return;
             }
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.fine("Shutting down. Closing all pools; shutting down executors as needed.");
+                LOGGER.debug("Shutting down. Closing all pools; shutting down executors as needed.");
             }
             isClosed = true;
 
@@ -783,16 +775,12 @@ public class MultiEndpointPool<E> {
                 sePool = endpointToPoolMap.get(endpoint);
                 if (sePool == null) {
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.log(Level.FINE,
-                                   "Creating new endpoint pool for key {0}",
-                                   endpoint);
+                        LOGGER.debug("Creating new endpoint pool for key {}", endpoint);
                     }
                     sePool = createSingleEndpointPool(endpoint);
                     endpointToPoolMap.put(endpoint, sePool);
                 } else if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE,
-                               "Returning existing pool {0} for key {1}",
-                               new Object[]{sePool, endpoint});
+                    LOGGER.debug("Returning existing pool {} for key {}", sePool, endpoint);
                 }
             }
         }

@@ -40,6 +40,12 @@
 
 package org.glassfish.grizzly.samples.httpserver.blockinghandler;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -60,18 +66,11 @@ import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HeaderValue;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-
-import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.slf4j.Logger;
 
 
 /**
@@ -122,7 +121,7 @@ public class BlockingHttpHandlerSample {
             Client client = new Client();
             client.run();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             server.shutdownNow();
         }
@@ -178,9 +177,9 @@ public class BlockingHttpHandlerSample {
                     System.out.println("\nEchoed POST Data: " + result + '\n');
                 } catch (Exception e) {
                     if (connection == null) {
-                        LOGGER.log(Level.WARNING, "Connection failed.  Server is not listening.");
+                        LOGGER.warn("Connection failed.  Server is not listening.");
                     } else {
-                        LOGGER.log(Level.WARNING, "Unexpected error communicating with the server.");
+                        LOGGER.warn("Unexpected error communicating with the server.");
                     }
                 } finally {
                     // Close the client connection

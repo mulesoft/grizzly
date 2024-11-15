@@ -40,6 +40,18 @@
 
 package org.glassfish.grizzly.samples.connectionpool;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Collections;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.ConnectorHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
@@ -56,18 +68,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.StringFilter;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.Collections;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
 
 
 
@@ -155,7 +156,7 @@ public class MultiEndpointPoolSample implements ClientCallback {
                 // initialize count down latch
                 responsesCountDownLatch = new CountDownLatch(requestsCount);
                 
-                LOGGER.log(Level.INFO, "Making {0} requests...", requestsCount);
+                LOGGER.info("Making {} requests...", requestsCount);
                 
                 final long startTime = System.currentTimeMillis();
                 
@@ -193,8 +194,7 @@ public class MultiEndpointPoolSample implements ClientCallback {
 
                                 @Override
                                 public void failed(Throwable throwable) {
-                                    LOGGER.log(Level.WARNING,
-                                            "Can't allocate a Connection", throwable);
+                                    LOGGER.warn("Can't allocate a Connection", throwable);
                                 }
 
                                 @Override
@@ -220,11 +220,8 @@ public class MultiEndpointPoolSample implements ClientCallback {
                 final long runTime = (System.currentTimeMillis() - startTime) / 1000;
                 
                 // print out stats
-                LOGGER.log(Level.INFO, "Completed in {0} seconds\nRequests sent: "
-                        + "{1}\nResponses missed: {2}\nConnections created: {3}",
-                        new Object[]{runTime, requestsCount,
-                            responsesCountDownLatch.getCount(),
-                            clientConnectionsCounter.get()});
+                LOGGER.info("Completed in {} seconds\nRequests sent: {}\nResponses missed: {}\nConnections created: {}",
+                            runTime, requestsCount, responsesCountDownLatch.getCount(), clientConnectionsCounter.get());
                 
             } finally {
                 // shutdown the aux. thread-pool
@@ -262,8 +259,7 @@ public class MultiEndpointPoolSample implements ClientCallback {
             responsesCountDownLatch.countDown();
         } else {
             // if message is not tracked - it's a bug
-            LOGGER.log(Level.WARNING, "Received unexpected response: {0}",
-                    responseMessage);
+            LOGGER.warn("Received unexpected response: {}", responseMessage);
         }
         
         // return the connection back to the pool

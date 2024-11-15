@@ -48,13 +48,14 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
 import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
 
 /**
  * Client implementation, which sends a message to a {@link Server} and checks
@@ -79,7 +80,7 @@ import org.glassfish.grizzly.utils.Charsets;
  * @author Alexey Stashok
  */
 public class Client {
-    private static final Logger logger = Logger.getLogger(Client.class.getName());
+    private static final Logger logger = Grizzly.logger(Client.class);
 
     @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
@@ -131,7 +132,7 @@ public class Client {
 
                 // Send echo message
                 final MultiLinePacket request = MultiLinePacket.create("echo", input);
-                logger.log(Level.INFO, "--------- Client is sending the request:\n{0}", request);
+                logger.info("--------- Client is sending the request:\n{}", request);
 
                 connection.write(request);
             }

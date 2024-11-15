@@ -56,6 +56,7 @@ import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.impl.FutureImpl;
+import org.slf4j.Logger;
 
 /**
  * HTTP client download filter.
@@ -65,7 +66,7 @@ import org.glassfish.grizzly.impl.FutureImpl;
  * @author Alexey Stashok
  */
 public class ClientDownloadFilter extends BaseFilter {
-    private final static Logger logger = Grizzly.logger(ClientDownloadFilter.class);
+    private final static Logger LOGGER = Grizzly.logger(ClientDownloadFilter.class);
     
     // URI of a remote resource
     private final URI uri;
@@ -126,7 +127,7 @@ public class ClientDownloadFilter extends BaseFilter {
         final HttpRequestPacket httpRequest = HttpRequestPacket.builder().method("GET")
                 .uri(resourcePath).protocol(Protocol.HTTP_1_1)
                 .header("Host", uri.getHost()).build();
-        logger.log(Level.INFO, "Connected... Sending the request: {0}", httpRequest);
+        LOGGER.info("Connected... Sending the request: {}", httpRequest);
 
         // Write the request asynchronously
         ctx.write(httpRequest);
@@ -151,11 +152,11 @@ public class ClientDownloadFilter extends BaseFilter {
             // Cast message to a HttpContent
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            LOGGER.debug("Got HTTP response chunk");
             if (output == null) {
                 // If local file wasn't created - create it
-                logger.log(Level.INFO, "HTTP response: {0}", httpContent.getHttpHeader());
-                logger.log(Level.FINE, "Create a file: {0}", fileName);
+                LOGGER.info("HTTP response: {}", httpContent.getHttpHeader());
+                LOGGER.debug("Create a file: {}", fileName);
                 FileOutputStream fos = new FileOutputStream(fileName);
                 output = fos.getChannel();
             }
@@ -163,7 +164,7 @@ public class ClientDownloadFilter extends BaseFilter {
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            LOGGER.debug("HTTP content size: {}", buffer.remaining());
             if (buffer.remaining() > 0) {
                 bytesDownloaded += buffer.remaining();
                 
@@ -180,7 +181,7 @@ public class ClientDownloadFilter extends BaseFilter {
             if (httpContent.isLast()) {
                 // it's last HttpContent - we close the local file and
                 // notify about download completion
-                logger.log(Level.FINE, "Downloaded done: {0} bytes", bytesDownloaded);
+                LOGGER.debug("Downloaded done: {} bytes", bytesDownloaded);
                 completeFuture.result(fileName);
                 close();
             }

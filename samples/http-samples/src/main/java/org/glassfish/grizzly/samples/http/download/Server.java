@@ -48,6 +48,8 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.DelayedExecutor;
 import org.glassfish.grizzly.utils.IdleTimeoutFilter;
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  * @author Alexey Stashok
  */
 public class Server {
-    private static final Logger logger = Grizzly.logger(Server.class);
+    private static final Logger LOGGER = Grizzly.logger(Server.class);
 
     // TCP Host
     public static final String HOST = "localhost";
@@ -99,15 +101,15 @@ public class Server {
             // start the transport
             transport.start();
 
-            logger.info("Press any key to stop the server...");
+            LOGGER.info("Press any key to stop the server...");
             System.in.read();
         } finally {
-            logger.info("Stopping transport...");
+            LOGGER.info("Stopping transport...");
             // stop the transport
             transport.shutdownNow();
             timeoutExecutor.stop();
             timeoutExecutor.destroy();
-            logger.info("Stopped transport...");
+            LOGGER.info("Stopped transport...");
         }
     }
 }
