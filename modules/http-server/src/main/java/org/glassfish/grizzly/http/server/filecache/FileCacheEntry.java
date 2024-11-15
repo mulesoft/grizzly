@@ -44,12 +44,11 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.CompressionConfig;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.util.ContentType;
+import org.slf4j.Logger;
 
 /**
  * The entry value in the file cache map.
@@ -187,9 +186,7 @@ public final class FileCacheEntry implements Runnable {
         if (compressedFile != null) {
             if (!compressedFile.delete()) {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE,
-                               "Unable to delete file {0}.  Will try to delete again upon VM exit.",
-                               compressedFile.getCanonicalPath());
+                    LOGGER.debug("Unable to delete file {}.  Will try to delete again upon VM exit.", compressedFile.getCanonicalPath());
                 }
                 compressedFile.deleteOnExit();
             }

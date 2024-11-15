@@ -66,12 +66,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-
 import org.glassfish.grizzly.Buffer;
-
 import org.glassfish.grizzly.Grizzly;
-
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 /**
  * @author Costin Manolache
@@ -123,7 +121,7 @@ public final class Parameters {
     public void setEncoding(final Charset encoding) {
         this.encoding = encoding;
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST, "Set encoding to {0}", encoding);
+            LOGGER.trace("Set encoding to {}", encoding);
         }
     }
 
@@ -134,8 +132,7 @@ public final class Parameters {
     public void setQueryStringEncoding(final Charset queryStringEncoding) {
         this.queryStringEncoding = queryStringEncoding;
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST, "Set query string encoding to {0}",
-                       queryStringEncoding);
+            LOGGER.trace("Set query string encoding to {}", queryStringEncoding);
         }
     }
 
@@ -269,9 +266,8 @@ public final class Parameters {
     private void merge() {
         // recursive
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST, "Before merging {0} {1} {2}",
-                       new Object[]{this, parent, didMerge});
-            LOGGER.log(Level.FINEST, paramsAsString());
+            LOGGER.trace("Before merging {} {} {}", this, parent, didMerge);
+            LOGGER.trace(paramsAsString());
         }
 
         // Local parameters first - they take precedence as in spec.
@@ -295,7 +291,7 @@ public final class Parameters {
         merge2(paramHashValues, parentProps);
         didMerge = true;
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST, "After {0}", paramsAsString());
+            LOGGER.trace("After {}", paramsAsString());
         }
     }
 
@@ -325,8 +321,7 @@ public final class Parameters {
             return;
         }
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST, "Decoding query {0} {1}",
-                       new Object[]{queryDC, queryStringEncoding});
+            LOGGER.trace("Decoding query {} {}", queryDC, queryStringEncoding);
         }
         
         decodedQuery.duplicate(queryDC);
@@ -422,14 +417,7 @@ public final class Parameters {
         final Charset enc) {
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST,
-                       "Process parameters. Buffer: {0} start={1} len={2} content={3}",
-                       new Object[]{
-                               buffer,
-                               start,
-                               len,
-                               buffer.toStringContent(enc, start, start + len)
-                       });
+            LOGGER.trace("Process parameters. Buffer: {} start={} len={} content={}", buffer, start, len, buffer.toStringContent(enc, start, start + len));
         }
         
         int decodeFailCount = 0;
@@ -438,7 +426,7 @@ public final class Parameters {
         int pos = start;
         while (pos < end) {
             if (limit > -1 && parameterCount >= limit) {
-                LOGGER.warning(LogMessages.WARNING_GRIZZLY_HTTP_SEVERE_GRIZZLY_HTTP_PARAMETERS_MAX_COUNT_FAIL(limit));
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SEVERE_GRIZZLY_HTTP_PARAMETERS_MAX_COUNT_FAIL(limit));
                 break;
             }
             int nameStart = pos;
@@ -500,8 +488,7 @@ public final class Parameters {
             }
 
             if (LOGGER.isTraceEnabled() && valueStart == -1) {
-                LOGGER.log(Level.FINEST,
-                           LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_NOEQUAL(
+                LOGGER.trace(LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_NOEQUAL(
                                    nameStart,
                                    nameEnd,
                                    buffer.toStringContent(DEFAULT_CHARSET,
@@ -509,8 +496,7 @@ public final class Parameters {
             }
 
             if (nameEnd <= nameStart) {
-                if (LOGGER.isLoggable(Level.INFO)) {
-                    String extract;
+                if (LOGGER.isInfoEnabled()) {
                     if (valueEnd < nameStart) {
                         LOGGER.info(LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_INVALID_CHUNK(
                                 nameStart,
@@ -556,20 +542,16 @@ public final class Parameters {
             } catch (Exception e) {
                 decodeFailCount++;
                 if (LOGGER.isTraceEnabled()) {
-                   LOGGER.log(Level.FINEST,
-                            LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(
-                            origName.toString(), origValue.toString()));
-                } else if (LOGGER.isLoggable(Level.INFO) && decodeFailCount == 1) {
+                   LOGGER.trace(LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(origName.toString(), origValue.toString()));
+                } else if (LOGGER.isInfoEnabled() && decodeFailCount == 1) {
                     final String name = ((tmpName.getLength() > 0)
                                             ? tmpName.toString()
                                             : "unavailable");
                     final String value = ((tmpValue.getLength() > 0)
                                             ? tmpValue.toString()
                                             : "unavailable");
-                    LOGGER.log(Level.INFO,
-                               LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_INFO(
-                                       e.getMessage(), name, value));
-                    LOGGER.log(Level.FINE, "Decoding stacktrace.", e);
+                    LOGGER.info(LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_INFO(e.getMessage(), name, value));
+                    LOGGER.debug("Decoding stacktrace.", e);
                 }
             } finally {
                 tmpName.recycle();
@@ -620,21 +602,12 @@ public final class Parameters {
         int decodeFailCount = 0;
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST,
-                       "Process parameters. chars: {0} start={1} len={2} content={3}",
-                       new Object[]{
-                               chars,
-                               start,
-                               len,
-                               new String(chars, start, len)
-                       });
+            LOGGER.trace("Process parameters. chars: {} start={} len={} content={}", chars, start, len, new String(chars, start, len));
         }
 
         do {
             if (limit > -1 && parameterCount >= limit) {
-                LOGGER.warning(
-                        LogMessages.WARNING_GRIZZLY_HTTP_SEVERE_GRIZZLY_HTTP_PARAMETERS_MAX_COUNT_FAIL(
-                                limit));
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SEVERE_GRIZZLY_HTTP_PARAMETERS_MAX_COUNT_FAIL(limit));
                 break;
             }
             boolean noEq = false;
@@ -650,14 +623,7 @@ public final class Parameters {
                 valStart = nameEnd;
                 valEnd = nameEnd;
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "no equal {0} {1} {2}",
-                               new Object[]{
-                                       nameStart,
-                                       nameEnd,
-                                       new String(chars,
-                                                  nameStart,
-                                                  nameEnd - nameStart)
-                               });
+                    LOGGER.trace("no equal {} {} {}", nameStart, nameEnd, new String(chars, nameStart, nameEnd - nameStart));
                 }
             }
             if (nameEnd == -1) {
@@ -680,37 +646,29 @@ public final class Parameters {
                 tmpNameC.append(chars, nameStart, nameEnd - nameStart);
                 tmpValueC.append(chars, valStart, valEnd - valStart);
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "{0}= {1}",
-                               new Object[]{tmpNameC, tmpValueC});
+                    LOGGER.trace("{}= {}", tmpNameC, tmpValueC);
                 }
                 URLDecoder.decode(tmpNameC, tmpNameC, true,
                                   queryStringEncoding.name());
                 URLDecoder.decode(tmpValueC, tmpValueC, true,
                                   queryStringEncoding.name());
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "{0}= {1}",
-                               new Object[]{tmpNameC, tmpValueC});
+                    LOGGER.trace("{}= {}", tmpNameC, tmpValueC);
                 }
                 addParameter(tmpNameC.toString(), tmpValueC.toString());
             } catch (Exception e) {
                 decodeFailCount++;
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST,
-                               LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(
-                                       origName.toString(),
-                                       origValue.toString()));
-                } else if (LOGGER.isLoggable(
-                        Level.INFO) && decodeFailCount == 1) {
+                    LOGGER.trace(LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(origName.toString(), origValue.toString()));
+                } else if (LOGGER.isInfoEnabled() && decodeFailCount == 1) {
                     final String name = ((tmpNameC.getLength() > 0)
                             ? tmpNameC.toString()
                             : "unavailable");
                     final String value = ((tmpValueC.getLength() > 0)
                             ? tmpValueC.toString()
                             : "unavailable");
-                    LOGGER.log(Level.INFO,
-                               LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_INFO(
-                                       e.getMessage(), name, value));
-                    LOGGER.log(Level.FINE, "Decoding stacktrace.", e);
+                    LOGGER.info(LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_INFO(e.getMessage(), name, value));
+                    LOGGER.debug("Decoding stacktrace.", e);
                 }
             } finally {
                 tmpNameC.recycle();
@@ -780,15 +738,11 @@ public final class Parameters {
         int decodeFailCount = 0;
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST,
-                       "Process parameters. String: {0}",
-                       str);
+            LOGGER.trace("Process parameters. String: {}", str);
         }
         do {
             if (limit > -1 && parameterCount >= limit) {
-                LOGGER.warning(
-                        LogMessages.WARNING_GRIZZLY_HTTP_SEVERE_GRIZZLY_HTTP_PARAMETERS_MAX_COUNT_FAIL(
-                                limit));
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SEVERE_GRIZZLY_HTTP_PARAMETERS_MAX_COUNT_FAIL(limit));
                 break;
             }
             boolean noEq = false;
@@ -807,12 +761,7 @@ public final class Parameters {
                 valStart = nameEnd;
                 valEnd = nameEnd;
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "no equal {0} {1} {2}",
-                               new Object[]{
-                                       nameStart,
-                                       nameEnd,
-                                       str.substring(nameStart, nameEnd)
-                               });
+                    LOGGER.trace("no equal {} {} {}", nameStart, nameEnd, str.substring(nameStart, nameEnd));
                 }
             }
             if (nameEnd == -1) {
@@ -830,42 +779,33 @@ public final class Parameters {
                 continue;
             }
             if (LOGGER.isTraceEnabled()) {
-                LOGGER.log(Level.FINEST, "XXX {0} {1} {2} {3}",
-                           new Object[]{nameStart, nameEnd, valStart, valEnd});
+                LOGGER.trace("XXX {} {} {} {}", nameStart, nameEnd, valStart, valEnd);
             }
             try {
                 tmpNameC.append(str, nameStart, nameEnd - nameStart);
                 tmpValueC.append(str, valStart, valEnd - valStart);
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "{0}= {1}",
-                               new Object[]{tmpNameC, tmpValueC});
+                    LOGGER.trace("{}= {}", tmpNameC, tmpValueC);
                 }
                 URLDecoder.decode(tmpNameC, true);
                 URLDecoder.decode(tmpValueC, true);
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST, "{0}= {1}",
-                               new Object[]{tmpNameC, tmpValueC});
+                    LOGGER.trace("{}= {}", tmpNameC, tmpValueC);
                 }
                 addParameter(tmpNameC.toString(), tmpValueC.toString());
             } catch (Exception e) {
                 decodeFailCount++;
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.log(Level.FINEST,
-                               LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(
-                                       origName.toString(),
-                                       origValue.toString()));
-                } else if (LOGGER.isLoggable(
-                        Level.INFO) && decodeFailCount == 1) {
+                    LOGGER.trace(LogMessages.FINE_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_DEBUG(origName.toString(), origValue.toString()));
+                } else if (LOGGER.isInfoEnabled() && decodeFailCount == 1) {
                     final String name = ((tmpNameC.getLength() > 0)
                             ? tmpNameC.toString()
                             : "unavailable");
                     final String value = ((tmpValueC.getLength() > 0)
                             ? tmpValueC.toString()
                             : "unavailable");
-                    LOGGER.log(Level.INFO,
-                               LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_INFO(
-                                       e.getMessage(), name, value));
-                    LOGGER.log(Level.FINE, "Decoding stacktrace.", e);
+                    LOGGER.info(LogMessages.INFO_GRIZZLY_HTTP_PARAMETERS_DECODE_FAIL_INFO(e.getMessage(), name, value));
+                    LOGGER.debug("Decoding stacktrace.", e);
                 }
             } finally {
                 tmpNameC.recycle();

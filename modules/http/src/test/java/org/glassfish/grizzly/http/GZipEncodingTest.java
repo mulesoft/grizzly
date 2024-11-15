@@ -40,6 +40,17 @@
 
 package org.glassfish.grizzly.http;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPOutputStream;
+
+import junit.framework.TestCase;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -49,28 +60,17 @@ import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.ChunkingFilter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-
-import java.util.zip.GZIPOutputStream;
-import junit.framework.TestCase;
-import org.glassfish.grizzly.memory.Buffers;
+import org.slf4j.Logger;
 
 /**
  *
@@ -429,9 +429,8 @@ public class GZipEncodingTest extends TestCase {
         @Override
         public NextAction handleConnect(FilterChainContext ctx)
               throws IOException {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}",
-                        request);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Connected... Sending the request: {}", request);
             }
 
             ctx.write(request);
@@ -446,7 +445,7 @@ public class GZipEncodingTest extends TestCase {
 
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk; last: {0}", httpContent.isLast());
+            logger.debug("Got HTTP response chunk; last: {}", httpContent.isLast());
 
 
             if (httpContent.isLast()) {

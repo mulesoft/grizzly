@@ -50,6 +50,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.streams.StreamReader;
 import org.glassfish.grizzly.streams.StreamWriter;
+import org.slf4j.Logger;
 
 /**
  * Test standalone Grizzly implementation.
@@ -161,8 +162,7 @@ public class StandaloneTest extends GrizzlyTestCase {
 
                         assertTrue(writeFuture.isDone());
                     } catch (Throwable e) {
-                        logger.log(Level.WARNING,
-                                "Error working with accepted connection", e);
+                        logger.warn("Error working with accepted connection", e);
                         assertTrue("Error working with accepted connection", false);
                     } finally {
                         connection.closeSilently();
@@ -170,8 +170,7 @@ public class StandaloneTest extends GrizzlyTestCase {
 
                 } catch (Exception e) {
                     if (!transport.isStopped()) {
-                        logger.log(Level.WARNING,
-                                "Error accepting connection", e);
+                        logger.warn("Error accepting connection", e);
                         assertTrue("Error accepting connection", false);
                     }
                 }

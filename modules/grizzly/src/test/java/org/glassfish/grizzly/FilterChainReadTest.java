@@ -42,18 +42,6 @@ package org.glassfish.grizzly;
 
 import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 
-import org.glassfish.grizzly.asyncqueue.WritableMessage;
-import org.glassfish.grizzly.filterchain.BaseFilter;
-import org.glassfish.grizzly.filterchain.FilterChain;
-import org.glassfish.grizzly.filterchain.FilterChainBuilder;
-import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.filterchain.NextAction;
-import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.utils.EchoFilter;
-import org.glassfish.grizzly.utils.StringEncoder;
-import org.glassfish.grizzly.utils.StringFilter;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -61,11 +49,23 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
 import junit.framework.TestCase;
+import org.glassfish.grizzly.asyncqueue.WritableMessage;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChain;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.glassfish.grizzly.utils.EchoFilter;
+import org.glassfish.grizzly.utils.StringEncoder;
+import org.glassfish.grizzly.utils.StringFilter;
+import org.slf4j.Logger;
 
 /**
  * Test {@link FilterChain} blocking read.
@@ -76,7 +76,7 @@ import org.glassfish.grizzly.utils.DataStructures;
 public class FilterChainReadTest extends TestCase {
     public final int PORT = findFreePort();
 
-    private static final Logger logger = Grizzly.logger(FilterChainReadTest.class);
+    private static final Logger LOGGER = Grizzly.logger(FilterChainReadTest.class);
 
     public void testBlockingRead() throws Exception {
         final String[] clientMsgs = {"Hello", "from", "client"};
@@ -95,7 +95,7 @@ public class FilterChainReadTest extends TestCase {
 
                 String message = ctx.getMessage();
 
-                logger.log(Level.INFO, "First chunk come: {0}", message);
+                LOGGER.info("First chunk come: {}", message);
                 intermResultQueue.add(message);
 
                 Connection connection = ctx.getConnection();
@@ -106,7 +106,7 @@ public class FilterChainReadTest extends TestCase {
                     final String blckMsg = (String) rr.getMessage();
 
                     rr.recycle();
-                    logger.log(Level.INFO, "Blocking chunk come: {0}", blckMsg);
+                    LOGGER.info("Blocking chunk come: {}", blckMsg);
                     intermResultQueue.add(blckMsg);
                     message += blckMsg;
                 }
@@ -202,7 +202,7 @@ public class FilterChainReadTest extends TestCase {
 
                 String message = ctx.getMessage();
 
-                logger.log(Level.INFO, "First chunk come: {0}", message);
+                LOGGER.info("First chunk come: {}", message);
                 intermResultQueue.add(message);
 
                 Connection connection = ctx.getConnection();
@@ -213,7 +213,7 @@ public class FilterChainReadTest extends TestCase {
                     final String blckMsg = (String) rr.getMessage();
 
                     rr.recycle();
-                    logger.log(Level.INFO, "Blocking chunk come: {0}", blckMsg);
+                    LOGGER.info("Blocking chunk come: {}", blckMsg);
                     intermResultQueue.add(blckMsg);
                     message += blckMsg;
                 }
@@ -317,7 +317,7 @@ public class FilterChainReadTest extends TestCase {
 
                 String message = ctx.getMessage();
 
-                logger.log(Level.INFO, "First chunk come: {0}", message);
+                LOGGER.info("First chunk come: {}", message);
                 intermResultQueue.add(message);
 
                 Connection connection = ctx.getConnection();

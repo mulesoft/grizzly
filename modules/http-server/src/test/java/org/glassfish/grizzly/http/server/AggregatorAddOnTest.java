@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,7 +50,6 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
 
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -79,8 +80,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * Test AggregatorAddOn
@@ -259,8 +259,7 @@ public class AggregatorAddOnTest {
                     
                     try {
                         out.close();
-                        LOGGER.log(Level.INFO, "Client received file ({0} bytes) in {1}ms.",
-                                new Object[]{f.length(), stop - start});
+                        LOGGER.info("Client received file ({} bytes) in {}ms.", f.length(), stop - start);
                         // result.result(f) should be the last operation in handleRead
                         // otherwise NPE may occur in handleWrite asynchronously
                         result.result(content);
@@ -276,7 +275,7 @@ public class AggregatorAddOnTest {
                 try {
                     if (f != null) {
                         if (!f.delete()) {
-                            LOGGER.log(Level.WARNING, "Unable to explicitly delete file: {0}", f.getAbsolutePath());
+                            LOGGER.warn("Unable to explicitly delete file: {}", f.getAbsolutePath());
                         }
                         f = null;
                     }

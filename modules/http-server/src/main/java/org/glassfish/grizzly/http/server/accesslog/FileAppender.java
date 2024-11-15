@@ -44,9 +44,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.slf4j.Logger;
 
 /**
  * An {@link AccessLogAppender appender} writing log entries to {@link File}s.
@@ -79,6 +79,6 @@ public class FileAppender extends StreamAppender {
     public FileAppender(File file, boolean append)
     throws IOException {
         super(new FileOutputStream(file, append));
-        LOGGER.info("Access log file \"" + file.getAbsolutePath() + "\" opened");
+        LOGGER.info("Access log file \"{}\" opened", file.getAbsolutePath());
     }
 }

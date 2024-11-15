@@ -58,6 +58,8 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -73,8 +75,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 
 import org.glassfish.grizzly.CloseListener;
 import org.glassfish.grizzly.CloseType;
@@ -95,8 +95,6 @@ import org.glassfish.grizzly.http.server.io.ServerOutputBuffer;
 import org.glassfish.grizzly.http.server.util.Globals;
 import org.glassfish.grizzly.http.server.util.HtmlHelper;
 import org.glassfish.grizzly.http.util.CharChunk;
-
-import static org.glassfish.grizzly.http.util.Constants.*;
 import org.glassfish.grizzly.http.util.ContentType;
 import org.glassfish.grizzly.http.util.CookieSerializerUtils;
 import org.glassfish.grizzly.http.util.FastHttpDateFormat;
@@ -109,6 +107,7 @@ import org.glassfish.grizzly.http.util.UEncoder;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.DelayedExecutor;
 import org.glassfish.grizzly.utils.DelayedExecutor.DelayQueue;
+import org.slf4j.Logger;
 
 /**
  * Wrapper object for the Coyote response.
@@ -517,13 +516,11 @@ public class Response {
             outputBuffer.endRequest();
         } catch (IOException e) {
             if (LOGGER.isTraceEnabled()) {
-                LOGGER.log(Level.FINEST,
-                        LogMessages.WARNING_GRIZZLY_HTTP_SERVER_RESPONSE_FINISH_ERROR(), e);
+                LOGGER.trace(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_RESPONSE_FINISH_ERROR(), e);
             }
         } catch (Throwable t) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_HTTP_SERVER_RESPONSE_FINISH_ERROR(), t);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_RESPONSE_FINISH_ERROR(), t);
             }
         }
     }

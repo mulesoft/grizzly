@@ -219,7 +219,7 @@ public class MultipartUploadFilter implements Filter {
             File[] f = file.listFiles();
             if (f.length == 0) {
                 if (!file.delete()) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
+                    if (LOGGER.isWarnEnabled()) {
                         LOGGER.warning(String.format("Unable to delete directory %s.  Will attempt deletion again upon JVM exit.",
                                 file.getAbsolutePath()));
                     }
@@ -231,7 +231,7 @@ public class MultipartUploadFilter implements Filter {
             }
         } else {
             if (!file.delete()) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
+                if (LOGGER.isWarnEnabled()) {
                     LOGGER.warning(String.format("Unable to delete file %s.  Will attempt deletion again upon JVM exit.",
                                    file.getAbsolutePath()));
                 }

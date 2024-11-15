@@ -77,6 +77,7 @@ import org.glassfish.grizzly.http.HttpRequestPacket.Builder;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.nio.transport.TCPNIOConnection;
+import org.slf4j.Logger;
 
 
 /**
@@ -1049,8 +1050,8 @@ public class HttpSemanticsTest extends TestCase {
         @Override
         public NextAction handleConnect(FilterChainContext ctx)
               throws IOException {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}", request);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Connected... Sending the request: {}", request);
             }
 
             if (request instanceof List) {
@@ -1076,7 +1077,7 @@ public class HttpSemanticsTest extends TestCase {
 
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            logger.debug("Got HTTP response chunk");
             if (httpContent.isLast()) {
                 accumulatedContent.append(httpContent.getContent().toStringContent(Charsets.UTF8_CHARSET));
                 validate(httpContent, accumulatedContent.toString());

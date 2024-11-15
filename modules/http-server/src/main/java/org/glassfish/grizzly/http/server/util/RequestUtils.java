@@ -44,7 +44,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyFuture;
 import org.glassfish.grizzly.http.server.Request;
@@ -53,6 +52,7 @@ import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.ssl.SSLBaseFilter.CertificateEvent;
 import org.glassfish.grizzly.ssl.SSLSupport;
 import org.glassfish.grizzly.ssl.SSLSupportImpl;
+import org.slf4j.Logger;
 
 public class RequestUtils {
 
@@ -80,9 +80,7 @@ public class RequestUtils {
                 certificates = certFuture.get(30, TimeUnit.SECONDS);
             } catch (Exception e) {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE,
-                               "Unable to obtain certificates from peer.",
-                               e);
+                    LOGGER.debug("Unable to obtain certificates from peer.", e);
                 }
             }
             request.setAttribute(SSLSupport.CERTIFICATE_KEY, certificates);
@@ -113,9 +111,7 @@ public class RequestUtils {
                 }
             } catch (Exception ioe) {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE,
-                            "Unable to populate SSL attributes",
-                            ioe);
+                    LOGGER.debug("Unable to populate SSL attributes", ioe);
                 }
             }
         }
@@ -127,9 +123,8 @@ public class RequestUtils {
         if (f != null) {
             final Response response = request.getResponse();
             if (response.isCommitted()) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUESTUTILS_SENDFILE_FAILED());
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUESTUTILS_SENDFILE_FAILED());
                 }
 
                 return;

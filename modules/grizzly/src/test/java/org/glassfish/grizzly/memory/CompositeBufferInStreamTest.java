@@ -59,6 +59,7 @@ import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyTestCase;
 import org.glassfish.grizzly.StandaloneProcessor;
+import org.slf4j.Logger;
 
 /**
  * Test how {@link CompositeBuffer} works with Streams.
@@ -188,16 +189,14 @@ public class CompositeBufferInStreamTest extends GrizzlyTestCase {
                             // Read until whole buffer will be filled out
                         } catch (Throwable e) {
                             portions[i].getSecond().failure(e);
-                            LOGGER.log(Level.WARNING,
-                                    "Error working with accepted connection on step: " + i, e);
+                            LOGGER.warn("Error working with accepted connection on step: {}", i, e);
                         } finally {
                             connection.closeSilently();
                         }
 
                     } catch (Exception e) {
                         if (!transport.isStopped()) {
-                            LOGGER.log(Level.WARNING,
-                                    "Error accepting connection", e);
+                            LOGGER.warn("Error accepting connection", e);
                             assertTrue("Error accepting connection", false);
                         }
                     }

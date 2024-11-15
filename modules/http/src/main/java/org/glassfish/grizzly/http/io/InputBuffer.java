@@ -40,20 +40,9 @@
 
 package org.glassfish.grizzly.http.io;
 
-import org.glassfish.grizzly.http.HttpBrokenContent;
-import org.glassfish.grizzly.http.util.MimeHeaders;
-import org.glassfish.grizzly.http.HttpHeader;
-import org.glassfish.grizzly.http.HttpTrailer;
-import java.io.EOFException;
-import org.glassfish.grizzly.Buffer;
-import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.ReadResult;
-import org.glassfish.grizzly.ReadHandler;
-import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.http.HttpContent;
-import org.glassfish.grizzly.threadpool.Threads;
-import org.glassfish.grizzly.utils.Charsets;
+import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -67,14 +56,24 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
-
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.ReadHandler;
+import org.glassfish.grizzly.ReadResult;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.http.HttpBrokenContent;
 import org.glassfish.grizzly.http.HttpBrokenContentException;
+import org.glassfish.grizzly.http.HttpContent;
+import org.glassfish.grizzly.http.HttpHeader;
+import org.glassfish.grizzly.http.HttpTrailer;
+import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.CompositeBuffer;
+import org.glassfish.grizzly.threadpool.Threads;
+import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.Exceptions;
-
-import static org.glassfish.grizzly.http.util.Constants.*;
+import org.slf4j.Logger;
 
 /**
  * Abstraction exposing both byte and character methods to read content
@@ -82,8 +81,7 @@ import static org.glassfish.grizzly.http.util.Constants.*;
  */
 public class InputBuffer {
     private static final Logger LOGGER = Grizzly.logger(InputBuffer.class);
-    private static final Level LOGGER_LEVEL = Level.FINER;
-    
+
     /**
      * The {@link org.glassfish.grizzly.http.HttpHeader} associated with this <code>InputBuffer</code>
      */
@@ -222,7 +220,7 @@ public class InputBuffer {
             contentRead = content.isLast();
             content.recycle();
             
-            if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+            if (LOGGER.isDebugEnabled()) {
                 log("InputBuffer %s initialize with ready content: %s",
                         this, inputContentBuffer);
             }
@@ -308,7 +306,7 @@ public class InputBuffer {
      * @see java.io.InputStream#read()
      */
     public int readByte() throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s readByte. Ready content: %s",
                     this, inputContentBuffer);
         }
@@ -332,7 +330,7 @@ public class InputBuffer {
      * @see java.io.InputStream#read(byte[], int, int)
      */
     public int read(final byte b[], final int off, final int len) throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s read byte array of len: %s. Ready content: %s",
                     this, len, inputContentBuffer);
         }
@@ -395,7 +393,7 @@ public class InputBuffer {
      * {@link Buffer} used to buffer incoming request data.
      */
     public Buffer getBuffer() {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s getBuffer. Ready content: %s",
                     this, inputContentBuffer);
         }
@@ -410,7 +408,7 @@ public class InputBuffer {
      * the {@link Buffer}.
      */
     public Buffer readBuffer() {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s readBuffer. Ready content: %s",
                     this, inputContentBuffer);
         }
@@ -427,7 +425,7 @@ public class InputBuffer {
      * {@link Buffer}, so user code becomes responsible for handling its life-cycle.
      */
     public Buffer readBuffer(final int size) {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s readBuffer(size), size: %s. Ready content: %s",
                     this, size, inputContentBuffer);
         }
@@ -466,7 +464,7 @@ public class InputBuffer {
      * @see java.io.Reader#read(java.nio.CharBuffer)
      */
     public int read(final CharBuffer target) throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s read(CharBuffer). Ready content: %s",
                     this, inputContentBuffer);
         }
@@ -492,7 +490,7 @@ public class InputBuffer {
      * @see java.io.Reader#read()
      */
     public int readChar() throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s readChar. Ready content: %s",
                     this, inputContentBuffer);
         }
@@ -522,7 +520,7 @@ public class InputBuffer {
      */
     public int read(final char cbuf[], final int off, final int len)
     throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s read char array, len: %s. Ready content: %s",
                     this, len, inputContentBuffer);
         }
@@ -570,7 +568,7 @@ public class InputBuffer {
      * @throws IOException
      */
     public void fillFully(final int length) throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s fillFully, len: %s. Ready content: %s",
                 this, length, inputContentBuffer);
         }
@@ -697,7 +695,7 @@ public class InputBuffer {
      * @see java.io.Reader#skip(long)
      */
     public long skip(final long n) throws IOException {
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s skip %s bytes. Ready content: %s",
                     this, n, inputContentBuffer);
         }
@@ -795,7 +793,7 @@ public class InputBuffer {
             throw new IllegalStateException("Can't replay when InputBuffer is not closed");
         }
         
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
+        if (LOGGER.isDebugEnabled()) {
             log("InputBuffer %s replayPayload to %s", this, buffer);
         }
         
@@ -1432,9 +1430,9 @@ public class InputBuffer {
         final String preparedMsg = String.format(message, params);
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST, preparedMsg, new Exception("Logged at"));
+            LOGGER.trace(preparedMsg, new Exception("Logged at"));
         } else {
-            LOGGER.log(LOGGER_LEVEL, preparedMsg);
+            LOGGER.debug(preparedMsg);
         }
     }
 }

@@ -40,12 +40,14 @@
 
 package org.glassfish.grizzly.ssl;
 
-import java.nio.ByteBuffer;
+import static org.glassfish.grizzly.ssl.SSLUtils.sslEngineWrap;
 
+import java.nio.ByteBuffer;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
+
 import org.glassfish.grizzly.AbstractTransformer;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -57,7 +59,7 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.ByteBufferArray;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.memory.MemoryManager;
-import static org.glassfish.grizzly.ssl.SSLUtils.*;
+import org.slf4j.Logger;
 
 /**
  * <tt>Transformer</tt>, which encrypts plain data, contained in the
@@ -132,8 +134,7 @@ public final class SSLEncoderTransformer extends AbstractTransformer<Buffer, Buf
 
             try {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE, "SSLEncoder engine: {0} input: {1} output: {2}",
-                            new Object[]{sslEngine, originalByteBuffer, currentTargetByteBuffer});
+                    LOGGER.debug("SSLEncoder engine: {} input: {} output: {}", sslEngine, originalByteBuffer, currentTargetByteBuffer);
                 }
                 
                 final SSLEngineResult sslEngineResult =
@@ -150,8 +151,7 @@ public final class SSLEncoderTransformer extends AbstractTransformer<Buffer, Buf
                 final SSLEngineResult.Status status = sslEngineResult.getStatus();
 
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE, "SSLEncoder done engine: {0} result: {1} input: {2} output: {3}",
-                            new Object[]{sslEngine, sslEngineResult, originalByteBuffer, currentTargetByteBuffer});
+                    LOGGER.debug("SSLEncoder done engine: {} result: {} input: {} output: {}", sslEngine, sslEngineResult, originalByteBuffer, currentTargetByteBuffer);
                 }
 
                 if (status == SSLEngineResult.Status.OK) {

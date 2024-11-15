@@ -1157,7 +1157,7 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
         public NextAction handleConnect(FilterChainContext ctx)
                 throws IOException {
 
-            if (logger.isLoggable(Level.FINE)) {
+            if (logger.isDebugEnabled()) {
                 logger.log(Level.FINE, "Connected... Sending the request: {0}", request);
             }
 
@@ -1198,7 +1198,7 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
                 // Get HttpContent's Buffer
                 final Buffer buffer = httpContent.getContent();
 
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
                 }
                 if (buffer.hasRemaining()) {
@@ -1209,7 +1209,7 @@ public class NIOInputSourcesTest extends AbstractSpdyTest {
                 }
 
                 if (httpContent.isLast()) {
-                    if (logger.isLoggable(Level.FINE)) {
+                    if (logger.isDebugEnabled()) {
                         logger.log(Level.FINE, "Response complete: {0} bytes",
                                 bytesDownloaded);
                     }

@@ -254,7 +254,7 @@ public class SplitTest extends AbstractSpdyTest {
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            if (logger.isLoggable(Level.FINE)) {
+            if (logger.isDebugEnabled()) {
                 logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
             }
 

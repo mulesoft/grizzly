@@ -49,8 +49,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-
-
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -75,6 +73,7 @@ import org.glassfish.grizzly.monitoring.MonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.ssl.SSLUtils;
 import org.glassfish.grizzly.utils.ArraySet;
+import org.slf4j.Logger;
 
 /**
  * The {@link org.glassfish.grizzly.filterchain.Filter}, responsible for transforming {@link Buffer} into
@@ -625,7 +624,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                             httpHeader, headerSizeInBytes);
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Error parsing HTTP header", e);
+                LOGGER.debug("Error parsing HTTP header", e);
 
                 HttpProbeNotifier.notifyProbesError(this, connection, httpHeader, e);
 
@@ -707,7 +706,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                     }
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Error parsing HTTP payload", e);
+                LOGGER.debug("Error parsing HTTP payload", e);
                 
                 httpHeader.getProcessingState().setError(true);
                 HttpProbeNotifier.notifyProbesError(this, connection,
@@ -1050,7 +1049,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 if (httpHeader.isRequest()) {
                     ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
                 } else {
-                    LOGGER.warning("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
+                    LOGGER.warn("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
                 }
             }
         }
@@ -1329,7 +1328,7 @@ public abstract class HttpCodecFilter extends HttpBaseFilter
                 if (httpHeader.isRequest()) {
                     ((HttpRequestPacket) httpHeader).requiresAcknowledgement(true);
                 } else {
-                    LOGGER.warning("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
+                    LOGGER.warn("Header 'Expect' was found in a server response. The header will be ignored, but this is a server error");
                 }
             }
         }

@@ -39,6 +39,9 @@
  */
 package org.glassfish.grizzly.http.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -55,11 +58,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.filterchain.*;
-import org.glassfish.grizzly.http.*;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.http.HttpClientFilter;
+import org.glassfish.grizzly.http.HttpContent;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
+import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
@@ -67,7 +78,7 @@ import org.glassfish.grizzly.utils.Futures;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * {@link CLStaticHttpHandler} test.
@@ -363,8 +374,7 @@ public class CLStaticHttpHandlerTest {
                             }
 
                             out.close();
-                            LOGGER.log(Level.INFO, "Client received file ({0} bytes) in {1}ms.",
-                                    new Object[]{f.length(), stop - start});
+                            LOGGER.info("Client received file ({} bytes) in {}ms.", f.length(), stop - start);
                         // result.result(f) should be the last operation in handleRead
                             // otherwise NPE may occur in handleWrite asynchronously
                             resultQueue.add(Futures.createReadyFuture(f));
@@ -380,7 +390,7 @@ public class CLStaticHttpHandlerTest {
                     try {
                         if (f != null) {
                             if (!f.delete()) {
-                                LOGGER.log(Level.WARNING, "Unable to explicitly delete file: {0}", f.getAbsolutePath());
+                                LOGGER.warn("Unable to explicitly delete file: {}", f.getAbsolutePath());
                             }
                             f = null;
                         }

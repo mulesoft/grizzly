@@ -62,6 +62,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  *
@@ -154,7 +155,7 @@ public class ProtocolChainCodecTest extends GrizzlyTestCase {
 
                 final String message = ctx.getMessage();
 
-                logger.log(Level.FINE, "Server got message: " + message);
+                logger.debug("Server got message: {}", message);
 
                 assertEquals(clientMessage + "-" + counter, message);
 

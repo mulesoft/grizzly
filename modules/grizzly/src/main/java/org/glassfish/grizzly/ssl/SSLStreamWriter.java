@@ -43,7 +43,6 @@ package org.glassfish.grizzly.ssl;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
@@ -93,11 +92,10 @@ public class SSLStreamWriter extends TransformerStreamWriter {
             checkBuffers(connection, sslEngine);
         }
 
-        final boolean isLoggingFinest = LOGGER.isLoggable(Level.FINEST);
+        final boolean isLoggingFinest = LOGGER.isTraceEnabled();
 
         if (isLoggingFinest) {
-            LOGGER.log(Level.FINEST, "connection={0} engine={1} handshakeStatus={2}",
-                    new Object[]{connection, sslEngine, sslEngine.getHandshakeStatus()});
+            LOGGER.trace("connection={} engine={} handshakeStatus={}", connection, sslEngine, sslEngine.getHandshakeStatus());
         }
 
         HandshakeStatus handshakeStatus = sslEngine.getHandshakeStatus();
@@ -164,7 +162,7 @@ public class SSLStreamWriter extends TransformerStreamWriter {
 
         public boolean doHandshakeStep() throws IOException {
 
-            final boolean isLoggingFinest = LOGGER.isLoggable(Level.FINEST);
+            final boolean isLoggingFinest = LOGGER.isTraceEnabled();
 
             HandshakeStatus handshakeStatus = sslEngine.getHandshakeStatus();
 
@@ -176,16 +174,14 @@ public class SSLStreamWriter extends TransformerStreamWriter {
             while (true) {
 
                 if (isLoggingFinest) {
-                    LOGGER.log(Level.FINEST, "Loop Engine: {0} handshakeStatus={1}",
-                            new Object[]{sslEngine, sslEngine.getHandshakeStatus()});
+                    LOGGER.trace("Loop Engine: {} handshakeStatus={}", sslEngine, sslEngine.getHandshakeStatus());
                 }
 
                 switch (handshakeStatus) {
                     case NEED_UNWRAP: {
 
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_UNWRAP Engine: {0}",
-                                    sslEngine);
+                            LOGGER.trace("NEED_UNWRAP Engine: {}", sslEngine);
                         }
 
                         return false;
@@ -193,8 +189,7 @@ public class SSLStreamWriter extends TransformerStreamWriter {
 
                     case NEED_WRAP: {
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_WRAP Engine: {0}",
-                                    sslEngine);
+                            LOGGER.trace("NEED_WRAP Engine: {}", sslEngine);
                         }
 
                         streamWriter.writeBuffer(Buffers.EMPTY_BUFFER);
@@ -206,8 +201,7 @@ public class SSLStreamWriter extends TransformerStreamWriter {
 
                     case NEED_TASK: {
                         if (isLoggingFinest) {
-                            LOGGER.log(Level.FINEST, "NEED_TASK Engine: {0}",
-                                    sslEngine);
+                            LOGGER.trace("NEED_TASK Engine: {}", sslEngine);
                         }
                         SSLUtils.executeDelegatedTask(sslEngine);
                         handshakeStatus = sslEngine.getHandshakeStatus();

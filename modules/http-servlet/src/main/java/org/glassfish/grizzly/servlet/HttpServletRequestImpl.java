@@ -62,8 +62,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Locale;
@@ -71,7 +71,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -90,6 +89,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import javax.servlet.http.WebConnection;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.Grizzly;
@@ -102,6 +102,7 @@ import org.glassfish.grizzly.http.server.TimeoutHandler;
 import org.glassfish.grizzly.http.server.util.Enumerator;
 import org.glassfish.grizzly.http.server.util.Globals;
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 /**
  * Facade class that wraps a {@link Request} request object.
@@ -617,10 +618,8 @@ public class HttpServletRequestImpl implements HttpServletRequest, Holders.Reque
                     listener.attributeAdded(event);
                 }
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                               LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_ADD_ERROR("ServletRequestAttributeListener", listener.getClass().getName()),
-                               t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_ADD_ERROR("ServletRequestAttributeListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -657,9 +656,7 @@ public class HttpServletRequestImpl implements HttpServletRequest, Holders.Reque
                 }
                 listener.attributeRemoved(event);
             } catch (Throwable t) {
-                LOGGER.log(Level.WARNING,
-                           LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_REMOVE_ERROR("ServletRequestAttributeListener", listener.getClass().getName()),
-                           t);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_REMOVE_ERROR("ServletRequestAttributeListener", listener.getClass().getName()), t);
             }
         }
     }
@@ -1210,10 +1207,8 @@ public class HttpServletRequestImpl implements HttpServletRequest, Holders.Reque
                     currentCookie.setVersion(cookie.getVersion());
                     cookies[cookieIdx++] = currentCookie;
                 } catch (IllegalArgumentException iae) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_COOKIE_CREATE_ERROR(
-                                        cookie.getName(), iae.getLocalizedMessage()));
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_COOKIE_CREATE_ERROR(cookie.getName(), iae.getLocalizedMessage()));
                     }
                 }
             }
@@ -1555,7 +1550,7 @@ public class HttpServletRequestImpl implements HttpServletRequest, Holders.Reque
                         servletResponse.getOutputStream());
                 httpUpgradeHandler.init(wc);
             } else {
-                LOGGER.log(Level.SEVERE, "HttpUpgradeHandler handler cannot be null");
+                LOGGER.error("HttpUpgradeHandler handler cannot be null");
             }
         }
     }
@@ -1592,7 +1587,7 @@ public class HttpServletRequestImpl implements HttpServletRequest, Holders.Reque
 //                    hostValve.postInvoke(this, response);
 //                }
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Unable to perform error dispatch", e);
+                LOGGER.error("Unable to perform error dispatch", e);
             } finally {
                 /*
                  * If no matching error page was found, or the error page

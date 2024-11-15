@@ -40,6 +40,10 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -50,11 +54,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-
 import junit.framework.AssertionFailedError;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.EmptyCompletionHandler;
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.SocketConnectorHandler;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
@@ -72,10 +74,6 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.ssl.SSLFilter;
 import org.glassfish.grizzly.utils.Futures;
 import org.junit.After;
-
-import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,8 +90,6 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SuspendTest {
 
-    private static final Logger LOGGER = Grizzly.logger(SuspendTest.class);
-    
     public final int PORT = findFreePort();
     private ScheduledThreadPoolExecutor scheduledThreadPool;
     private final String testString = "blabla test.";

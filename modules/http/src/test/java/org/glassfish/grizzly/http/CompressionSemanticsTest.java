@@ -71,6 +71,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
 import org.glassfish.grizzly.filterchain.Filter;
 import org.glassfish.grizzly.memory.Buffers;
+import org.slf4j.Logger;
 
 /**
  *
@@ -519,7 +520,7 @@ public class CompressionSemanticsTest extends TestCase {
 
 
     private class ClientFilter extends BaseFilter {
-        private final Logger logger = Grizzly.logger(ClientFilter.class);
+        private final Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final HttpPacket request;
         private final FutureImpl<Boolean> testResult;
@@ -545,9 +546,8 @@ public class CompressionSemanticsTest extends TestCase {
         @Override
         public NextAction handleConnect(FilterChainContext ctx)
               throws IOException {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}",
-                        request);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Connected... Sending the request: {}", request);
             }
 
             ctx.write(request);
@@ -562,7 +562,7 @@ public class CompressionSemanticsTest extends TestCase {
 
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk; last: {0}", httpContent.isLast());
+            LOGGER.debug("Got HTTP response chunk; last: {}", httpContent.isLast());
 
 
             if (httpContent.isLast()) {

@@ -39,7 +39,18 @@
  */
 package org.glassfish.grizzly.memory;
 
-import org.junit.Test;
+import static org.glassfish.grizzly.memory.PooledMemoryManager.DEFAULT_BASE_BUFFER_SIZE;
+import static org.glassfish.grizzly.memory.PooledMemoryManager.DEFAULT_GROWTH_FACTOR;
+import static org.glassfish.grizzly.memory.PooledMemoryManager.DEFAULT_HEAP_USAGE_PERCENTAGE;
+import static org.glassfish.grizzly.memory.PooledMemoryManager.DEFAULT_NUMBER_OF_POOLS;
+import static org.glassfish.grizzly.memory.PooledMemoryManager.DEFAULT_PREALLOCATED_BUFFERS_PERCENTAGE;
+import static org.glassfish.grizzly.memory.PooledMemoryManager.PoolSlice;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,15 +64,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 import org.glassfish.grizzly.Buffer;
-
+import org.glassfish.grizzly.Grizzly;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import static org.glassfish.grizzly.memory.PooledMemoryManager.*;
-import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class PooledMemoryManagerTest {
@@ -811,10 +819,7 @@ public class PooledMemoryManagerTest {
         if (errorsSeen.get()) {
             for (int i = 0, len = errors.length; i < len; i++) {
                 if (errors[i] != null) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE,
-                                                    "Error in test thread " + (i + 1) + ": " + errors[i]
-                                                            .getMessage(),
-                                                    errors[i]);
+                    Grizzly.logger(PooledMemoryManagerTest.class).error("Error in test thread {}: {}", i + 1, errors[i].getMessage(), errors[i]);
                 }
             }
             fail("Test failed!  See log for details.");

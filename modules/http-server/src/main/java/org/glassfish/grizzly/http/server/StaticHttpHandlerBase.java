@@ -46,21 +46,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
 import org.glassfish.grizzly.filterchain.Filter;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.io.NIOOutputStream;
 import org.glassfish.grizzly.http.io.OutputBuffer;
-import org.glassfish.grizzly.http.util.MimeType;
+import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.glassfish.grizzly.http.util.MimeType;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.slf4j.Logger;
 
 /**
  * The basic class for {@link HttpHandler} implementations,
@@ -333,7 +333,7 @@ public abstract class StaticHttpHandlerBase extends HttpHandler {
         
         @Override
         public void onWritePossible() throws Exception {
-            LOGGER.log(Level.FINE, "[onWritePossible]");
+            LOGGER.debug("[onWritePossible]");
             // send CHUNK of data
             final boolean isWriteMore = sendChunk();
 
@@ -345,7 +345,7 @@ public abstract class StaticHttpHandlerBase extends HttpHandler {
 
         @Override
         public void onError(Throwable t) {
-            LOGGER.log(Level.FINE, "[onError] ", t);
+            LOGGER.debug("[onError] ", t);
             response.setStatus(500, t.getMessage());
             complete(true);
         }

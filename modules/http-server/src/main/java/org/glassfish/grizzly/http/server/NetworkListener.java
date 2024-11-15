@@ -75,6 +75,7 @@ import org.glassfish.grizzly.strategies.SameThreadIOStrategy;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.grizzly.utils.ArraySet;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 public class NetworkListener {
     private static final Logger LOGGER = Grizzly.logger(NetworkListener.class);
@@ -761,10 +762,8 @@ public class NetworkListener {
 
         state = State.RUNNING;
 
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO,
-                "Started listener bound to [{0}]",
-                host + ':' + port);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Started listener bound to [{}]", host + ':' + port);
         }
 
     }
@@ -813,10 +812,8 @@ public class NetworkListener {
         try {
             serverConnection = null;
             transport.shutdownNow();
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.log(Level.INFO,
-                    "Stopped listener bound to [{0}]",
-                    host + ':' + port);
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Stopped listener bound to [{}]", host + ':' + port);
             }
         } finally {
             state = State.STOPPED;
@@ -845,10 +842,8 @@ public class NetworkListener {
         }
         transport.pause();
         state = State.PAUSED;
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO,
-                "Paused listener bound to [{0}]",
-                host + ':' + port);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Paused listener bound to [{}]", host + ':' + port);
         }
 
     }
@@ -862,10 +857,8 @@ public class NetworkListener {
         }
         transport.resume();
         state = State.RUNNING;
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO,
-                "Resumed listener bound to [{0}]",
-                host + ':' + port);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Resumed listener bound to [{}]", host + ':' + port);
         }
 
     }

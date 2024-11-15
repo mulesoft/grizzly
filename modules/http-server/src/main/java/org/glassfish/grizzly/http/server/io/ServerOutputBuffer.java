@@ -40,15 +40,14 @@
 
 package org.glassfish.grizzly.http.server.io;
 
+import java.io.File;
+import java.util.concurrent.Executor;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.http.io.OutputBuffer;
 import org.glassfish.grizzly.http.server.Response;
-
-import java.io.File;
-import java.util.concurrent.Executor;
-
 import org.glassfish.grizzly.localization.LogMessages;
 
 public class ServerOutputBuffer extends OutputBuffer {
@@ -108,19 +107,16 @@ public class ServerOutputBuffer extends OutputBuffer {
             ch = new CompletionHandler<WriteResult>() {
                 @Override
                 public void cancelled() {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                LogMessages.WARNING_GRIZZLY_HTTP_SERVER_SERVEROUTPUTBUFFER_FILE_TRANSFER_CANCELLED(file.getAbsolutePath()));
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_SERVEROUTPUTBUFFER_FILE_TRANSFER_CANCELLED(file.getAbsolutePath()));
                     }
                     serverResponse.resume();
                 }
 
                 @Override
                 public void failed(Throwable throwable) {
-                    if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(Level.SEVERE,
-                                LogMessages.WARNING_GRIZZLY_HTTP_SERVER_SERVEROUTPUTBUFFER_FILE_TRANSFER_FAILED(file.getAbsolutePath(), throwable.getMessage()),
-                                throwable);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_SERVEROUTPUTBUFFER_FILE_TRANSFER_FAILED(file.getAbsolutePath(), throwable.getMessage()), throwable);
                     }
                     serverResponse.resume();
                 }

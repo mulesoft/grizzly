@@ -58,6 +58,8 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.http.util.Constants.FORM_POST_CONTENT_TYPE;
+
 import java.io.CharConversionException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,8 +76,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
 
-
 import javax.security.auth.Subject;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ReadHandler;
@@ -107,8 +109,7 @@ import org.glassfish.grizzly.http.util.Parameters;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.JdkVersion;
-
-import static org.glassfish.grizzly.http.util.Constants.FORM_POST_CONTENT_TYPE;
+import org.slf4j.Logger;
 /**
  * Wrapper object for the Coyote request.
  *
@@ -145,7 +146,7 @@ public class Request {
                 lp = localeParserClazz.newInstance();
             } catch (Throwable e) {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.log(Level.FINE, "Can't load JDK7 TagLocaleParser", e);
+                    LOGGER.debug("Can't load JDK7 TagLocaleParser", e);
                 }
                 lp = new LegacyLocaleParser();
             }
@@ -628,8 +629,7 @@ public class Request {
                 try {
                     anAfterServicesList.onAfterService(this);
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_AFTERSERVICE_NOTIFICATION_ERROR(), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_AFTERSERVICE_NOTIFICATION_ERROR(), e);
                 }
             }
         }
@@ -2069,8 +2069,8 @@ public class Request {
         }
 
         if ((maxFormPostSize > 0) && (len > maxFormPostSize)) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_POST_TOO_LARGE());
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_POST_TOO_LARGE());
             }
 
             throw new IllegalStateException(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_POST_TOO_LARGE());
@@ -2086,8 +2086,7 @@ public class Request {
             try {
                 skipPostBody(read);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_BODY_SKIP(), e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUEST_BODY_SKIP(), e);
             }
         }
 

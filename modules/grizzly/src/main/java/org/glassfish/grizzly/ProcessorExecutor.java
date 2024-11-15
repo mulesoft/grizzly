@@ -42,8 +42,8 @@ package org.glassfish.grizzly;
 
 import java.io.IOException;
 
-
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 /**
  *
@@ -63,10 +63,7 @@ public final class ProcessorExecutor {
     @SuppressWarnings("unchecked")
     public static void execute(Context context) {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.log(Level.FINEST,
-                    "executing connection ({0}). IOEvent={1} processor={2}",
-                    new Object[]{context.getConnection(), context.getIoEvent(),
-                    context.getProcessor()});
+            LOGGER.trace("executing connection ({}). IOEvent={} processor={}", context.getConnection(), context.getIoEvent(), context.getProcessor());
         }
 
         boolean isRerun;
@@ -86,12 +83,8 @@ public final class ProcessorExecutor {
             complete0(context, result);
             
         } catch (Throwable t) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_PROCESSOR_ERROR(
-                                context.getConnection(), context.getIoEvent(),
-                                context.getProcessor()),
-                        t);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_PROCESSOR_ERROR(context.getConnection(), context.getIoEvent(), context.getProcessor()), t);
             }
             
             try {

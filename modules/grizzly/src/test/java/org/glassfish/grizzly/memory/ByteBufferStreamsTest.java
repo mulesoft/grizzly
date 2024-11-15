@@ -42,27 +42,15 @@ package org.glassfish.grizzly.memory;
 
 import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
 
-import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.impl.SafeFutureImpl;
-import java.util.List;
-import java.util.ArrayList;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
 import junit.framework.Assert;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.streams.StreamReader;
-import org.glassfish.grizzly.streams.StreamWriter;
-import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
-import org.glassfish.grizzly.streams.AbstractStreamReader;
-import org.glassfish.grizzly.streams.BufferedInput;
-import org.glassfish.grizzly.utils.conditions.Condition;
-import java.util.concurrent.BlockingQueue;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -70,7 +58,18 @@ import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyFuture;
 import org.glassfish.grizzly.GrizzlyTestCase;
 import org.glassfish.grizzly.StandaloneProcessor;
+import org.glassfish.grizzly.impl.FutureImpl;
+import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.streams.AbstractStreamReader;
+import org.glassfish.grizzly.streams.BufferedInput;
+import org.glassfish.grizzly.streams.StreamReader;
+import org.glassfish.grizzly.streams.StreamWriter;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.glassfish.grizzly.utils.conditions.Condition;
+import org.slf4j.Logger;
 
 /**
  * Basic idea:
@@ -125,24 +124,22 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
         }
 
         protected void werrMsg(Object obj, Throwable thr) {
-            LOGGER.log(Level.SEVERE, "###Checker({0}).write: Caught {1} at parameter {2}",
-                    new Object[]{toString(), thr, obj});
+            LOGGER.error("###Checker({}).write: Caught {} at parameter {}", this, thr, obj);
         }
 
         protected void rerrMsg(Object obj, Throwable thr) {
-            LOGGER.log(Level.SEVERE, "###Checker({0}).readAndCheck: Caught {1} at parameter {2}",
-                    new Object[]{toString(), thr, obj});
+            LOGGER.error("###Checker({}).readAndCheck: Caught {} at parameter {}", this, thr, obj);
         }
 
         public void wmsg() {
             if (LOGGER.isTraceEnabled()) {
-                LOGGER.log(Level.SEVERE, "Write:{0}", toString());
+                LOGGER.error("Write:{}", this);
             }
         }
 
         public void rmsg() {
             if (LOGGER.isTraceEnabled()) {
-                LOGGER.log(Level.SEVERE, "ReadAndCheck:{0}", toString());
+                LOGGER.error("ReadAndCheck:{}", this);
             }
         }
 
@@ -1170,7 +1167,7 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
         try {
             reader.readByteArray(checkArray, 0, 500);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Data generate error", e);
+            LOGGER.error("Data generate error", e);
         }
 
         Assert.assertTrue(Arrays.equals(checkArray, testdata));
@@ -1193,7 +1190,7 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
             clienttransport.shutdownNow();
 
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Close", ex);
+            LOGGER.error("Close", ex);
         }
     }
 
@@ -1210,7 +1207,7 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
             startEchoServerThread(servertransport, serverConnection);
 
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Server start error", ex);
+            LOGGER.error("Server start error", ex);
         }
 
     }
@@ -1242,7 +1239,7 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
                     getStreamWriter(clientconnection);
             
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Client start error", ex);
+            LOGGER.error("Client start error", ex);
         }
     }
 
@@ -1271,8 +1268,7 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
                                 }
 
                                 if (LOGGER.isTraceEnabled()) {
-                                    LOGGER.log(Level.FINEST, "reader.availableDataSize():{0},{1}",
-                                            new Object[]{reader.available(), checker.byteSize()});
+                                    LOGGER.trace("reader.availableDataSize():{},{}", reader.available(), checker.byteSize());
                                 }
 
                                 Future f = reader.notifyAvailable((int) checker.byteSize());
@@ -1293,16 +1289,14 @@ public class ByteBufferStreamsTest extends GrizzlyTestCase {
 
 
                         } catch (Throwable e) {
-                            LOGGER.log(Level.WARNING,
-                                    "Error working with accepted connection", e);
+                            LOGGER.warn("Error working with accepted connection", e);
                         } finally {
                             connection.closeSilently();
                         }
 
                     } catch (Exception e) {
                         if (!transport.isStopped()) {
-                            LOGGER.log(Level.WARNING,
-                                    "Error accepting connection", e);
+                            LOGGER.warn("Error accepting connection", e);
                             assertTrue("Error accepting connection", false);
                         }
                     }

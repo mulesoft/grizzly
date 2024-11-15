@@ -62,6 +62,8 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.junit.Test;
+import org.slf4j.Logger;
+
 import static org.junit.Assert.*;
 
 /**
@@ -214,13 +216,13 @@ public class BasicConfigTest {
             // Cast message to a HttpContent
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            logger.debug("Got HTTP response chunk");
 
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            if (logger.isDebugEnabled()) {
+                logger.debug("HTTP content size: {}", buffer.remaining());
             }
 
             if (!httpContent.isLast()) {

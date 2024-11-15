@@ -1221,7 +1221,7 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
             final HttpRequestPacket httpRequest = HttpRequestPacket.builder().method("GET")
                   .uri("/path").protocol(Protocol.HTTP_1_1)
                   .header("Host", "localhost:" + PORT).build();
-            if (logger.isLoggable(Level.FINE)) {
+            if (logger.isDebugEnabled()) {
                 logger.log(Level.FINE, "Connected... Sending the request: {0}", httpRequest);
             }
 
@@ -1246,7 +1246,7 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
                 // Get HttpContent's Buffer
                 final Buffer buffer = httpContent.getContent();
 
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
                 }
                 if (buffer.remaining() > 0) {
@@ -1257,7 +1257,7 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
                 }
 
                 if (httpContent.isLast()) {
-                    if (logger.isLoggable(Level.FINE)) {
+                    if (logger.isDebugEnabled()) {
                         logger.log(Level.FINE, "Response complete: {0} bytes", bytesDownloaded);
                     }
                     completeFuture.result(buf.toStringContent());

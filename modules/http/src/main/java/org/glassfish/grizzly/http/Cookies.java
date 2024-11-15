@@ -60,7 +60,6 @@ package org.glassfish.grizzly.http;
 
 import java.util.Arrays;
 
-
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.util.BufferChunk;
 import org.glassfish.grizzly.http.util.ByteChunk;
@@ -69,6 +68,7 @@ import org.glassfish.grizzly.http.util.CookieUtils;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.slf4j.Logger;
 
 /**
  * A collection of cookies - reusable and tuned for server side performance.
@@ -212,7 +212,7 @@ public final class Cookies {
 
             // Uncomment to test the new parsing code
             if (cookieValue.getType() == DataChunk.Type.Bytes) {
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     log("Parsing b[]: " + cookieValue.toString());
                 }
 
@@ -221,7 +221,7 @@ public final class Cookies {
                         byteChunk.getStart(),
                         byteChunk.getLength());
             } else if (cookieValue.getType() == DataChunk.Type.Buffer) {
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     log("Parsing buffer: " + cookieValue.toString());
                 }
 
@@ -230,7 +230,7 @@ public final class Cookies {
                         bufferChunk.getStart(),
                         bufferChunk.getLength());
             } else {
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     log("Parsing string: " + cookieValue.toString());
                 }
 
@@ -268,7 +268,7 @@ public final class Cookies {
 
             // Uncomment to test the new parsing code
             if (cookieValue.getType() == DataChunk.Type.Bytes) {
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     log("Parsing b[]: " + cookieValue.toString());
                 }
 
@@ -279,7 +279,7 @@ public final class Cookies {
                         CookieUtils.COOKIE_VERSION_ONE_STRICT_COMPLIANCE,
                         CookieUtils.RFC_6265_SUPPORT_ENABLED);
             } else if (cookieValue.getType() == DataChunk.Type.Buffer) {
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     log("Parsing b[]: " + cookieValue.toString());
                 }
 
@@ -290,7 +290,7 @@ public final class Cookies {
                         CookieUtils.COOKIE_VERSION_ONE_STRICT_COMPLIANCE,
                         CookieUtils.RFC_6265_SUPPORT_ENABLED);
             } else {
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isDebugEnabled()) {
                     log("Parsing string: " + cookieValue.toString());
                 }
 
@@ -313,8 +313,8 @@ public final class Cookies {
     }
 
     private static void log(String s) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "Cookies: {0}", s);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Cookies: {}", s);
         }
     }
 

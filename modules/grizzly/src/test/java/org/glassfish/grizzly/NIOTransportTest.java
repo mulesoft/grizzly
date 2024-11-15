@@ -61,6 +61,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -116,7 +117,7 @@ public class NIOTransportTest {
 
     @Test
     public void testStartStop() throws IOException {
-        LOGGER.log(Level.INFO, "Running: testStartStop ({0})", transport.getName());
+        LOGGER.info("Running: testStartStop ({})", transport.getName());
         
         try {
             transport.bind(port);
@@ -128,7 +129,7 @@ public class NIOTransportTest {
 
     @Test
     public void testStartStopStart() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testStartStopStart ({0})", transport.getName());
+        LOGGER.info("Running: testStartStopStart ({})", transport.getName());
 
         try {
             transport.bind(port);
@@ -156,7 +157,7 @@ public class NIOTransportTest {
 
     @Test
     public void testReadWriteTimeout() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testReadWriteTimeout ({0})", transport.getName());
+        LOGGER.info("Running: testReadWriteTimeout ({})", transport.getName());
 
         assertEquals(30, transport.getWriteTimeout(TimeUnit.SECONDS));
         assertEquals(30, transport.getReadTimeout(TimeUnit.SECONDS));
@@ -172,7 +173,7 @@ public class NIOTransportTest {
 
     @Test
     public void testConnectorHandlerConnect() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testConnectorHandlerConnect ({0})", transport.getName());
+        LOGGER.info("Running: testConnectorHandlerConnect ({})", transport.getName());
 
         Connection connection = null;
 
@@ -194,7 +195,7 @@ public class NIOTransportTest {
 
     @Test
     public void testPortRangeBind() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testPortRangeBind ({0})", transport.getName());
+        LOGGER.info("Running: testPortRangeBind ({})", transport.getName());
 
         final int portsTest = 10;
         final int startPort = 7777 + 1234;
@@ -232,7 +233,7 @@ public class NIOTransportTest {
 
     @Test
     public void testConnectorHandlerConnectAndWrite() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testConnectorHandlerConnectAndWrite ({0})", transport.getName());
+        LOGGER.info("Running: testConnectorHandlerConnectAndWrite ({})", transport.getName());
 
         Connection connection = null;
         StreamWriter writer = null;
@@ -281,7 +282,7 @@ public class NIOTransportTest {
 
     @Test
     public void testSimpleEcho() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testSimpleEcho ({0})", transport.getName());
+        LOGGER.info("Running: testSimpleEcho ({})", transport.getName());
 
         Connection connection = null;
         StreamReader reader;
@@ -344,7 +345,7 @@ public class NIOTransportTest {
 
     @Test
     public void testSeveralPacketsEcho() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testSeveralPacketsEcho ({0})", transport.getName());
+        LOGGER.info("Running: testSeveralPacketsEcho ({})", transport.getName());
 
         Connection connection = null;
         StreamReader reader;
@@ -408,7 +409,7 @@ public class NIOTransportTest {
 
     @Test
     public void testAsyncReadWriteEcho() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testAsyncReadWriteEcho ({0})", transport.getName());
+        LOGGER.info("Running: testAsyncReadWriteEcho ({})", transport.getName());
 
         Connection connection = null;
         StreamReader reader;
@@ -469,7 +470,7 @@ public class NIOTransportTest {
 
     @Test
     public void testSeveralPacketsAsyncReadWriteEcho() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testSeveralPacketsAsyncReadWriteEcho ({0})", transport.getName());
+        LOGGER.info("Running: testSeveralPacketsAsyncReadWriteEcho ({})", transport.getName());
 
         int packetsNumber = 100;
         final int packetSize = 32;
@@ -537,7 +538,7 @@ public class NIOTransportTest {
 
     @Test
     public void testFeeder() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testFeeder ({0})", transport.getName());
+        LOGGER.info("Running: testFeeder ({})", transport.getName());
 
         class CheckSizeFilter extends BaseFilter {
             private int size;
@@ -552,8 +553,7 @@ public class NIOTransportTest {
             public NextAction handleRead(FilterChainContext ctx)
             throws IOException {
                 final Buffer buffer = ctx.getMessage();
-                LOGGER.log(Level.INFO, "Feeder. Check size filter: {0}",
-                           buffer);
+                LOGGER.info("Feeder. Check size filter: {}", buffer);
                 if (buffer.remaining() >= size) {
                     latch.countDown();
                     return ctx.getInvokeAction();
@@ -644,7 +644,7 @@ public class NIOTransportTest {
 
     @Test
     public void testWorkerThreadPoolConfiguration() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testWorkerThreadPoolConfiguration ({0})", transport.getName());
+        LOGGER.info("Running: testWorkerThreadPoolConfiguration ({})", transport.getName());
 
         ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
         config.setCorePoolSize(1);
@@ -660,7 +660,7 @@ public class NIOTransportTest {
 
     @Test
     public void testWorkerThreadPoolConfiguration2() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testWorkerThreadPoolConfiguration2 ({0})", transport.getName());
+        LOGGER.info("Running: testWorkerThreadPoolConfiguration2 ({})", transport.getName());
 
         ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
         config.setCorePoolSize(1);
@@ -674,7 +674,7 @@ public class NIOTransportTest {
 
     @Test
     public void testGracefulShutdown() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testGracefulShutdown ({0})", transport.getName());
+        LOGGER.info("Running: testGracefulShutdown ({})", transport.getName());
 
         final CountDownLatch latch = new CountDownLatch(2);
         final AtomicBoolean forcedNotCalled1 = new AtomicBoolean();
@@ -739,7 +739,7 @@ public class NIOTransportTest {
 
     @Test
     public void testGracefulShutdownWithGracePeriod() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testGracefulShutdownWithGracePeriod ({0})", transport.getName());
+        LOGGER.info("Running: testGracefulShutdownWithGracePeriod ({})", transport.getName());
 
         final AtomicBoolean forcedNotCalled1 = new AtomicBoolean();
         final AtomicBoolean forcedNotCalled2 = new AtomicBoolean();
@@ -799,7 +799,7 @@ public class NIOTransportTest {
 
     @Test
     public void testGracefulShutdownWithGracePeriodTimeout() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testGracefulShutdownWithGracePeriodTimeout ({0})", transport.getName());
+        LOGGER.info("Running: testGracefulShutdownWithGracePeriodTimeout ({})", transport.getName());
 
         final AtomicBoolean forcedCalled1 = new AtomicBoolean();
         final AtomicBoolean forcedCalled2 = new AtomicBoolean();
@@ -858,7 +858,7 @@ public class NIOTransportTest {
 
     @Test
     public void testGracefulShutdownAndThenForced() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testGracefulShutdownAndThenForced ({0})", transport.getName());
+        LOGGER.info("Running: testGracefulShutdownAndThenForced ({})", transport.getName());
 
         final AtomicBoolean listener1 = new AtomicBoolean();
         final AtomicBoolean listener2 = new AtomicBoolean();
@@ -923,7 +923,7 @@ public class NIOTransportTest {
 
     @Test
     public void testTimedGracefulShutdownAndThenForced() throws Exception {
-        LOGGER.log(Level.INFO, "Running: testTimedGracefulShutdownAndThenForced ({0})", transport.getName());
+        LOGGER.info("Running: testTimedGracefulShutdownAndThenForced ({})", transport.getName());
 
         final CountDownLatch latch = new CountDownLatch(1);
         transport.addShutdownListener(new GracefulShutdownListener() {

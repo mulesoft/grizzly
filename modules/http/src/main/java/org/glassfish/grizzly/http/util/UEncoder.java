@@ -58,12 +58,13 @@
 
 package org.glassfish.grizzly.http.util;
 
-import org.glassfish.grizzly.Grizzly;
-
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.BitSet;
+
+import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 
 
@@ -80,7 +81,7 @@ import java.util.BitSet;
  */
 public final class UEncoder {
 
-    private final static Logger logger = Grizzly.logger(UEncoder.class);
+    private final static Logger LOGGER = Grizzly.logger(UEncoder.class);
     
     private static final BitSet initialSafeChars = new BitSet(128);
     static {
@@ -264,8 +265,8 @@ public final class UEncoder {
     }
 
     private static void log(String s) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine(s);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(s);
         }
     }
 }

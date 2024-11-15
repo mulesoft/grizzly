@@ -180,7 +180,7 @@ final class FilterChainImpl implements FilterChain, FilterChainInvoker {
                 try {
                     ((ServletRequestListener) listeners[i]).requestDestroyed(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
+                    if (LOGGER.isWarnEnabled()) {
                         LOGGER.log(Level.WARNING,
                                 LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("requestDestroyed", "ServletRequestListener", listeners[i].getClass().getName()),
                                 t);
@@ -198,7 +198,7 @@ final class FilterChainImpl implements FilterChain, FilterChainInvoker {
                 try {
                     ((ServletRequestListener) listeners[i]).requestInitialized(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
+                    if (LOGGER.isWarnEnabled()) {
                         LOGGER.log(Level.WARNING,
                                 LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("requestDestroyed", "ServletRequestListener", listeners[i].getClass().getName()),
                                 t);

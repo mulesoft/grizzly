@@ -58,9 +58,17 @@
 
 package org.glassfish.grizzly.http.util;
 
+import static org.glassfish.grizzly.http.util.CookieUtils.COOKIE_VERSION_ONE_STRICT_COMPLIANCE;
+import static org.glassfish.grizzly.http.util.CookieUtils.OLD_COOKIE_FORMAT;
+import static org.glassfish.grizzly.http.util.CookieUtils.RFC_6265_SUPPORT_ENABLED;
+import static org.glassfish.grizzly.http.util.CookieUtils.equalsIgnoreCase;
+import static org.glassfish.grizzly.http.util.CookieUtils.getQuotedValueEndPosition;
+import static org.glassfish.grizzly.http.util.CookieUtils.getTokenEndPosition;
+import static org.glassfish.grizzly.http.util.CookieUtils.isSeparator;
+import static org.glassfish.grizzly.http.util.CookieUtils.isWhiteSpace;
+
 import java.text.ParseException;
 import java.util.Date;
-
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
@@ -68,8 +76,7 @@ import org.glassfish.grizzly.http.Cookie;
 import org.glassfish.grizzly.http.Cookies;
 import org.glassfish.grizzly.http.LazyCookieState;
 import org.glassfish.grizzly.utils.Charsets;
-
-import static org.glassfish.grizzly.http.util.CookieUtils.*;
+import org.slf4j.Logger;
 
 /**
  * The set of Cookie utility methods for cookie parsing.
@@ -228,7 +235,7 @@ public class CookieParserUtils {
                             // INVALID COOKIE, advance to next delimiter
                             // The starting character of the cookie value was
                             // not valid.
-                            LOGGER.fine("Invalid cookie. Value not a token or quoted value");
+                            LOGGER.debug("Invalid cookie. Value not a token or quoted value");
                             while (pos < end && buffer.get(pos) != ';'
                                     && buffer.get(pos) != ',') {
                                 pos++;
@@ -316,7 +323,7 @@ public class CookieParserUtils {
 //                }
 
                 // Unknown cookie, complain
-                LOGGER.fine("Unknown Special Cookie");
+                LOGGER.debug("Unknown Special Cookie");
 
             } else { // Normal Cookie
                 cookie = cookies.getNextUnusedCookie();
@@ -478,7 +485,7 @@ public class CookieParserUtils {
                             // INVALID COOKIE, advance to next delimiter
                             // The starting character of the cookie value was
                             // not valid.
-                            LOGGER.fine("Invalid cookie. Value not a token or quoted value");
+                            LOGGER.debug("Invalid cookie. Value not a token or quoted value");
                             while (pos < end && bytes[pos] != ';'
                                     && bytes[pos] != ',') {
                                 pos++;
@@ -557,7 +564,7 @@ public class CookieParserUtils {
                 }
 
                 // Unknown cookie, complain
-                LOGGER.fine("Unknown Special Cookie");
+                LOGGER.debug("Unknown Special Cookie");
 
             } else { // Normal Cookie
                 cookie = cookies.getNextUnusedCookie();
@@ -701,7 +708,7 @@ public class CookieParserUtils {
                             // INVALID COOKIE, advance to next delimiter
                             // The starting character of the cookie value was
                             // not valid.
-                            LOGGER.fine("Invalid cookie. Value not a token or quoted value");
+                            LOGGER.debug("Invalid cookie. Value not a token or quoted value");
                             while (pos < end && cookiesStr.charAt(pos) != ';'
                                     && cookiesStr.charAt(pos) != ',') {
                                 pos++;
@@ -777,7 +784,7 @@ public class CookieParserUtils {
                 }
 
                 // Unknown cookie, complain
-                LOGGER.fine("Unknown Special Cookie");
+                LOGGER.debug("Unknown Special Cookie");
 
             } else { // Normal Cookie
 
@@ -919,7 +926,7 @@ public class CookieParserUtils {
                             // INVALID COOKIE, advance to next delimiter
                             // The starting character of the cookie value was
                             // not valid.
-                            LOGGER.fine("Invalid cookie. Value not a token or quoted value");
+                            LOGGER.debug("Invalid cookie. Value not a token or quoted value");
                             while (pos < end && bytes[pos] != ';'
                                     && bytes[pos] != ',') {
                                 pos++;
@@ -1189,7 +1196,7 @@ public class CookieParserUtils {
                             // INVALID COOKIE, advance to next delimiter
                             // The starting character of the cookie value was
                             // not valid.
-                            LOGGER.fine("Invalid cookie. Value not a token or quoted value");
+                            LOGGER.debug("Invalid cookie. Value not a token or quoted value");
                             while (pos < end && buffer.get(pos) != ';'
                                     && buffer.get(pos) != ',') {
                                 pos++;
@@ -1446,7 +1453,7 @@ public class CookieParserUtils {
                             // INVALID COOKIE, advance to next delimiter
                             // The starting character of the cookie value was
                             // not valid.
-                            LOGGER.fine("Invalid cookie. Value not a token or quoted value");
+                            LOGGER.debug("Invalid cookie. Value not a token or quoted value");
                             while (pos < end && cookiesStr.charAt(pos) != ';'
                                     && cookiesStr.charAt(pos) != ',') {
                                 pos++;
@@ -1768,7 +1775,7 @@ public class CookieParserUtils {
         long result = date1 - date2;
         if (result > Integer.MAX_VALUE) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.fine("Integer overflow when calculating max age delta.  Date: " + date1 + ", current date: " + date2 + ".  Using Integer.MAX_VALUE for further calculation.");
+                LOGGER.debug("Integer overflow when calculating max age delta.  Date: " + date1 + ", current date: " + date2 + ".  Using Integer.MAX_VALUE for further calculation.");
             }
             return Integer.MAX_VALUE;
         } else {
