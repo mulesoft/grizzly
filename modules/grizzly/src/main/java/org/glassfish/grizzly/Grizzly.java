@@ -41,15 +41,13 @@
 package org.glassfish.grizzly;
 
 import java.io.IOException;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.glassfish.grizzly.attributes.AttributeBuilder;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.glassfish.grizzly.attributes.AttributeBuilder;
+import org.slf4j.Logger;
 
 /**
  * Class contains information about Grizzly framework.
@@ -67,13 +65,13 @@ public class Grizzly {
     private static final int minor;
 
     private static boolean isTrackingThreadCache;
-    
+
     public static Logger logger(Class<?> clazz) {
-        return LoggerFactory.getLogger(clazz);
+        return logger(clazz.getName());
     }
 
     public static Logger logger(String name) {
-        return LoggerFactory.getLogger(name);
+        return MuleLoggerProvider.getLogger(name);
     }
 
     /** Reads version from properties and parses it. */
