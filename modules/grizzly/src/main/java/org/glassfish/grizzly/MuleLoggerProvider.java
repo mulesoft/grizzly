@@ -6,7 +6,7 @@
  */
 package org.glassfish.grizzly;
 
-import static java.lang.Boolean.getBoolean;
+import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.getProperty;
 
 import java.util.function.Supplier;
@@ -15,30 +15,24 @@ import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
-import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
 class MuleLoggerProvider {
 
-    private static final boolean isMuleLogSeparationEnabled = getProperty("mule.disableLogSeparation") == null;
-    private static final String USE_SLF4J_PROPERTY = "org.mule.grizzly.useSLF4J";
-    private static final boolean useSlf4jProperty = getBoolean(USE_SLF4J_PROPERTY);
+    private static final String DISABLE_LOG_SEPARATION_PROPERTY = "mule.disableLogSeparation";
+    private static final String USE_SLF4J_PROPERTY = "mule.grizzly.useSLF4J";
 
-    private static boolean useSlf4j() {
-        if (isMuleLogSeparationEnabled) {
-            // When log separation is enabled, the isLogEnabled() methods are expensive, and then we would be adding a
-            // performance degradation. If the user still wants to use SLF4J, then they have to set the property
-            // org.mule.grizzly.useSLF4J=true
-            return useSlf4jProperty;
-        } else {
-            // If log separation is disabled, there is no evidence or known issues of a performance degradation caused
-            // by this change, so it's safe to use SLF4J.
-            return true;
-        }
-    }
+    private static final boolean isMuleLogSeparationEnabled = getProperty(DISABLE_LOG_SEPARATION_PROPERTY) == null;
+
+    // When log separation is enabled, the isLogEnabled() methods are expensive, and then we would be adding a
+    // performance degradation. Then, by default we will use JUL if log separation is enabled, and SLF4J otherwise.
+    //
+    // If the user still wants to use SLF4J with log separation enabled, or use JUL with log separation disabled,
+    // then they have to set the property mule.grizzly.useSLF4J
+    private static final boolean useSlf4j = parseBoolean(getProperty(USE_SLF4J_PROPERTY, isMuleLogSeparationEnabled ? "false" : "true"));
 
     public static Logger getLogger(String name) {
-        return useSlf4j() ? LoggerFactory.getLogger(name) : new JulAsSlf4jAdapter(name);
+        return useSlf4j ? LoggerFactory.getLogger(name) : new JulAsSlf4jAdapter(name);
     }
 
     private static class JulAsSlf4jAdapter implements org.slf4j.Logger {
@@ -66,17 +60,17 @@ class MuleLoggerProvider {
 
         @Override
         public void trace(String format, Object arg) {
-            julDelegate.log(Level.FINEST, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.FINEST, new MessageSupplier(format, arg));
         }
 
         @Override
         public void trace(String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.FINEST, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.FINEST, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void trace(String format, Object... arguments) {
-            julDelegate.log(Level.FINEST, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.FINEST, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -96,17 +90,17 @@ class MuleLoggerProvider {
 
         @Override
         public void trace(Marker marker, String format, Object arg) {
-            julDelegate.log(Level.FINEST, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.FINEST, new MessageSupplier(format, arg));
         }
 
         @Override
         public void trace(Marker marker, String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.FINEST, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.FINEST, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void trace(Marker marker, String format, Object... arguments) {
-            julDelegate.log(Level.FINEST, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.FINEST, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -126,17 +120,17 @@ class MuleLoggerProvider {
 
         @Override
         public void debug(String format, Object arg) {
-            julDelegate.log(Level.FINE, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.FINE, new MessageSupplier(format, arg));
         }
 
         @Override
         public void debug(String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.FINE, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.FINE, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void debug(String format, Object... arguments) {
-            julDelegate.log(Level.FINE, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.FINE, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -156,17 +150,17 @@ class MuleLoggerProvider {
 
         @Override
         public void debug(Marker marker, String format, Object arg) {
-            julDelegate.log(Level.FINE, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.FINE, new MessageSupplier(format, arg));
         }
 
         @Override
         public void debug(Marker marker, String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.FINE, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.FINE, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void debug(Marker marker, String format, Object... arguments) {
-            julDelegate.log(Level.FINE, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.FINE, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -186,17 +180,17 @@ class MuleLoggerProvider {
 
         @Override
         public void info(String format, Object arg) {
-            julDelegate.log(Level.INFO, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.INFO, new MessageSupplier(format, arg));
         }
 
         @Override
         public void info(String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.INFO, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.INFO, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void info(String format, Object... arguments) {
-            julDelegate.log(Level.INFO, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.INFO, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -216,17 +210,17 @@ class MuleLoggerProvider {
 
         @Override
         public void info(Marker marker, String format, Object arg) {
-            julDelegate.log(Level.INFO, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.INFO, new MessageSupplier(format, arg));
         }
 
         @Override
         public void info(Marker marker, String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.INFO, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.INFO, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void info(Marker marker, String format, Object... arguments) {
-            julDelegate.log(Level.INFO, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.INFO, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -246,17 +240,17 @@ class MuleLoggerProvider {
 
         @Override
         public void warn(String format, Object arg) {
-            julDelegate.log(Level.WARNING, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.WARNING, new MessageSupplier(format, arg));
         }
 
         @Override
         public void warn(String format, Object... arguments) {
-            julDelegate.log(Level.WARNING, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.WARNING, new MessageSupplier(format, arguments));
         }
 
         @Override
         public void warn(String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.WARNING, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.WARNING, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
@@ -276,17 +270,17 @@ class MuleLoggerProvider {
 
         @Override
         public void warn(Marker marker, String format, Object arg) {
-            julDelegate.log(Level.WARNING, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.WARNING, new MessageSupplier(format, arg));
         }
 
         @Override
         public void warn(Marker marker, String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.WARNING, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.WARNING, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void warn(Marker marker, String format, Object... arguments) {
-            julDelegate.log(Level.WARNING, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.WARNING, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -306,17 +300,17 @@ class MuleLoggerProvider {
 
         @Override
         public void error(String format, Object arg) {
-            julDelegate.log(Level.SEVERE, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.SEVERE, new MessageSupplier(format, arg));
         }
 
         @Override
         public void error(String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.SEVERE, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.SEVERE, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void error(String format, Object... arguments) {
-            julDelegate.log(Level.SEVERE, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.SEVERE, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -336,17 +330,17 @@ class MuleLoggerProvider {
 
         @Override
         public void error(Marker marker, String format, Object arg) {
-            julDelegate.log(Level.SEVERE, new MessageSupplier(MessageFormatter.format(format, arg)));
+            julDelegate.log(Level.SEVERE, new MessageSupplier(format, arg));
         }
 
         @Override
         public void error(Marker marker, String format, Object arg1, Object arg2) {
-            julDelegate.log(Level.SEVERE, new MessageSupplier(MessageFormatter.format(format, arg1, arg2)));
+            julDelegate.log(Level.SEVERE, new MessageSupplier(format, arg1, arg2));
         }
 
         @Override
         public void error(Marker marker, String format, Object... arguments) {
-            julDelegate.log(Level.SEVERE, new MessageSupplier(MessageFormatter.format(format, arguments)));
+            julDelegate.log(Level.SEVERE, new MessageSupplier(format, arguments));
         }
 
         @Override
@@ -356,15 +350,42 @@ class MuleLoggerProvider {
     }
 
     private static class MessageSupplier implements Supplier<String> {
-        private final FormattingTuple formattingTuple;
 
-        public MessageSupplier(FormattingTuple formattingTuple) {
-            this.formattingTuple = formattingTuple;
+        private final Supplier<String> delegate;
+
+        public MessageSupplier(String format, Object arg) {
+            delegate = new Supplier<String>() {
+
+                @Override
+                public String get() {
+                    return MessageFormatter.format(format, arg).getMessage();
+                }
+            };
+        }
+
+        public MessageSupplier(String format, Object... arguments) {
+            delegate = new Supplier<String>() {
+
+                @Override
+                public String get() {
+                    return MessageFormatter.arrayFormat(format, arguments).getMessage();
+                }
+            };
+        }
+
+        public MessageSupplier(String format, Object arg1, Object arg2) {
+            delegate = new Supplier<String>() {
+
+                @Override
+                public String get() {
+                    return MessageFormatter.format(format, arg1, arg2).getMessage();
+                }
+            };
         }
 
         @Override
         public String get() {
-            return formattingTuple.getMessage();
+            return delegate.get();
         }
     }
 }
