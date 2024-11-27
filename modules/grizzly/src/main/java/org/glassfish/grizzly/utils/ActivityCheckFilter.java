@@ -45,7 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.attributes.Attribute;
@@ -65,8 +65,7 @@ import org.glassfish.grizzly.filterchain.NextAction;
  * @author Alexey Stashok
  */
 public class ActivityCheckFilter extends BaseFilter {
-    private static final Logger LOGGER = Grizzly.logger(ActivityCheckFilter.class);
-    
+
     public static final String ACTIVE_ATTRIBUTE_NAME = "connection-active-attribute";
     private static final Attribute<ActiveRecord> IDLE_ATTR =
             Grizzly.DEFAULT_ATTRIBUTE_BUILDER.createAttribute(

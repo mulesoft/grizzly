@@ -40,16 +40,15 @@
 
 package org.glassfish.grizzly.nio.tmpselectors;
 
-import org.glassfish.grizzly.Grizzly;
-
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.logging.Level;
+
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.Reader;
 import org.glassfish.grizzly.Writer;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 /**
  *
@@ -99,9 +98,7 @@ public class TemporarySelectorIO {
             try {
                 selectionKey.cancel();
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_IO_CANCEL_KEY_EXCEPTION(selectionKey),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_IO_CANCEL_KEY_EXCEPTION(selectionKey), e);
             }
         }
 

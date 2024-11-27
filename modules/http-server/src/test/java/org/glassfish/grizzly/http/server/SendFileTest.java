@@ -40,9 +40,18 @@
 
 package org.glassfish.grizzly.http.server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Level;
+import java.util.concurrent.TimeUnit;
+
 import junit.framework.TestCase;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -53,28 +62,18 @@ import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.http.CompressionConfig.CompressionMode;
 import org.glassfish.grizzly.http.HttpClientFilter;
 import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.Protocol;
-import org.glassfish.grizzly.http.util.MimeType;
 import org.glassfish.grizzly.http.util.Header;
+import org.glassfish.grizzly.http.util.MimeType;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.channels.FileChannel;
-import java.security.MessageDigest;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.http.CompressionConfig.CompressionMode;
+import org.slf4j.Logger;
 
 public class SendFileTest extends TestCase {
     
@@ -560,8 +559,7 @@ public class SendFileTest extends TestCase {
                     }
                     try {
                         out.close();
-                        LOGGER.log(Level.INFO, "Client received file ({0} bytes) in {1}ms.",
-                                new Object[]{f.length(), stop - start});
+                        LOGGER.info("Client received file ({} bytes) in {}ms.", f.length(), stop - start);
                         // result.result(f) should be the last operation in handleRead
                         // otherwise NPE may occur in handleWrite asynchronously
                         result.result(f);
@@ -577,7 +575,7 @@ public class SendFileTest extends TestCase {
                 try {
                     if (f != null) {
                         if (!f.delete()) {
-                            LOGGER.log(Level.WARNING, "Unable to explicitly delete file: {0}", f.getAbsolutePath());
+                            LOGGER.warn("Unable to explicitly delete file: {}", f.getAbsolutePath());
                         }
                         f = null;
                     }

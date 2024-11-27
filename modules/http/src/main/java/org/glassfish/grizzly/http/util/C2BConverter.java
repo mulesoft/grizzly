@@ -58,16 +58,18 @@
 
 package org.glassfish.grizzly.http.util;
 
-import org.glassfish.grizzly.utils.Charsets;
-import org.glassfish.grizzly.Grizzly;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.CoderResult;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
+
+
 
 /** Efficient conversion of character to bytes.
  *
@@ -76,7 +78,7 @@ import java.util.logging.Logger;
 
 public class C2BConverter {
 
-    private static final Logger logger = Grizzly.logger(C2BConverter.class);
+    private static final Logger LOGGER = Grizzly.logger(C2BConverter.class);
     protected ByteChunk bb;
     protected final String enc;
     protected final CharsetEncoder encoder;
@@ -183,8 +185,8 @@ public class C2BConverter {
                                 charC.getStart(), charC.getLength());
             //System.out.println("XXX Converting " + mb.getCharChunk() );
         } else {
-            if (logger.isLoggable(Level.FINE)){
-                logger.log(Level.FINE, "XXX unknowon type {0}", type);
+            if (LOGGER.isDebugEnabled()){
+                LOGGER.debug("XXX unknowon type {}", type);
             }
         }
         //System.out.println("C2B: XXX " + bb.getBuffer() + bb.getLength());

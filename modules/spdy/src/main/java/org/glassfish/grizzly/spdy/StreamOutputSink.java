@@ -40,18 +40,17 @@
 
 package org.glassfish.grizzly.spdy;
 
-import org.glassfish.grizzly.spdy.utils.ChunkedCompletionHandler;
+import static org.glassfish.grizzly.spdy.Constants.OUT_FIN_TERMINATION;
+
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
 import org.glassfish.grizzly.WriteResult;
-import org.glassfish.grizzly.asyncqueue.MessageCloner;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueRecord;
+import org.glassfish.grizzly.asyncqueue.MessageCloner;
 import org.glassfish.grizzly.asyncqueue.TaskQueue;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.http.HttpContent;
@@ -65,8 +64,7 @@ import org.glassfish.grizzly.spdy.frames.SpdyFrame;
 import org.glassfish.grizzly.spdy.frames.SynReplyFrame;
 import org.glassfish.grizzly.spdy.frames.SynStreamFrame;
 import org.glassfish.grizzly.spdy.frames.WindowUpdateFrame;
-
-import static org.glassfish.grizzly.spdy.Constants.*;
+import org.glassfish.grizzly.spdy.utils.ChunkedCompletionHandler;
 
 /**
  * Class represents an output sink associated with specific {@link SpdyStream}. 
@@ -77,8 +75,6 @@ import static org.glassfish.grizzly.spdy.Constants.*;
  * @author Alexey Stashok
  */
 final class StreamOutputSink {
-    private static final Logger LOGGER = Grizzly.logger(StreamOutputSink.class);
-    private static final Level LOGGER_LEVEL = Level.INFO;
 
     private static final int MAX_OUTPUT_QUEUE_SIZE = 65536;
 

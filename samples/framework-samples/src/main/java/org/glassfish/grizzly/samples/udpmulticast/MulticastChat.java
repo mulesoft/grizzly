@@ -46,8 +46,9 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
@@ -56,6 +57,7 @@ import org.glassfish.grizzly.nio.transport.UDPNIOTransport;
 import org.glassfish.grizzly.nio.transport.UDPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.JdkVersion;
 import org.glassfish.grizzly.utils.StringFilter;
+import org.slf4j.Logger;
 
 /**
  * Simple chat application based on UDP multicast.
@@ -108,7 +110,7 @@ import org.glassfish.grizzly.utils.StringFilter;
  * @author Alexey Stashok
  */
 public class MulticastChat {
-    private static final Logger logger = Logger.getLogger(MulticastChat.class.getName());
+    private static final Logger LOGGER = Grizzly.logger(MulticastChat.class);
 
     private static final int PORT = 8888;
     
@@ -187,11 +189,11 @@ public class MulticastChat {
                 connection.close();
             }
             
-            logger.fine("Stopping transport...");
+            LOGGER.debug("Stopping transport...");
             // stop the transport
             transport.shutdownNow();
 
-            logger.fine("Stopped transport...");
+            LOGGER.debug("Stopped transport...");
         }
         
     }

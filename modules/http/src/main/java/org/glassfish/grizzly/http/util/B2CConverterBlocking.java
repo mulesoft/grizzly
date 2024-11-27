@@ -61,14 +61,15 @@ package org.glassfish.grizzly.http.util;
 
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /** Efficient conversion of bytes  to character .
  *
@@ -85,7 +86,7 @@ public class B2CConverterBlocking {
     /**
      * Default Logger.
      */
-    private final static Logger logger = Grizzly.logger(B2CConverterBlocking.class);
+    private final static Logger LOGGER = Grizzly.logger(B2CConverterBlocking.class);
 
     private IntermediateInputStream iis;
     private ReadConverter conv;
@@ -191,8 +192,9 @@ public class B2CConverterBlocking {
     }
 
     void log( String s ) {
-        if (logger.isLoggable(Level.FINEST))
-	    logger.log(Level.FINEST,"B2CConverter: " + s );
+        if (LOGGER.isTraceEnabled()) {
+	        LOGGER.trace("B2CConverter: {}", s);
+        }
     }
 
     // -------------------- Not used - the speed improvement is quite small

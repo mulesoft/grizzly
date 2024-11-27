@@ -54,8 +54,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.ConnectionProbe;
 import org.glassfish.grizzly.EmptyCompletionHandler;
@@ -77,8 +76,8 @@ import org.glassfish.grizzly.http.LZMAContentEncoding;
 import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.server.jmxbase.JmxEventListener;
 import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.memory.MemoryProbe;
 import org.glassfish.grizzly.jmxbase.GrizzlyJmxManager;
+import org.glassfish.grizzly.memory.MemoryProbe;
 import org.glassfish.grizzly.monitoring.MonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
@@ -91,6 +90,7 @@ import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.grizzly.utils.DelayedExecutor;
 import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.grizzly.utils.IdleTimeoutFilter;
+import org.slf4j.Logger;
 
 
 /**
@@ -168,11 +168,9 @@ public class HttpServer {
                 try {
                     listener.start();
                 } catch (IOException ioe) {
-                    if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(Level.SEVERE,
-                                "Failed to start listener [{0}] : {1}",
-                                new Object[] { listener.toString(), ioe.toString() });
-                        LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("Failed to start listener [{}] : {}", listener, ioe.toString());
+                        LOGGER.error(ioe.toString(), ioe);
                     }
                 }
             }
@@ -226,11 +224,9 @@ public class HttpServer {
                 try {
                     listener.shutdownNow();
                 } catch (IOException ioe) {
-                    if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(Level.SEVERE,
-                                   "Failed to shutdown listener [{0}] : {1}",
-                                    new Object[] { listener.toString(), ioe.toString() });
-                        LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("Failed to shutdown listener [{}] : {}", listener, ioe.toString());
+                        LOGGER.error(ioe.toString(), ioe);
                     }
                 }
             }
@@ -276,11 +272,9 @@ public class HttpServer {
             try {
                 listener.start();
             } catch (IOException ioe) {
-                if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.log(Level.FINEST,
-                            "Failed to start listener [{0}] : {1}",
-                            new Object[]{listener.toString(), ioe.toString()});
-                    LOGGER.log(Level.FINEST, ioe.toString(), ioe);
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Failed to start listener [{}] : {}", listener, ioe.toString());
+                    LOGGER.trace(ioe.toString(), ioe);
                 }
 
                 throw ioe;
@@ -295,8 +289,8 @@ public class HttpServer {
             }
         }
 
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO, "[{0}] Started.", getServerConfiguration().getName());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("[{}] Started.", getServerConfiguration().getName());
         }
 
     }
@@ -452,7 +446,7 @@ public class HttpServer {
             }
             
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, null, e);
+            LOGGER.warn(null, e);
         } finally {
             for (final NetworkListener listener : listeners.values()) {
                 final Processor p = listener.getTransport().getProcessor();

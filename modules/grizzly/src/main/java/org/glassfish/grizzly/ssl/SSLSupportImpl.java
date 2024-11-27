@@ -62,19 +62,20 @@ import org.glassfish.grizzly.Connection;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
 import javax.security.cert.X509Certificate;
 import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 /**
  *
  * @author oleksiys
  */
 public class SSLSupportImpl implements SSLSupport {
-    private static final Logger logger = Grizzly.logger(SSLSupportImpl.class);
+    private static final Logger LOGGER = Grizzly.logger(SSLSupportImpl.class);
 
     /**
      * A mapping table to determine the number of effective bits in the key
@@ -148,11 +149,11 @@ public class SSLSupportImpl implements SSLSupport {
                 ByteArrayInputStream stream =
                         new ByteArrayInputStream(buffer);
                 x509Certs[i] = (java.security.cert.X509Certificate) cf.generateCertificate(stream);
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Cert #" + i + " = " + x509Certs[i]);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Cert #{} = {}", i, x509Certs[i]);
                 }
             } catch (Exception ex) {
-                logger.log(Level.INFO, "Error translating " + jsseCerts[i], ex);
+                LOGGER.info("Error translating {}", jsseCerts[i], ex);
                 return null;
             }
         }

@@ -62,6 +62,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -70,8 +71,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import static junit.framework.Assert.assertEquals;
 import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
@@ -421,7 +422,7 @@ public class LZMAEncodingTest {
 
 
     private class ClientFilter extends BaseFilter {
-        private final Logger logger = Grizzly.logger(ClientFilter.class);
+        private final Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final HttpPacket request;
         private final FutureImpl<Boolean> testResult;
@@ -447,9 +448,8 @@ public class LZMAEncodingTest {
         @Override
         public NextAction handleConnect(FilterChainContext ctx)
               throws IOException {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}",
-                        request);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Connected... Sending the request: {}", request);
             }
 
             ctx.write(request);
@@ -464,7 +464,7 @@ public class LZMAEncodingTest {
 
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk; last: {0}", httpContent.isLast());
+            LOGGER.debug("Got HTTP response chunk; last: {}", httpContent.isLast());
 
 
             if (httpContent.isLast()) {

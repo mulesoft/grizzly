@@ -40,57 +40,29 @@
 
 package org.glassfish.grizzly;
 
-import java.util.concurrent.ExecutorService;
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-
-import org.glassfish.grizzly.memory.ByteBufferManager;
-import org.glassfish.grizzly.memory.HeapMemoryManager;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.utils.ClientCheckFilter;
-import org.glassfish.grizzly.utils.ParallelWriteFilter;
-import org.glassfish.grizzly.utils.RandomDelayOnWriteFilter;
-import org.junit.Test;
-import org.glassfish.grizzly.memory.ByteBufferWrapper;
-import org.junit.Before;
-
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.runners.Parameterized.Parameters;
-import org.glassfish.grizzly.attributes.Attribute;
-import org.glassfish.grizzly.filterchain.Filter;
-import org.glassfish.grizzly.filterchain.BaseFilter;
-import org.glassfish.grizzly.filterchain.FilterChainBuilder;
-import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.filterchain.NextAction;
-import java.io.IOException;
-import java.net.URL;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.impl.SafeFutureImpl;
-import org.glassfish.grizzly.memory.MemoryManager;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-import org.glassfish.grizzly.ssl.SSLContextConfigurator;
-import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
-import org.glassfish.grizzly.ssl.SSLFilter;
-import org.glassfish.grizzly.ssl.SSLStreamReader;
-import org.glassfish.grizzly.ssl.SSLStreamWriter;
-import org.glassfish.grizzly.streams.StreamReader;
-import org.glassfish.grizzly.streams.StreamWriter;
-import org.glassfish.grizzly.utils.ChunkingFilter;
-import org.glassfish.grizzly.utils.EchoFilter;
-import org.glassfish.grizzly.utils.StringFilter;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -99,15 +71,44 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.glassfish.grizzly.attributes.Attribute;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.Filter;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.impl.FutureImpl;
+import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.memory.Buffers;
+import org.glassfish.grizzly.memory.ByteBufferManager;
+import org.glassfish.grizzly.memory.ByteBufferWrapper;
+import org.glassfish.grizzly.memory.HeapMemoryManager;
+import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
+import org.glassfish.grizzly.ssl.SSLFilter;
+import org.glassfish.grizzly.ssl.SSLStreamReader;
+import org.glassfish.grizzly.ssl.SSLStreamWriter;
+import org.glassfish.grizzly.streams.StreamReader;
+import org.glassfish.grizzly.streams.StreamWriter;
+import org.glassfish.grizzly.utils.ChunkingFilter;
+import org.glassfish.grizzly.utils.ClientCheckFilter;
+import org.glassfish.grizzly.utils.EchoFilter;
 import org.glassfish.grizzly.utils.Futures;
+import org.glassfish.grizzly.utils.ParallelWriteFilter;
+import org.glassfish.grizzly.utils.RandomDelayOnWriteFilter;
+import org.glassfish.grizzly.utils.StringFilter;
+import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
-import static org.junit.Assert.*;
+import org.junit.runners.Parameterized.Parameters;
+import org.slf4j.Logger;
 
 /**
  * Set of SSL tests
@@ -550,7 +551,7 @@ public class SSLTest {
                 }
                 assertEquals(pingPongTurnArounds, get);
             } catch (TimeoutException e) {
-                logger.severe("Server timeout");
+                logger.error("Server timeout");
             }
 
             assertEquals(pingPongTurnArounds,
@@ -671,8 +672,7 @@ public class SSLTest {
                         String receivedString = new String(receivedMessage);
                         assertEquals(sentString, receivedString);
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, "Error occurred when testing connection#{0} packet#{1}",
-                                new Object[]{i, j});
+                        logger.warn("Error occurred when testing connection#{} packet#{}", i, j);
                         throw e;
                     }
                 }
@@ -767,8 +767,7 @@ public class SSLTest {
                         connection.write(buffer);
                     }
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "Error occurred when testing connection#{0} packet#{1}",
-                            new Object[]{i, packetNum});
+                    logger.warn("Error occurred when testing connection#{} packet#{}", i, packetNum);
                     throw e;
                 }
 
@@ -852,7 +851,7 @@ public class SSLTest {
             try {
                 connection.write("start");
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Error occurred when sending start command");
+                logger.warn("Error occurred when sending start command");
                 throw e;
             }
 

@@ -45,8 +45,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyFuture;
@@ -62,6 +61,7 @@ import org.glassfish.grizzly.samples.portunif.subservice.SubClientMessageFilter;
 import org.glassfish.grizzly.samples.portunif.subservice.SubRequestMessage;
 import org.glassfish.grizzly.samples.portunif.subservice.SubResponseMessage;
 import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
 
 /**
  * Client app, which tests deployed SUB-service.
@@ -118,7 +118,7 @@ public class SubClient {
                     value1 = Integer.parseInt(values[0].trim());
                     value2 = Integer.parseInt(values[1].trim());
                 } catch (Exception e) {
-                    LOGGER.warning("Bad format, repeat pls");
+                    LOGGER.warn("Bad format, repeat pls");
                     continue;
                 }
 
@@ -151,7 +151,7 @@ public class SubClient {
             final SubResponseMessage subResponseMessage = ctx.getMessage();
 
             // do output
-            LOGGER.log(Level.INFO, "Result={0}", subResponseMessage.getResult());
+            LOGGER.info("Result={}", subResponseMessage.getResult());
 
             return ctx.getStopAction();
         }

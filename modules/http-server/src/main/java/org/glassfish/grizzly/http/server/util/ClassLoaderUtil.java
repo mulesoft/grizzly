@@ -46,9 +46,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 /**
  * Simple {@link ClassLoader} utility.
@@ -197,8 +197,7 @@ public class ClassLoaderUtil {
             className = Class.forName(clazzName, true, classLoader);
             return className.newInstance();
         } catch (Throwable t) {
-            LOGGER.log(Level.SEVERE, "Unable to load class "
-                    + clazzName, t);
+            LOGGER.error("Unable to load class {}", clazzName, t);
         }
 
         return null;

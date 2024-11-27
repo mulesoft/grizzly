@@ -39,6 +39,8 @@
  */
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.spdy.Constants.IN_FIN_TERMINATION;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -46,8 +48,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -58,8 +59,7 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.spdy.SpdyStream.Termination;
 import org.glassfish.grizzly.utils.DataStructures;
-
-import static org.glassfish.grizzly.spdy.Constants.*;
+import org.slf4j.Logger;
 
 /**
  *
@@ -233,7 +233,7 @@ final class StreamInputBuffer {
             spdySession.sendMessageUpstreamWithParseNotify(spdyStream, content);
         } catch (IOException e) {
             // Should never be thrown
-            LOGGER.log(Level.WARNING, "Unexpected IOException: {0}", e.getMessage());
+            LOGGER.warn("Unexpected IOException: {}", e.getMessage());
         }
     }
     

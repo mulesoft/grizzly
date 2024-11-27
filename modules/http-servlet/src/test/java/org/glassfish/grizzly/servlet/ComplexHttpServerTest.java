@@ -42,14 +42,14 @@ package org.glassfish.grizzly.servlet;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.slf4j.Logger;
 
 /**
  * {@link HttpServer} tests.
@@ -60,7 +60,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 public class ComplexHttpServerTest extends HttpServerAbstractTest {
 
     public static final int PORT = 18890 + 10;
-    private static final Logger logger = Grizzly.logger(ComplexHttpServerTest.class);
+    private static final Logger LOGGER = Grizzly.logger(ComplexHttpServerTest.class);
 
     /**
      * Want to test multiple servletMapping
@@ -115,7 +115,7 @@ public class ComplexHttpServerTest extends HttpServerAbstractTest {
 
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-                logger.log(Level.INFO, "{0} received request {1}", new Object[]{alias, req.getRequestURI()});
+                LOGGER.info("{} received request {}", alias, req.getRequestURI());
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write(req.getRequestURI());
             }

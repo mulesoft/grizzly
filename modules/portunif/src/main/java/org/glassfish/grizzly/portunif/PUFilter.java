@@ -42,8 +42,7 @@ package org.glassfish.grizzly.portunif;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Context;
@@ -61,6 +60,7 @@ import org.glassfish.grizzly.filterchain.FilterChainContext.CopyListener;
 import org.glassfish.grizzly.filterchain.FilterChainEvent;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.utils.ArraySet;
+import org.slf4j.Logger;
 
 /**
  * Port unification filter.
@@ -321,9 +321,7 @@ public class PUFilter extends BaseFilter {
                         puContext.skippedProtocolFinders ^= 1 << i;
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                        "ProtocolFinder " + protocol.getProtocolFinder() +
-                        " reported error", e);
+                LOGGER.warn("ProtocolFinder {} reported error", protocol.getProtocolFinder(), e);
             }
         }
     }

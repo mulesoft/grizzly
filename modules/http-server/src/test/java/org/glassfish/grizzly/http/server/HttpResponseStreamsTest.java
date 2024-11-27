@@ -40,6 +40,13 @@
 
 package org.glassfish.grizzly.http.server;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import junit.framework.TestCase;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -55,19 +62,11 @@ import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.ChunkingFilter;
-import junit.framework.TestCase;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.memory.CompositeBuffer;
+import org.slf4j.Logger;
 
 public class HttpResponseStreamsTest extends TestCase {
 
@@ -1125,7 +1124,7 @@ public class HttpResponseStreamsTest extends TestCase {
 
 
     private static class ClientFilter extends BaseFilter {
-        private final static Logger logger = Grizzly.logger(ClientFilter.class);
+        private final static Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final CompositeBuffer buf = CompositeBuffer.newBuffer();
 
@@ -1157,8 +1156,8 @@ public class HttpResponseStreamsTest extends TestCase {
             final HttpRequestPacket httpRequest = HttpRequestPacket.builder().method("GET")
                   .uri("/path").protocol(Protocol.HTTP_1_1)
                   .header("Host", "localhost:" + PORT).build();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}", httpRequest);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Connected... Sending the request: {}", httpRequest);
             }
 
             // Write the request asynchronously
@@ -1177,13 +1176,13 @@ public class HttpResponseStreamsTest extends TestCase {
                 // Cast message to a HttpContent
                 final HttpContent httpContent = ctx.getMessage();
 
-                logger.log(Level.FINE, "Got HTTP response chunk");
+                LOGGER.debug("Got HTTP response chunk");
 
                 // Get HttpContent's Buffer
                 final Buffer buffer = httpContent.getContent();
 
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("HTTP content size: {}", buffer.remaining());
                 }
                 if (buffer.remaining() > 0) {
                     bytesDownloaded += buffer.remaining();
@@ -1193,8 +1192,8 @@ public class HttpResponseStreamsTest extends TestCase {
                 }
 
                 if (httpContent.isLast()) {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "Response complete: {0} bytes", bytesDownloaded);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Response complete: {} bytes", bytesDownloaded);
                     }
                     completeFuture.result(buf.toStringContent());
                     close();

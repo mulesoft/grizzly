@@ -45,8 +45,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -58,7 +57,8 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.utils.BufferOutputStream;
 import org.glassfish.grizzly.utils.StringFilter;
- 
+import org.slf4j.Logger;
+
 /**
  * MultiString filter, the codec, that converts Buffer <-> List&lt;String&gt;
  * 
@@ -206,9 +206,8 @@ public class MultiStringFilter extends BaseFilter {
             return decodeResult;
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "StringFilter decode stringSize={0} buffer={1} content={2}",
-                    new Object[]{decodeResult.state, input, input.toStringContent()});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("StringFilter decode stringSize={} buffer={} content={}", decodeResult.state, input, input.toStringContent());
         }
  
         int stringSize = decodeResult.state;

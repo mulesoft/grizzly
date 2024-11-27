@@ -47,8 +47,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CloseReason;
 import org.glassfish.grizzly.CloseType;
@@ -69,6 +68,7 @@ import org.glassfish.grizzly.nio.AbstractNIOAsyncQueueWriter;
 import org.glassfish.grizzly.nio.DirectByteBufferRecord;
 import org.glassfish.grizzly.nio.NIOConnection;
 import org.glassfish.grizzly.nio.NIOTransport;
+import org.slf4j.Logger;
 
 /**
  * The TCP transport {@link AsyncQueueWriter} implementation, based on
@@ -77,7 +77,7 @@ import org.glassfish.grizzly.nio.NIOTransport;
  * @author Alexey Stashok
  */
 public final class TCPNIOAsyncQueueWriter extends AbstractNIOAsyncQueueWriter {
-    private final static Logger LOGGER = Grizzly.logger(TCPNIOAsyncQueueWriter.class);
+    private static final Logger LOGGER = Grizzly.logger(TCPNIOAsyncQueueWriter.class);
 
     public TCPNIOAsyncQueueWriter(final NIOTransport transport) {
         super(transport);
@@ -160,13 +160,8 @@ public final class TCPNIOAsyncQueueWriter extends AbstractNIOAsyncQueueWriter {
         
         int written = 0;
         
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST,
-                    "writeCompositeRecord connection={0}, queueRecord={1},"
-                            + " queueRecord.remaining={2},"
-                            + " queueRecord.queue.size()={3}",
-                    new Object[] {connection, queueRecord, queueRecord.remaining(),
-                        queueRecord.queue.size()});
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("writeCompositeRecord connection={}, queueRecord={}, queueRecord.remaining={}, queueRecord.queue.size()={}", connection, queueRecord, queueRecord.remaining(), queueRecord.queue.size());
         }
         
         if (queueRecord.size > 0) {
@@ -416,10 +411,8 @@ public final class TCPNIOAsyncQueueWriter extends AbstractNIOAsyncQueueWriter {
         }
 
         public void append(final AsyncWriteQueueRecord queueRecord) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINEST,
-                        "CompositeQueueRecord.append. connection={0}, this={1}, comp-size={2}, elem-count={3}, queueRecord={4}, newrec-size={5}, isEmpty={6}",
-                        new Object[] {connection, this, size, queue.size(), queueRecord, queueRecord.remaining(), queueRecord.isUncountable()});
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("CompositeQueueRecord.append. connection={}, this={}, comp-size={}, elem-count={}, queueRecord={}, newrec-size={}, isEmpty={}", connection, this, size, queue.size(), queueRecord, queueRecord.remaining(), queueRecord.isUncountable());
             }
             
             size += queueRecord.remaining();

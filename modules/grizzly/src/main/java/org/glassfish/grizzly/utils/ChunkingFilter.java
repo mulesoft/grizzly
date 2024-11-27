@@ -42,14 +42,12 @@ package org.glassfish.grizzly.utils;
 
 import org.glassfish.grizzly.AbstractTransformer;
 import org.glassfish.grizzly.Buffer;
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.TransformationException;
 import org.glassfish.grizzly.TransformationResult;
 import org.glassfish.grizzly.attributes.AttributeStorage;
 import org.glassfish.grizzly.filterchain.AbstractCodecFilter;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.memory.Buffers;
-import java.util.logging.Logger;
 
 
 /**
@@ -61,7 +59,6 @@ import java.util.logging.Logger;
  * @author Alexey Stashok
  */
 public class ChunkingFilter extends AbstractCodecFilter<Buffer, Buffer> {
-    private static final Logger LOGGER = Grizzly.logger(ChunkingFilter.class);
 
     private final int chunkSize;
 

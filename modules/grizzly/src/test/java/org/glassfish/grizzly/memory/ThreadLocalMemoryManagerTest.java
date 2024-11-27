@@ -40,23 +40,23 @@
 
 package org.glassfish.grizzly.memory;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.nio.ByteOrder;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.Buffer;
-import org.glassfish.grizzly.Grizzly;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.slf4j.Logger;
 
 /**
  * @author oleksiys
@@ -417,17 +417,17 @@ public class ThreadLocalMemoryManagerTest extends AbstractThreadLocalMemoryManag
 
         @Override
         public void onBufferAllocateEvent(int size) {
-            LOGGER.log(Level.INFO, "allocateNewBufferEvent: {0}", size);
+            LOGGER.info("allocateNewBufferEvent: {}", size);
         }
 
         @Override
         public void onBufferAllocateFromPoolEvent(int size) {
-            LOGGER.log(Level.INFO, "allocateBufferFromPoolEvent: {0}", size);
+            LOGGER.info("allocateBufferFromPoolEvent: {}", size);
         }
 
         @Override
         public void onBufferReleaseToPoolEvent(int size) {
-            LOGGER.log(Level.INFO, "releaseBufferToPoolEvent: {0}", size);
+            LOGGER.info("releaseBufferToPoolEvent: {}", size);
         }
     }
 }

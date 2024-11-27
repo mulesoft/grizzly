@@ -53,19 +53,48 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
-import org.glassfish.grizzly.asyncqueue.*;
+
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.Closeable;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.FileTransfer;
+import org.glassfish.grizzly.GracefulShutdownListener;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.IOEventLifeCycleListener;
+import org.glassfish.grizzly.PortRange;
+import org.glassfish.grizzly.Processor;
+import org.glassfish.grizzly.ProcessorExecutor;
+import org.glassfish.grizzly.ProcessorSelector;
+import org.glassfish.grizzly.ReadResult;
+import org.glassfish.grizzly.Reader;
+import org.glassfish.grizzly.StandaloneProcessor;
+import org.glassfish.grizzly.StandaloneProcessorSelector;
+import org.glassfish.grizzly.WriteResult;
+import org.glassfish.grizzly.Writer;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueIO;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueReader;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueWriter;
+import org.glassfish.grizzly.asyncqueue.WritableMessage;
 import org.glassfish.grizzly.filterchain.Filter;
 import org.glassfish.grizzly.filterchain.FilterChainEnabledTransport;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.memory.ByteBufferArray;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
-import org.glassfish.grizzly.nio.*;
+import org.glassfish.grizzly.nio.ChannelConfigurator;
+import org.glassfish.grizzly.nio.DirectByteBufferRecord;
+import org.glassfish.grizzly.nio.NIOConnection;
+import org.glassfish.grizzly.nio.NIOTransport;
+import org.glassfish.grizzly.nio.RegisterChannelResult;
+import org.glassfish.grizzly.nio.SelectorRunner;
 import org.glassfish.grizzly.nio.tmpselectors.TemporarySelectorIO;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 /**
  * UDP NIO transport implementation
@@ -138,10 +167,7 @@ public final class UDPNIOTransport extends NIOTransport
             try {
                 serverConnection.register();
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                           LogMessages.WARNING_GRIZZLY_TRANSPORT_START_SERVER_CONNECTION_EXCEPTION(
-                                   serverConnection),
-                           e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_START_SERVER_CONNECTION_EXCEPTION(serverConnection), e);
             }
         }
     }
@@ -237,9 +263,7 @@ public final class UDPNIOTransport extends NIOTransport
                     future.get(1000, TimeUnit.MILLISECONDS);
                     future.recycle(false);
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_TRANSPORT_UNBINDING_CONNECTION_EXCEPTION(connection),
-                            e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_UNBINDING_CONNECTION_EXCEPTION(connection), e);
                 }
             }
         } finally {
@@ -256,10 +280,8 @@ public final class UDPNIOTransport extends NIOTransport
                 try {
                     unbind(serverConnection);
                 } catch (Exception e) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.log(Level.FINE,
-                                "Exception occurred when closing server connection: "
-                                + serverConnection, e);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Exception occurred when closing server connection: {}", serverConnection, e);
                     }
                 }
             }
@@ -366,8 +388,7 @@ public final class UDPNIOTransport extends NIOTransport
             try {
                 nioChannel.close();
             } catch (IOException e) {
-                LOGGER.log(Level.FINE,
-                        "UDPNIOTransport.closeChannel exception", e);
+                LOGGER.debug("UDPNIOTransport.closeChannel exception", e);
             }
         }
 
@@ -713,8 +734,7 @@ public final class UDPNIOTransport extends NIOTransport
             try {
                 datagramSocket.setReuseAddress(udpNioTransport.isReuseAddress());
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_SOCKET_REUSEADDRESS_EXCEPTION(udpNioTransport.isReuseAddress()), e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_REUSEADDRESS_EXCEPTION(udpNioTransport.isReuseAddress()), e);
             }
         }
 
@@ -735,8 +755,7 @@ public final class UDPNIOTransport extends NIOTransport
             try {
                 datagramSocket.setSoTimeout(soTimeout);
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_SOCKET_TIMEOUT_EXCEPTION(soTimeout), e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_TIMEOUT_EXCEPTION(soTimeout), e);
             }
         }
     }

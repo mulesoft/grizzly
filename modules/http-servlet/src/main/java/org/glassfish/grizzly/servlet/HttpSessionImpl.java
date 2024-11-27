@@ -43,8 +43,7 @@ package org.glassfish.grizzly.servlet;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionAttributeListener;
@@ -53,9 +52,11 @@ import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.Session;
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 /**
  * Basic {@link HttpSession} based on {@link Session} support.
@@ -235,9 +236,8 @@ public class HttpSessionImpl implements HttpSession {
             try {
                 ((HttpSessionBindingListener) unbound).valueUnbound(new HttpSessionBindingEvent(this, key));
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                               LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_SESSION_LISTENER_UNBOUND_ERROR(unbound.getClass().getName()));
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_SESSION_LISTENER_UNBOUND_ERROR(unbound.getClass().getName()));
                 }
             }
         }
@@ -251,9 +251,8 @@ public class HttpSessionImpl implements HttpSession {
                 try {
                     ((HttpSessionBindingListener) value).valueBound(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_SESSION_LISTENER_BOUND_ERROR(value.getClass().getName()));
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_SESSION_LISTENER_BOUND_ERROR(value.getClass().getName()));
                     }
                 }
             }
@@ -283,10 +282,8 @@ public class HttpSessionImpl implements HttpSession {
                     listener.attributeAdded(event);
                 }
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                               LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_ADD_ERROR("HttpSessionAttributeListener", listener.getClass().getName()),
-                               t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_ADD_ERROR("HttpSessionAttributeListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -333,10 +330,8 @@ public class HttpSessionImpl implements HttpSession {
                 }
                 listener.attributeRemoved(event);
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                               LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_REMOVE_ERROR("HttpSessionAttributeListener", listener.getClass().getName()),
-                               t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_REMOVE_ERROR("HttpSessionAttributeListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -372,10 +367,8 @@ public class HttpSessionImpl implements HttpSession {
                 try {
                     listener.sessionDestroyed(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                   LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("sessionDestroyed", "HttpSessionListener", listener.getClass().getName()),
-                                   t);
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("sessionDestroyed", "HttpSessionListener", listener.getClass().getName()), t);
                     }
                 }
             }
@@ -413,10 +406,8 @@ public class HttpSessionImpl implements HttpSession {
                 try {
                     listener.sessionCreated(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                   LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("sessionCreated", "HttpSessionListener", listener.getClass().getName()),
-                                   t);
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("sessionCreated", "HttpSessionListener", listener.getClass().getName()), t);
                     }
                 }
             }
@@ -442,10 +433,8 @@ public class HttpSessionImpl implements HttpSession {
                 try {
                     listener.sessionIdChanged(event, oldId);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                   LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("sessionCreated", "HttpSessionListener", listener.getClass().getName()),
-                                   t);
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("sessionCreated", "HttpSessionListener", listener.getClass().getName()), t);
                     }
                 }
             }

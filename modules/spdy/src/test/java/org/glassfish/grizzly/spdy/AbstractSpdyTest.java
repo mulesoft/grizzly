@@ -44,7 +44,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.Filter;
@@ -64,6 +64,7 @@ import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.ssl.SSLFilter;
+import org.slf4j.Logger;
 
 /**
  * General Spdy client/server init code.

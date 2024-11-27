@@ -55,8 +55,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CloseReason;
@@ -89,6 +87,7 @@ import org.glassfish.grizzly.utils.CompletionHandlerAdapter;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.grizzly.utils.NullaryFunction;
+import org.slf4j.Logger;
 
 /**
  * Common {@link Connection} implementation for Java NIO <tt>Connection</tt>s.
@@ -569,7 +568,7 @@ public abstract class NIOConnection implements Connection<SocketAddress> {
             CloseReason closeReason) {
         if (isCloseScheduled.compareAndSet(false, true)) {
 
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 // replace close reason: clone the original value and add stacktrace
                 closeReason = new CloseReason(closeReason.getType(),
                         new IOException("Connection is closed at",
@@ -612,7 +611,7 @@ public abstract class NIOConnection implements Connection<SocketAddress> {
         isCloseScheduled.set(true);
         if (closeReasonUpdater.compareAndSet(this, null, reason)) {
 
-            if (LOGGER.isLoggable(Level.FINEST)) {
+            if (LOGGER.isTraceEnabled()) {
                 // replace close reason: clone the original value and add stacktrace
                 this.closeReason = new CloseReason(reason.getType(),
                         new IOException("Connection is closed at",
@@ -631,7 +630,7 @@ public abstract class NIOConnection implements Connection<SocketAddress> {
                     try {
                         doClose();
                     } catch (IOException e) {
-                        LOGGER.log(Level.FINE, "Error during connection close", e);
+                        LOGGER.debug("Error during connection close", e);
                     }
 
                     return true;
@@ -1103,7 +1102,7 @@ public abstract class NIOConnection implements Connection<SocketAddress> {
         private static final class StaticMapAccessor {
             
             static {
-                Grizzly.logger(StaticMapAccessor.class).fine("Map is going to "
+                Grizzly.logger(StaticMapAccessor.class).debug("Map is going to "
                         + "be used as Connection<->ProcessorState storage");
             }
 

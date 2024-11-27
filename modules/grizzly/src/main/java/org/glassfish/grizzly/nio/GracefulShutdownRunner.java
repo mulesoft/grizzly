@@ -47,14 +47,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.GracefulShutdownListener;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ShutdownContext;
 import org.glassfish.grizzly.Transport;
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 class GracefulShutdownRunner implements Runnable {
     private static final Logger LOGGER = Grizzly.logger(GracefulShutdownRunner.class);
@@ -107,18 +106,13 @@ class GracefulShutdownRunner implements Runnable {
             if (gracePeriod <= 0) {
                 shutdownLatch.await();
             } else {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_GRACEFULSHUTDOWN_MSG(
-                                    transport.getName() + '[' + Integer.toHexString(hashCode()) + ']',
-                                    gracePeriod, timeUnit));
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_GRACEFULSHUTDOWN_MSG(transport.getName() + '[' + Integer.toHexString(hashCode()) + ']', gracePeriod, timeUnit));
                 }
                 final boolean result = shutdownLatch.await(gracePeriod, timeUnit);
                 if (!result) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                LogMessages.WARNING_GRIZZLY_GRACEFULSHUTDOWN_EXCEEDED(
-                                        transport.getName() + '[' + Integer.toHexString(hashCode()) + ']'));
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_GRACEFULSHUTDOWN_EXCEEDED(transport.getName() + '[' + Integer.toHexString(hashCode()) + ']'));
                     }
                     if (!contexts.isEmpty()) {
                         for (GracefulShutdownListener l : contexts.values()) {
@@ -128,8 +122,8 @@ class GracefulShutdownRunner implements Runnable {
                 }
             }
         } catch (InterruptedException ie) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning(LogMessages.WARNING_GRIZZLY_GRACEFULSHUTDOWN_INTERRUPTED());
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_GRACEFULSHUTDOWN_INTERRUPTED());
             }
             if (!contexts.isEmpty()) {
                 for (GracefulShutdownListener l : contexts.values()) {

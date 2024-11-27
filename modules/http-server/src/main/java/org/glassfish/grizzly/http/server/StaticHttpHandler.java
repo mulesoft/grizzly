@@ -41,13 +41,13 @@ package org.glassfish.grizzly.http.server;
 
 import java.io.File;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.utils.ArraySet;
+import org.slf4j.Logger;
 
 /**
  * {@link HttpHandler}, which processes requests to a static resources.
@@ -235,8 +235,8 @@ public class StaticHttpHandler extends StaticHttpHandlerBase {
         }
 
         if (!found) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "File not found {0}", resource);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("File not found {}", resource);
             }
             return false;
         }
@@ -245,9 +245,8 @@ public class StaticHttpHandler extends StaticHttpHandlerBase {
         
         // If it's not HTTP GET - return method is not supported status
         if (!Method.GET.equals(request.getMethod())) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "File found {0}, but HTTP method {1} is not allowed",
-                        new Object[] {resource, request.getMethod()});
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("File found {}, but HTTP method {} is not allowed", resource, request.getMethod());
             }
             response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
             response.setHeader(Header.Allow, "GET");

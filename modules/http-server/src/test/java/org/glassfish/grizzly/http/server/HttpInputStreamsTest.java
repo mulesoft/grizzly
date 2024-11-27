@@ -40,6 +40,21 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.nio.CharBuffer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -52,38 +67,21 @@ import org.glassfish.grizzly.http.HttpClientFilter;
 import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpPacket;
 import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.Protocol;
+import org.glassfish.grizzly.http.util.HeaderValue;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.utils.ChunkingFilter;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.nio.CharBuffer;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
+import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.DelayFilter;
 import org.glassfish.grizzly.utils.Futures;
-import org.glassfish.grizzly.http.util.HeaderValue;
-
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import org.glassfish.grizzly.http.Method;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * Test cases to validate the behaviors of {@link org.glassfish.grizzly.http.io.NIOInputStream} and
@@ -1448,12 +1446,12 @@ public class HttpInputStreamsTest {
 
             final HttpContent httpContent = ctx.getMessage();
 
-            LOGGER.log(Level.FINE, "Got HTTP response chunk");
+            LOGGER.debug("Got HTTP response chunk");
 
             final Buffer buffer = httpContent.getContent();
 
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("HTTP content size: {}", buffer.remaining());
             }
 
             if (httpContent.isLast()) {

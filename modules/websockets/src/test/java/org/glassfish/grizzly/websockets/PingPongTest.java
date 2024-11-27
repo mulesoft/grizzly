@@ -39,6 +39,8 @@
  */
 package org.glassfish.grizzly.websockets;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+
 import org.glassfish.grizzly.PortRange;
 import org.glassfish.grizzly.utils.Charsets;
 import org.junit.Test;
@@ -50,8 +52,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class PingPongTest {
-    
-    private static final int PORT = 9009;
+
+    public final int PORT = findFreePort();
 
     @Test
     public void testPingFromClientToServer() throws Exception {

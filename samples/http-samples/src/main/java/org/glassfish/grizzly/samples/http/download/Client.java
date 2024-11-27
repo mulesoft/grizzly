@@ -40,6 +40,7 @@
 
 package org.glassfish.grizzly.samples.http.download;
 
+import org.slf4j.Logger;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
@@ -56,8 +57,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Simple asynchronous HTTP client implementation, which downloads HTTP resource
@@ -123,12 +122,12 @@ public class Client {
                 connection = connectFuture.get(10, TimeUnit.SECONDS);
                 // Wait until download will be completed
                 String filename = completeFuture.get();
-                logger.log(Level.INFO, "File " + filename + " was successfully downloaded");
+                logger.info("File " + filename + " was successfully downloaded");
             } catch (Exception e) {
                 if (connection == null) {
-                    logger.log(Level.WARNING, "Can not connect to the target resource");
+                    logger.warn("Can not connect to the target resource");
                 } else {
-                    logger.log(Level.WARNING, "Error downloading the resource");
+                    logger.warn("Error downloading the resource");
                 }
             } finally {
                 // Close the client connection

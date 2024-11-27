@@ -39,8 +39,8 @@
  */
 package org.glassfish.grizzly.servlet;
 
-import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.localization.LogMessages;
+import java.io.IOException;
+import java.util.EventListener;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -50,10 +50,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.ServletResponse;
-import java.io.IOException;
-import java.util.EventListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
+
+
 
 /**
  * Implementation of <code>javax.servlet.FilterChain</code> used to manage
@@ -180,10 +182,8 @@ final class FilterChainImpl implements FilterChain, FilterChainInvoker {
                 try {
                     ((ServletRequestListener) listeners[i]).requestDestroyed(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("requestDestroyed", "ServletRequestListener", listeners[i].getClass().getName()),
-                                t);
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("requestDestroyed", "ServletRequestListener", listeners[i].getClass().getName()), t);
                     }
                 }
             }
@@ -198,10 +198,8 @@ final class FilterChainImpl implements FilterChain, FilterChainInvoker {
                 try {
                     ((ServletRequestListener) listeners[i]).requestInitialized(event);
                 } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.log(Level.WARNING,
-                                LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("requestDestroyed", "ServletRequestListener", listeners[i].getClass().getName()),
-                                t);
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("requestDestroyed", "ServletRequestListener", listeners[i].getClass().getName()), t);
                     }
                 }
             }

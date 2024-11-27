@@ -59,8 +59,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
@@ -93,6 +91,7 @@ import org.glassfish.grizzly.utils.RandomDelayOnWriteFilter;
 import org.glassfish.grizzly.utils.StringFilter;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 
 /**
@@ -568,7 +567,7 @@ public class TCPNIOTransportTest {
             try {
                 connection.write("start");
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Error occurred when sending start command");
+                logger.warn("Error occurred when sending start command");
                 throw e;
             }
 

@@ -40,6 +40,9 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -47,13 +50,22 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.filterchain.*;
-import org.glassfish.grizzly.http.*;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.http.HttpClientFilter;
+import org.glassfish.grizzly.http.HttpContent;
+import org.glassfish.grizzly.http.HttpPacket;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
+import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
@@ -61,7 +73,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * Test HTTP TRACE method processing
@@ -211,13 +223,13 @@ public class TraceMethodTest {
             // Cast message to a HttpContent
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            logger.debug("Got HTTP response chunk");
 
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            if (logger.isDebugEnabled()) {
+                logger.debug("HTTP content size: {}", buffer.remaining());
             }
 
             if (!httpContent.isLast()) {

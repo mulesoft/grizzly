@@ -44,8 +44,6 @@ import java.io.CharConversionException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -61,6 +59,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.RequestURIRef;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
 
 /**
  * Base class to use when Request/Response/InputStream/OutputStream
@@ -179,8 +178,7 @@ public abstract class HttpHandler {
             
             return runService(request, response);
         } catch (Exception t) {
-            LOGGER.log(Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_HTTP_SERVER_HTTPHANDLER_SERVICE_ERROR(), t);
+            LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_HTTPHANDLER_SERVICE_ERROR(), t);
             HtmlHelper.setErrorAndSendErrorPage(request, response,
                     response.getErrorPageGenerator(),
                     500, HttpStatus.INTERNAL_SERVER_ERROR_500.getReasonPhrase(),
@@ -224,7 +222,7 @@ public abstract class HttpHandler {
                         service(request, response);
                         wasSuspended = suspendStatus.getAndInvalidate();
                     } catch (Throwable e) {
-                        LOGGER.log(Level.FINE, "service exception", e);
+                        LOGGER.debug("service exception", e);
                         if (!response.isCommitted()) {
                             response.reset();
                             try {

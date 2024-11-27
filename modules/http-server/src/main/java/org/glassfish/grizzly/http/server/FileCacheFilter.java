@@ -44,8 +44,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.FileTransfer;
@@ -66,6 +66,7 @@ import org.glassfish.grizzly.http.server.filecache.FileCache.CacheType;
 import org.glassfish.grizzly.http.server.filecache.FileCacheEntry;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.memory.Buffers;
+import org.slf4j.Logger;
 
 /**
  *
@@ -208,8 +209,7 @@ public class FileCacheFilter extends BaseFilter {
         ctx.write(f, new EmptyCompletionHandler<WriteResult>() {
             @Override
             public void failed(Throwable throwable) {
-                LOGGER.log(Level.FINE, "Error reported during file-send entry: " +
-                        cacheEntry, throwable);
+                LOGGER.debug("Error reported during file-send entry: {}", cacheEntry, throwable);
             }
         });
 

@@ -40,11 +40,26 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.EOFException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ReadHandler;
+import org.glassfish.grizzly.Transport;
+import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
@@ -59,37 +74,21 @@ import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.http.io.NIOInputStream;
 import org.glassfish.grizzly.http.io.NIOOutputStream;
 import org.glassfish.grizzly.http.io.NIOReader;
+import org.glassfish.grizzly.http.util.ContentType;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.memory.Buffers;
+import org.glassfish.grizzly.memory.ByteBufferManager;
+import org.glassfish.grizzly.memory.ByteBufferWrapper;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.utils.ChunkingFilter;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.EmptyCompletionHandler;
-import org.glassfish.grizzly.Transport;
-import org.glassfish.grizzly.WriteResult;
-import org.glassfish.grizzly.http.util.ContentType;
-import org.glassfish.grizzly.memory.Buffers;
-import org.glassfish.grizzly.memory.ByteBufferManager;
-import org.glassfish.grizzly.memory.ByteBufferWrapper;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
+import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import org.slf4j.Logger;
 
 /**
  * Test case to exercise <code>AsyncStreamReader</code>.
@@ -1138,7 +1137,7 @@ public class NIOInputSourcesTest {
     }
 
     private static class ClientFilter extends BaseFilter {
-        private final static Logger logger = Grizzly.logger(ClientFilter.class);
+        private final static Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final CompositeBuffer buf = CompositeBuffer.newBuffer();
 
@@ -1177,8 +1176,8 @@ public class NIOInputSourcesTest {
         public NextAction handleConnect(FilterChainContext ctx)
                 throws IOException {
 
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}", request);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Connected... Sending the request: {}", request);
             }
 
             if (strategy == null) {
@@ -1213,13 +1212,13 @@ public class NIOInputSourcesTest {
                 // Cast message to a HttpContent
                 final HttpContent httpContent = ctx.getMessage();
 
-                logger.log(Level.FINE, "Got HTTP response chunk");
+                LOGGER.debug("Got HTTP response chunk");
 
                 // Get HttpContent's Buffer
                 final Buffer buffer = httpContent.getContent();
 
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("HTTP content size: {}", buffer.remaining());
                 }
                 if (buffer.hasRemaining()) {
                     bytesDownloaded += buffer.remaining();
@@ -1229,9 +1228,8 @@ public class NIOInputSourcesTest {
                 }
 
                 if (httpContent.isLast()) {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "Response complete: {0} bytes",
-                                bytesDownloaded);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Response complete: {} bytes", bytesDownloaded);
                     }
                     if (encoding != null) {
                         testFuture.result(buf.toStringContent(Charset.forName(encoding)));

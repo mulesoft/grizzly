@@ -40,38 +40,37 @@
 
 package org.glassfish.grizzly.portunif;
 
-import org.glassfish.grizzly.utils.NullaryFunction;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.glassfish.grizzly.attributes.Attribute;
-import java.util.logging.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import java.util.concurrent.Executors;
-import java.nio.charset.Charset;
+import static org.junit.Assert.assertTrue;
 
-import org.glassfish.grizzly.filterchain.FilterChain;
 import java.io.IOException;
-import org.glassfish.grizzly.filterchain.BaseFilter;
-import org.glassfish.grizzly.filterchain.FilterChainContext;
-import org.glassfish.grizzly.filterchain.NextAction;
+import java.nio.charset.Charset;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.SocketConnectorHandler;
+import org.glassfish.grizzly.attributes.Attribute;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChain;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.utils.NullaryFunction;
 import org.glassfish.grizzly.utils.StringFilter;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Asynchronous port-unification tests
@@ -83,8 +82,6 @@ public class AsyncPUTest {
     public static final int PORT = 17400;
     public static final Charset CHARSET = Charset.forName("UTF-8");
     
-    private static final Logger LOGGER = Grizzly.logger(AsyncPUTest.class);
-
     private static ScheduledExecutorService tp;
 
     @BeforeClass

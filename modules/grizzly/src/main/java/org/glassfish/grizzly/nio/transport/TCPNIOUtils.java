@@ -44,8 +44,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.memory.BufferArray;
 import org.glassfish.grizzly.memory.Buffers;
@@ -54,6 +53,7 @@ import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.nio.DirectByteBufferRecord;
 import org.glassfish.grizzly.utils.Exceptions;
+import org.slf4j.Logger;
 
 /**
  * TCP NIO Transport utils
@@ -87,10 +87,8 @@ public class TCPNIOUtils {
                     ? flushByteBuffers(socketChannel, ioRecord.getArray(), 0, arraySize)
                     : flushByteBuffer(socketChannel, ioRecord.getArray()[0]);
 
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (composite) write {1} bytes", new Object[]{
-                            connection, written
-                        });
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("TCPNIOConnection ({}) (composite) write {} bytes", connection, written);
             }
         } finally {
             ioRecord.release();
@@ -137,10 +135,8 @@ public class TCPNIOUtils {
         }
 
         Buffers.setPositionLimit(buffer, oldPos + written, oldLim);
-        if(LOGGER.isLoggable(Level.FINE))
-            LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (plain) write {1} bytes", new Object[] {
-                connection, written
-            });
+        if(LOGGER.isDebugEnabled())
+            LOGGER.debug("TCPNIOConnection ({}) (plain) write {} bytes", connection, written);
         return written;
     }
 
@@ -271,10 +267,8 @@ public class TCPNIOUtils {
             buffer = Buffers.EMPTY_BUFFER;
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (allocated) read {1} bytes", new Object[]{
-                        connection, read
-                    });
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("TCPNIOConnection ({}) (allocated) read {} bytes", connection, read);
         }
         return buffer;
     }
@@ -305,10 +299,8 @@ public class TCPNIOUtils {
             buffer.position(oldPos + read);
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (nonallocated, composite) read {1} bytes", new Object[]{
-                        connection, read
-                    });
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("TCPNIOConnection ({}) (nonallocated, composite) read {} bytes", connection, read);
         }
         
         return read;
@@ -329,10 +321,8 @@ public class TCPNIOUtils {
             buffer.position(oldPos + read);
         }
         
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "TCPNIOConnection ({0}) (nonallocated, simple) read {1} bytes", new Object[]{
-                        connection, read
-                    });
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("TCPNIOConnection ({}) (nonallocated, simple) read {} bytes", connection, read);
         }
         
         return read;

@@ -40,15 +40,16 @@
 
 package org.glassfish.grizzly.utils;
 
+import java.io.IOException;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.Filter;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
 
 /**
  * Simple log {@link Filter}
@@ -91,58 +92,52 @@ public class LogFilter extends BaseFilter {
 
     @Override
     public void onAdded(FilterChain filterChain) {
-        logger.log(level, "LogFilter onAdded");
+        logger.atLevel(level).log("LogFilter onAdded");
     }
 
     @Override
     public void onRemoved(FilterChain filterChain) {
-        logger.log(level, "LogFilter onRemoved");
+        logger.atLevel(level).log("LogFilter onRemoved");
     }
 
     @Override
     public void onFilterChainChanged(FilterChain filterChain) {
-        logger.log(level, "LogFilter onFilterChainChanged");
+        logger.atLevel(level).log("LogFilter onFilterChainChanged");
     }
 
     @Override
     public NextAction handleRead(FilterChainContext ctx) throws IOException {
-        logger.log(level, "LogFilter handleRead. Connection={0} message={1}",
-                new Object[] {ctx.getConnection(), ctx.getMessage()});
+        logger.atLevel(level).log("LogFilter handleRead. Connection={} message={}", ctx.getConnection(), ctx.getMessage());
         return ctx.getInvokeAction();
     }
 
     @Override
     public NextAction handleWrite(FilterChainContext ctx) throws IOException {
-        logger.log(level, "LogFilter handleWrite. Connection={0} message={1}",
-                new Object[] {ctx.getConnection(), ctx.getMessage()});
+        logger.atLevel(level).log("LogFilter handleWrite. Connection={} message={}", ctx.getConnection(), ctx.getMessage());
         return ctx.getInvokeAction();
     }
 
     @Override
     public NextAction handleConnect(FilterChainContext ctx) throws IOException {
-        logger.log(level, "LogFilter handleConnect. Connection={0} message={1}",
-                new Object[] {ctx.getConnection(), ctx.getMessage()});
+        logger.atLevel(level).log("LogFilter handleConnect. Connection={} message={}", ctx.getConnection(), ctx.getMessage());
         return ctx.getInvokeAction();
     }
 
     @Override
     public NextAction handleAccept(FilterChainContext ctx) throws IOException {
-        logger.log(level, "LogFilter handleAccept. Connection={0} message={1}",
-                new Object[] {ctx.getConnection(), ctx.getMessage()});
+        logger.atLevel(level).log("LogFilter handleAccept. Connection={} message={}", ctx.getConnection(), ctx.getMessage());
         return ctx.getInvokeAction();
     }
 
     @Override
     public NextAction handleClose(FilterChainContext ctx) throws IOException {
-        logger.log(level, "LogFilter handleClose. Connection={0} message={1}",
-                new Object[] {ctx.getConnection(), ctx.getMessage()});
+        logger.atLevel(level).log("LogFilter handleClose. Connection={} message={}", ctx.getConnection(), ctx.getMessage());
         return ctx.getInvokeAction();
     }
 
     @Override
     public void exceptionOccurred(FilterChainContext ctx,
             Throwable error) {
-        logger.log(level, "LogFilter exceptionOccured. Connection={0} message={1}",
-                new Object[] {ctx.getConnection(), ctx.getMessage()});
+        logger.atLevel(level).log("LogFilter exceptionOccured. Connection={} message={}", ctx.getConnection(), ctx.getMessage());
     }
 }

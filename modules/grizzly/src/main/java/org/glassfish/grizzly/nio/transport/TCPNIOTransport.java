@@ -56,18 +56,46 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
-import org.glassfish.grizzly.asyncqueue.*;
+
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.CloseReason;
+import org.glassfish.grizzly.CloseType;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.FileTransfer;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.IOEventLifeCycleListener;
+import org.glassfish.grizzly.PortRange;
+import org.glassfish.grizzly.Processor;
+import org.glassfish.grizzly.ProcessorExecutor;
+import org.glassfish.grizzly.ProcessorSelector;
+import org.glassfish.grizzly.Reader;
+import org.glassfish.grizzly.StandaloneProcessor;
+import org.glassfish.grizzly.StandaloneProcessorSelector;
+import org.glassfish.grizzly.WriteResult;
+import org.glassfish.grizzly.Writer;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueEnabledTransport;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueIO;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueReader;
+import org.glassfish.grizzly.asyncqueue.AsyncQueueWriter;
+import org.glassfish.grizzly.asyncqueue.WritableMessage;
 import org.glassfish.grizzly.filterchain.Filter;
 import org.glassfish.grizzly.filterchain.FilterChainEnabledTransport;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
-import org.glassfish.grizzly.nio.*;
+import org.glassfish.grizzly.nio.ChannelConfigurator;
+import org.glassfish.grizzly.nio.NIOConnection;
+import org.glassfish.grizzly.nio.NIOTransport;
+import org.glassfish.grizzly.nio.RegisterChannelResult;
+import org.glassfish.grizzly.nio.SelectorRunner;
 import org.glassfish.grizzly.nio.tmpselectors.TemporarySelectorIO;
 import org.glassfish.grizzly.nio.tmpselectors.TemporarySelectorsEnabledTransport;
+import org.slf4j.Logger;
 
 /**
  * TCP Transport NIO implementation
@@ -174,9 +202,7 @@ public final class TCPNIOTransport extends NIOTransport implements
             try {
                 listenServerConnection(serverConnection);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_TRANSPORT_START_SERVER_CONNECTION_EXCEPTION(serverConnection),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_START_SERVER_CONNECTION_EXCEPTION(serverConnection), e);
             }
         }
     }
@@ -278,9 +304,7 @@ public final class TCPNIOTransport extends NIOTransport implements
                     future.get(1000, TimeUnit.MILLISECONDS);
                     future.recycle(false);
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_TRANSPORT_UNBINDING_CONNECTION_EXCEPTION(connection),
-                            e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_TRANSPORT_UNBINDING_CONNECTION_EXCEPTION(connection), e);
                 }
             }
         } finally {
@@ -297,9 +321,7 @@ public final class TCPNIOTransport extends NIOTransport implements
                 try {
                     unbind(serverConnection);
                 } catch (Exception e) {
-                    LOGGER.log(Level.FINE,
-                            "Exception occurred when closing server connection: "
-                            + serverConnection, e);
+                    LOGGER.debug("Exception occurred when closing server connection: {}", serverConnection, e);
                 }
             }
 
@@ -388,8 +410,7 @@ public final class TCPNIOTransport extends NIOTransport implements
             try {
                 nioChannel.close();
             } catch (IOException e) {
-                LOGGER.log(Level.FINE,
-                        "TCPNIOTransport.closeChannel exception", e);
+                LOGGER.debug("TCPNIOTransport.closeChannel exception", e);
             }
         }
 
@@ -514,10 +535,8 @@ public final class TCPNIOTransport extends NIOTransport implements
                 try {
                     rebindAddress(connection);
                 } catch (IOException ioe) {
-                    if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(Level.SEVERE,
-                                   LogMessages.SEVERE_GRIZZLY_TRANSPORT_LISTEN_INTERRUPTED_REBIND_EXCEPTION(connection.getLocalAddress()),
-                                   ioe);
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error(LogMessages.SEVERE_GRIZZLY_TRANSPORT_LISTEN_INTERRUPTED_REBIND_EXCEPTION(connection.getLocalAddress()), ioe);
                     }
                 }
             } catch (IOException e) {
@@ -598,8 +617,8 @@ public final class TCPNIOTransport extends NIOTransport implements
                 read = buffer.position();
                 tcpConnection.onRead(buffer, read);
             } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "TCPNIOConnection (" + connection + ") (allocated) read exception", e);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("TCPNIOConnection ({}) (allocated) read exception", connection, e);
                 }
 
                 read = -1;
@@ -619,8 +638,8 @@ public final class TCPNIOTransport extends NIOTransport implements
                 try {
                     read = TCPNIOUtils.readBuffer(tcpConnection, buffer);
                 } catch (Exception e) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.log(Level.FINE, "TCPNIOConnection (" + connection + ") (existing) read exception", e);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("TCPNIOConnection ({}) (existing) read exception", connection, e);
                     }
                     read = -1;
                 }
@@ -766,8 +785,7 @@ public final class TCPNIOTransport extends NIOTransport implements
                 try {
                     socket.setReuseAddress(reuseAddress);
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_SOCKET_REUSEADDRESS_EXCEPTION(reuseAddress), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_REUSEADDRESS_EXCEPTION(reuseAddress), e);
                 }
             } else { // ServerSocketChannel
                 final ServerSocketChannel serverSocketChannel
@@ -779,8 +797,7 @@ public final class TCPNIOTransport extends NIOTransport implements
                 try {
                     serverSocket.setReuseAddress(tcpNioTransport.isReuseAddress());
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_SOCKET_REUSEADDRESS_EXCEPTION(tcpNioTransport.isReuseAddress()), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_REUSEADDRESS_EXCEPTION(tcpNioTransport.isReuseAddress()), e);
                 }
             }
         }
@@ -800,31 +817,28 @@ public final class TCPNIOTransport extends NIOTransport implements
                         socket.setSoLinger(true, linger);
                     }
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_SOCKET_LINGER_EXCEPTION(linger), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_LINGER_EXCEPTION(linger), e);
                 }
 
                 final boolean keepAlive = tcpNioTransport.isKeepAlive();
                 try {
                     socket.setKeepAlive(keepAlive);
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_SOCKET_KEEPALIVE_EXCEPTION(keepAlive), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_KEEPALIVE_EXCEPTION(keepAlive), e);
                 }
 
                 final boolean tcpNoDelay = tcpNioTransport.isTcpNoDelay();
                 try {
                     socket.setTcpNoDelay(tcpNoDelay);
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_SOCKET_TCPNODELAY_EXCEPTION(tcpNoDelay), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_TCPNODELAY_EXCEPTION(tcpNoDelay), e);
                 }
 
                 final int clientSocketSoTimeout = tcpNioTransport.getClientSocketSoTimeout();
                 try {
                     socket.setSoTimeout(clientSocketSoTimeout);
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, LogMessages.WARNING_GRIZZLY_SOCKET_TIMEOUT_EXCEPTION(tcpNioTransport.getClientSocketSoTimeout()), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_TIMEOUT_EXCEPTION(tcpNioTransport.getClientSocketSoTimeout()), e);
                 }
             } else { //ServerSocketChannel
                 final ServerSocketChannel serverSocketChannel =
@@ -834,8 +848,7 @@ public final class TCPNIOTransport extends NIOTransport implements
                 try {
                     serverSocket.setSoTimeout(tcpNioTransport.getServerSocketSoTimeout());
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_SOCKET_TIMEOUT_EXCEPTION(tcpNioTransport.getServerSocketSoTimeout()), e);
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_SOCKET_TIMEOUT_EXCEPTION(tcpNioTransport.getServerSocketSoTimeout()), e);
                 }
             }
         }

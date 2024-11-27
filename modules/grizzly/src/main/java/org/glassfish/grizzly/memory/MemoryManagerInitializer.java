@@ -40,12 +40,10 @@
 
 package org.glassfish.grizzly.memory;
 
-import org.glassfish.grizzly.Grizzly;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static org.glassfish.grizzly.memory.DefaultMemoryManagerFactory.DMMF_PROP_NAME;
+
+import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 class MemoryManagerInitializer {
 
@@ -101,13 +99,11 @@ class MemoryManagerInitializer {
                                   MemoryManager.class.getClassLoader());
             return (T) clazz.newInstance();
         } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                           "Unable to load or create a new instance of Class {0}.  Cause: {1}",
-                           new Object[]{className, e.getMessage()});
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Unable to load or create a new instance of Class {}.  Cause: {}", className, e.getMessage());
             }
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, e.toString(), e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(e.toString(), e);
             }
             return null;
         }

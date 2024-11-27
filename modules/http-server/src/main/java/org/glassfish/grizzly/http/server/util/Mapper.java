@@ -61,7 +61,7 @@ package org.glassfish.grizzly.http.server.util;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.util.Constants;
 import java.io.IOException;
-import java.util.logging.Level;
+
 
 import org.glassfish.grizzly.Grizzly;
 
@@ -69,7 +69,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.http.server.naming.DirContext;
 import org.glassfish.grizzly.http.server.naming.NamingContext;
 import org.glassfish.grizzly.http.server.naming.NamingException;
@@ -79,6 +79,7 @@ import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.MessageBytes;
 
 import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
 
 /**
  * Mapper, which implements the servlet API mapping rules (which are derived
@@ -89,7 +90,7 @@ import org.glassfish.grizzly.utils.Charsets;
 @SuppressWarnings({"UnusedDeclaration"})
 public class Mapper {
 
-    private final static Logger logger = Grizzly.logger(Mapper.class);
+    private final static Logger LOGGER = Grizzly.logger(Mapper.class);
 
     private static final String DEFAULT_SERVLET =
             System.getProperty("org.glassfish.grizzly.servlet.defaultServlet", "default");
@@ -342,8 +343,7 @@ public class Mapper {
             pos = findIgnoreCase(newHosts, hostName);
         }
         if (pos < 0) {
-            logger.log(Level.FINE, "No host found: {0} for Mapper listening on port: {1}",
-                    new Object[]{hostName, port});
+            LOGGER.debug("No host found: {} for Mapper listening on port: {}", hostName, port);
             return;
         }
         Host host = newHosts[pos];
@@ -487,7 +487,7 @@ public class Mapper {
             Context[] contexts = host.contextList.contexts;
             int pos2 = find(contexts, contextPath);
             if( pos2<0 ) {
-                 logger.log(Level.SEVERE, "No context found: {0}", contextPath);
+                LOGGER.error("No context found: {}", contextPath);
                 return;
             }
             Context ctx = contexts[pos2];

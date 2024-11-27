@@ -169,7 +169,8 @@
                         <configuration>
                             <classifier>sources</classifier>
                             <excludeScope>provided</excludeScope>
-                            <excludeArtifactIds>junit</excludeArtifactIds>
+                            <excludeGroupIds>org.apache.logging.log4j</excludeGroupIds>
+                            <excludeArtifactIds>junit,slf4j-api</excludeArtifactIds>
                             <!-- fudge an actual source hierarchy so that the source
                                  plugin can actually do something useful.  Otherwise,
                                  you'll end up with an empty source jar -->

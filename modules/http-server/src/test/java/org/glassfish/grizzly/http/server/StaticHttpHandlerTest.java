@@ -40,6 +40,10 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,12 +57,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.filterchain.*;
-import org.glassfish.grizzly.http.*;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.http.HttpClientFilter;
+import org.glassfish.grizzly.http.HttpContent;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
+import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.memory.HeapMemoryManager;
@@ -75,9 +87,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * {@link StaticHttpHandler} test.
@@ -277,8 +287,7 @@ public class StaticHttpHandlerTest {
                         }
                         
                         out.close();
-                        LOGGER.log(Level.INFO, "Client received file ({0} bytes) in {1}ms.",
-                                new Object[]{f.length(), stop - start});
+                        LOGGER.info("Client received file ({} bytes) in {}ms.", f.length(), stop - start);
                         // result.result(f) should be the last operation in handleRead
                         // otherwise NPE may occur in handleWrite asynchronously
                         result.result(f);
@@ -294,7 +303,7 @@ public class StaticHttpHandlerTest {
                 try {
                     if (f != null) {
                         if (!f.delete()) {
-                            LOGGER.log(Level.WARNING, "Unable to explicitly delete file: {0}", f.getAbsolutePath());
+                            LOGGER.warn("Unable to explicitly delete file: {}", f.getAbsolutePath());
                         }
                         f = null;
                     }

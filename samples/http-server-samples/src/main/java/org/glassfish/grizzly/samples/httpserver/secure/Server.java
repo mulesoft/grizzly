@@ -42,14 +42,14 @@ package org.glassfish.grizzly.samples.httpserver.secure;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
+import org.slf4j.Logger;
 
 /**
  * Secured standalone Java HTTP server.
@@ -81,7 +81,7 @@ public class Server {
             System.out.println("The secured server is running.\nhttps://localhost:" + NetworkListener.DEFAULT_NETWORK_PORT + "\nPress enter to stop...");
             System.in.read();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             server.shutdownNow();
         }

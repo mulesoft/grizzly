@@ -42,13 +42,15 @@ package org.glassfish.grizzly.samples.udpecho;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.UDPNIOTransport;
 import org.glassfish.grizzly.nio.transport.UDPNIOTransportBuilder;
 import org.glassfish.grizzly.samples.echo.EchoFilter;
 import org.glassfish.grizzly.utils.StringFilter;
+import org.slf4j.Logger;
 
 /**
  * Class initializes and starts the UDP echo server, based on Grizzly 2.0
@@ -56,7 +58,7 @@ import org.glassfish.grizzly.utils.StringFilter;
  * @author Alexey Stashok
  */
 public class EchoServer {
-    private static final Logger logger = Logger.getLogger(EchoServer.class.getName());
+    private static final Logger logger = Grizzly.logger(EchoServer.class);
 
     public static final String HOST = "localhost";
     public static final int PORT = 7777;

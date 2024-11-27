@@ -46,8 +46,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.Grizzly;
@@ -61,6 +60,7 @@ import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.slf4j.Logger;
 
 /**
  * Simple Web server implementation, which locates requested resources in a
@@ -69,7 +69,7 @@ import org.glassfish.grizzly.memory.MemoryManager;
  * @author Alexey Stashok
  */
 public class WebServerFilter extends BaseFilter {
-    private static final Logger logger = Grizzly.logger(WebServerFilter.class);
+    private static final Logger LOGGER = Grizzly.logger(WebServerFilter.class);
     private final File rootFolderFile;
 
     /**
@@ -129,7 +129,7 @@ public class WebServerFilter extends BaseFilter {
         // Locate corresponding file
         final File file = new File(rootFolderFile, localURL);
 
-        logger.log(Level.INFO, "Request file: {0}", file.getAbsolutePath());
+        LOGGER.info("Request file: {}", file.getAbsolutePath());
 
         if (!file.isFile()) {
             // If file doesn't exist - response 404
@@ -363,7 +363,7 @@ public class WebServerFilter extends BaseFilter {
             try {
                 in.close();
             } catch (IOException e) {
-                logger.fine("Error closing a downloading file");
+                LOGGER.debug("Error closing a downloading file");
             }
         }
 

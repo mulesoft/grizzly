@@ -42,10 +42,9 @@ package org.glassfish.grizzly.ssl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Logger;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import org.glassfish.grizzly.Grizzly;
 
 /**
  * Utility class, which helps to configure {@link SSLEngine}.
@@ -53,7 +52,6 @@ import org.glassfish.grizzly.Grizzly;
  * @author Alexey Stashok
  */
 public class SSLEngineConfigurator implements SSLEngineFactory {
-    private static final Logger LOGGER = Grizzly.logger(SSLEngineConfigurator.class);
 
     private final Object sync = new Object();
     

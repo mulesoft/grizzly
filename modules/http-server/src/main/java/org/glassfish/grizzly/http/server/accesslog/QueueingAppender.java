@@ -40,15 +40,12 @@
 
 package org.glassfish.grizzly.http.server.accesslog;
 
-import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.WARNING;
-
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.slf4j.Logger;
 
 /**
  * An {@link AccessLogAppender appender} enqueueing log entries into a
@@ -90,7 +87,7 @@ public class QueueingAppender implements AccessLogAppender {
         if (thread.isAlive()) try {
             queue.put(accessLogEntry);
         } catch (InterruptedException exception) {
-            LOGGER.log(FINE, "Interrupted adding log entry to the queue", exception);
+            LOGGER.debug("Interrupted adding log entry to the queue", exception);
         }
     }
 
@@ -100,7 +97,7 @@ public class QueueingAppender implements AccessLogAppender {
         try {
             thread.join();
         } catch (InterruptedException exception) {
-            LOGGER.log(FINE, "Interrupted stopping de-queuer", exception);
+            LOGGER.debug("Interrupted stopping de-queuer", exception);
         } finally {
             appender.close();
         }
@@ -117,10 +114,10 @@ public class QueueingAppender implements AccessLogAppender {
                 final String accessLogEntry = queue.take();
                 if (accessLogEntry != null) appender.append(accessLogEntry);
             } catch (InterruptedException exception) {
-                LOGGER.log(FINE, "Interrupted waiting for log entry to be queued, exiting!", exception);
+                LOGGER.debug("Interrupted waiting for log entry to be queued, exiting!", exception);
                 return;
             } catch (Throwable throwable) {
-                LOGGER.log(WARNING, "Exception caught appending ququed log entry", throwable);
+                LOGGER.warn("Exception caught appending ququed log entry", throwable);
             }
         }
     }

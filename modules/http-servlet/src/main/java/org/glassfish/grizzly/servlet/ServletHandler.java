@@ -40,21 +40,22 @@
 
 package org.glassfish.grizzly.servlet;
 
+import static javax.servlet.DispatcherType.REQUEST;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.servlet.DispatcherType;
-import static javax.servlet.DispatcherType.REQUEST;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.Note;
 import org.glassfish.grizzly.http.server.AfterServiceListener;
@@ -71,6 +72,7 @@ import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.HttpRequestURIDecoder;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.slf4j.Logger;
 
 /**
  * HttpHandler implementation that provides an entry point for processing
@@ -144,7 +146,7 @@ public class ServletHandler extends HttpHandler {
         try {
             configureServletEnv();
         } catch (Throwable t) {
-            LOGGER.log(Level.SEVERE, "start", t);
+            LOGGER.error("start", t);
         }
     }
 
@@ -231,7 +233,7 @@ public class ServletHandler extends HttpHandler {
             // Request may want to initialize async processing
             servletRequest.onAfterService();
         } catch (Throwable ex) {
-            LOGGER.log(Level.SEVERE, "service exception:", ex);
+            LOGGER.error("service exception:", ex);
             customizeErrorPage(response, "Internal Error", 500, ex);
         }
     }
@@ -290,10 +292,10 @@ public class ServletHandler extends HttpHandler {
                 servletInstance.service(servletRequest, servletResponse);
             }
         } catch (ServletException se) {
-            LOGGER.log(Level.SEVERE, "service exception:", se);
+            LOGGER.error("service exception:", se);
             throw se;
         } catch (IOException ie) {
-            LOGGER.log(Level.SEVERE, "service exception:", ie);
+            LOGGER.error("service exception:", ie);
             throw ie;
         }
     }
@@ -340,7 +342,7 @@ public class ServletHandler extends HttpHandler {
                             throw new RuntimeException(e);
                         }
                     }
-                    LOGGER.log(Level.INFO, "Loading Servlet: {0}", newServletInstance.getClass().getName());
+                    LOGGER.info("Loading Servlet: {}", newServletInstance.getClass().getName());
                     newServletInstance.init(servletConfig);
                     servletInstance = newServletInstance;
                 }
@@ -471,7 +473,7 @@ public class ServletHandler extends HttpHandler {
                     try {
                         onDestroyListeners.get(i).run();
                     } catch (Throwable t) {
-                        LOGGER.log(Level.WARNING, "onDestroyListener error", t);
+                        LOGGER.warn("onDestroyListener error", t);
                     }
                 }
 

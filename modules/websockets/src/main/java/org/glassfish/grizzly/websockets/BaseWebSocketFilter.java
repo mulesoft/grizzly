@@ -42,8 +42,6 @@ package org.glassfish.grizzly.websockets;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -59,6 +57,7 @@ import org.glassfish.grizzly.http.HttpHeader;
 import org.glassfish.grizzly.http.HttpServerFilter;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.IdleTimeoutFilter;
+import org.slf4j.Logger;
 
 /**
  * WebSocket {@link Filter} implementation, which supposed to be placed into a {@link FilterChain} right after HTTP
@@ -153,9 +152,8 @@ public abstract class BaseWebSocketFilter extends BaseFilter {
         // Try to obtain associated WebSocket
         final WebSocketHolder holder = WebSocketHolder.get(connection);
         WebSocket ws = getWebSocket(connection);
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "handleRead websocket: {0} content-size={1} headers=\n{2}",
-                new Object[]{ws, message.getContent().remaining(), header});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("handleRead websocket: {} content-size={} headers=\n{}", ws, message.getContent().remaining(), header);
         }
         if (ws == null || !ws.isConnected()) {
             // If websocket is null - it means either non-websocket Connection, or websocket with incomplete handshake
@@ -169,9 +167,8 @@ public abstract class BaseWebSocketFilter extends BaseFilter {
                 // Handle handshake
                 return handleHandshake(ctx, message);
             } catch (HandshakeException e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "Handshake error. Code: {0} Msg:{1}",
-                        new Object[]{e.getCode(), e.getMessage()});
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Handshake error. Code: {} Msg:{}", e.getCode(), e.getMessage());
                 }
 
                 onHandshakeFailure(connection, e);

@@ -40,18 +40,14 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -73,8 +69,10 @@ import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
 
 @RunWith(Parameterized.class)
 public class HttpOutputStreamsTest extends AbstractSpdyTest {
@@ -1189,7 +1187,7 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
 
 
     private static class ClientFilter extends BaseFilter {
-        private final static Logger logger = Grizzly.logger(ClientFilter.class);
+        private final static Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final CompositeBuffer buf = CompositeBuffer.newBuffer();
 
@@ -1221,8 +1219,8 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
             final HttpRequestPacket httpRequest = HttpRequestPacket.builder().method("GET")
                   .uri("/path").protocol(Protocol.HTTP_1_1)
                   .header("Host", "localhost:" + PORT).build();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Connected... Sending the request: {0}", httpRequest);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Connected... Sending the request: {}", httpRequest);
             }
 
             // Write the request asynchronously
@@ -1241,13 +1239,13 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
                 // Cast message to a HttpContent
                 final HttpContent httpContent = ctx.getMessage();
 
-                logger.log(Level.FINE, "Got HTTP response chunk");
+                LOGGER.debug("Got HTTP response chunk");
 
                 // Get HttpContent's Buffer
                 final Buffer buffer = httpContent.getContent();
 
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("HTTP content size: {}", buffer.remaining());
                 }
                 if (buffer.remaining() > 0) {
                     bytesDownloaded += buffer.remaining();
@@ -1257,8 +1255,8 @@ public class HttpOutputStreamsTest extends AbstractSpdyTest {
                 }
 
                 if (httpContent.isLast()) {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "Response complete: {0} bytes", bytesDownloaded);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Response complete: {} bytes", bytesDownloaded);
                     }
                     completeFuture.result(buf.toStringContent());
                     close();

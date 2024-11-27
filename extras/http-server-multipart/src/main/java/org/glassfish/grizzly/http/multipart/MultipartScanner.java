@@ -42,12 +42,13 @@ package org.glassfish.grizzly.http.multipart;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.io.NIOInputStream;
+import org.slf4j.Logger;
 
 /**
  * Entry point for the multipart message processing.
@@ -130,7 +131,7 @@ public class MultipartScanner {
             if (completionHandler != null) {
                 completionHandler.failed(e);
             } else {
-                LOGGER.log(Level.WARNING, "Error occurred, but no CompletionHandler installed to handle it", e);
+                LOGGER.warn("Error occurred, but no CompletionHandler installed to handle it", e);
             }
         }
     }
@@ -193,7 +194,7 @@ public class MultipartScanner {
             if (completionHandler != null) {
                 completionHandler.failed(e);
             } else {
-                LOGGER.log(Level.WARNING, "Error occurred, but no CompletionHandler installed to handle it", e);
+                LOGGER.warn("Error occurred, but no CompletionHandler installed to handle it", e);
             }
         }
     }

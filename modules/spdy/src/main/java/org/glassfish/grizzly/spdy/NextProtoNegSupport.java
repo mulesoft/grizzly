@@ -44,8 +44,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.net.ssl.SSLEngine;
 
 import org.glassfish.grizzly.CloseListener;
@@ -60,6 +59,7 @@ import org.glassfish.grizzly.npn.ServerSideNegotiator;
 import org.glassfish.grizzly.ssl.SSLBaseFilter;
 import org.glassfish.grizzly.ssl.SSLFilter;
 import org.glassfish.grizzly.ssl.SSLUtils;
+import org.slf4j.Logger;
 
 /**
  * Grizzly TLS Next Protocol Negotiation support class.
@@ -80,7 +80,7 @@ public class NextProtoNegSupport {
             ClassLoader.getSystemClassLoader().loadClass("sun.security.ssl.GrizzlyNPN");
             isExtensionFound = true;
         } catch (Throwable e) {
-            LOGGER.log(Level.FINE, "TLS Next Protocol Negotiation extension is not found:", e);
+            LOGGER.debug("TLS Next Protocol Negotiation extension is not found:", e);
         }
         
         INSTANCE = isExtensionFound ? new NextProtoNegSupport() : null;

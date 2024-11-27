@@ -40,7 +40,6 @@
 
 package org.glassfish.grizzly.nio.tmpselectors;
 
-import org.glassfish.grizzly.Grizzly;
 import java.io.IOException;
 import java.nio.channels.Selector;
 import java.nio.channels.spi.SelectorProvider;
@@ -48,10 +47,11 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.nio.Selectors;
+import org.slf4j.Logger;
 
 /**
  *
@@ -128,15 +128,12 @@ public class TemporarySelectorPool {
             try {
                 selector = Selectors.newSelector(selectorProvider);
             } catch (IOException e) {
-               LOGGER.log(Level.WARNING,
-                       LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_CREATE_SELECTOR_EXCEPTION(),
-                       e);
+               LOGGER.warn(LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_CREATE_SELECTOR_EXCEPTION(), e);
             }
 
             final int missesCount = missesCounter.incrementAndGet();
             if (missesCount % MISS_THRESHOLD == 0) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_MISSES_EXCEPTION(missesCount, maxPoolSize));
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_MISSES_EXCEPTION(missesCount, maxPoolSize));
             }
         }
 
@@ -187,9 +184,8 @@ public class TemporarySelectorPool {
         try {
             selector.close();
         } catch (IOException e) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "TemporarySelectorFactory: error " +
-                        "occurred when trying to close the Selector", e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("TemporarySelectorFactory: error occurred when trying to close the Selector", e);
             }
         }
     }
@@ -199,15 +195,11 @@ public class TemporarySelectorPool {
             selector.selectNow();
             return selector;
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_SELECTOR_FAILURE_EXCEPTION(),
-                    e);
+            LOGGER.warn(LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_SELECTOR_FAILURE_EXCEPTION(), e);
             try {
                 return Selectors.newSelector(selectorProvider);
             } catch (IOException ee) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_CREATE_SELECTOR_EXCEPTION(),
-                        ee);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_TEMPORARY_SELECTOR_POOL_CREATE_SELECTOR_EXCEPTION(), ee);
             }
         }
 

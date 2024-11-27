@@ -49,7 +49,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -71,6 +71,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
 import org.glassfish.grizzly.ssl.SSLSupport;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import static org.junit.Assert.*;
 
@@ -611,7 +612,7 @@ public class BasicAjpTest extends AjpTestBase {
                 if (isOk) {
                     response.setStatus(200, "FINE");
                 } else {
-                    LOGGER.warning(errorBuilder.toString());
+                    LOGGER.warn(errorBuilder.toString());
                     response.setStatus(500, "ERROR");
                 }
             }

@@ -40,9 +40,10 @@
 
 package org.glassfish.grizzly.streams;
 
-import org.glassfish.grizzly.Transformer;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -51,11 +52,10 @@ import org.glassfish.grizzly.GrizzlyFuture;
 import org.glassfish.grizzly.TransformationException;
 import org.glassfish.grizzly.TransformationResult;
 import org.glassfish.grizzly.TransformationResult.Status;
+import org.glassfish.grizzly.Transformer;
 import org.glassfish.grizzly.impl.ReadyFutureImpl;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.memory.Buffers;
+import org.slf4j.Logger;
 
 /**
  * Write the primitive Java type to the current ByteBuffer.  If it doesn't
@@ -66,7 +66,7 @@ import org.glassfish.grizzly.memory.Buffers;
  * @author Ken Cavanaugh
  */
 public abstract class AbstractStreamWriter implements StreamWriter {
-    protected static final Logger logger = Grizzly.logger(AbstractStreamWriter.class);
+    protected static final Logger LOGGER = Grizzly.logger(AbstractStreamWriter.class);
     
     protected static final Integer ZERO = 0;
     protected static final GrizzlyFuture<Integer> ZERO_READY_FUTURE =

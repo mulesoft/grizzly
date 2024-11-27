@@ -50,11 +50,15 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
- 
+
 import junit.framework.TestCase;
 import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.http.server.*;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.slf4j.Logger;
 
 /**
  * Basic Comet Test.
@@ -155,7 +159,7 @@ public class BasicCometTest extends TestCase {
     }
 
     public void testHttpPipeline() throws Exception {
-        LOGGER.fine("testHttpPipeline");
+        LOGGER.debug("testHttpPipeline");
         cometContext.setExpirationDelay(10000);
         cometContext.setDetectClosedConnections(false);
         final String alias = "/testPipeline";
@@ -248,7 +252,7 @@ public class BasicCometTest extends TestCase {
     }
     
     public void testHttpPipeline2() throws Exception {
-        LOGGER.fine("testHttpPipeline2");
+        LOGGER.debug("testHttpPipeline2");
         cometContext.setExpirationDelay(10000);
         cometContext.setDetectClosedConnections(false);
         final String alias = "/testPipeline2";

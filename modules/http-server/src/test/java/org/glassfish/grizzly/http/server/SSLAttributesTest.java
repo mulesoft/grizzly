@@ -53,8 +53,6 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -81,6 +79,7 @@ import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.junit.After;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * Testing SSL attributes.
@@ -353,7 +352,7 @@ public class SSLAttributesTest {
                 response.setHeader("PAYLOAD_SIZE", Integer.toString(size));
                 
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Can't retrieve SSL attribute", e);
+                LOGGER.error("Can't retrieve SSL attribute", e);
                 response.setStatus(500, "Can't retrieve SSL attribute");
             }
         }

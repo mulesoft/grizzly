@@ -47,10 +47,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.SocketConnectorHandler;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
@@ -79,7 +78,6 @@ import org.junit.Test;
  */
 public class PayloadReplayTest {
     private static final int PORT = 18905;
-    private static final Logger LOGGER = Grizzly.logger(PayloadReplayTest.class);
 
     private HttpServer httpServer;
     

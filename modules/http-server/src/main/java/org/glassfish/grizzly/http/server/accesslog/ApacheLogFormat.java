@@ -40,15 +40,12 @@
 
 package org.glassfish.grizzly.http.server.accesslog;
 
-import static java.util.logging.Level.WARNING;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.Cookie;
@@ -58,6 +55,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.slf4j.Logger;
 
 /**
  * An {@link AccessLogFormat} using a standard vaguely similar and heavily
@@ -214,7 +212,7 @@ public class ApacheLogFormat implements AccessLogFormat {
         for (Field field: fields) try {
             field.format(builder, request, response, timeStamp, responseNanos);
         } catch (Exception exception) {
-            LOGGER.log(WARNING, "Exception formatting access log entry", exception);
+            LOGGER.warn("Exception formatting access log entry", exception);
             builder.append('-');
         }
         return builder.toString();

@@ -44,14 +44,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.attributes.Attribute;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
+import org.slf4j.Logger;
 
 /**
  * The {@link org.glassfish.grizzly.filterchain.Filter} is responsible for a
@@ -123,7 +123,7 @@ public class MultiLineFilter extends BaseFilter {
         
         // Set MultiLinePacket packet as a context message
         ctx.setMessage(packet);
-        LOGGER.log(Level.INFO, "-------- Received from network:\n{0}", packet);
+        LOGGER.info("-------- Received from network:\n{}", packet);
         
         return input.isEmpty()
                 ? ctx.getInvokeAction()
@@ -145,7 +145,7 @@ public class MultiLineFilter extends BaseFilter {
         // Get a processing MultiLinePacket
         final MultiLinePacket input = ctx.getMessage();
 
-        LOGGER.log(Level.INFO, "------- Sending to network:\n{0}", input);
+        LOGGER.info("------- Sending to network:\n{}", input);
 
         // pass MultiLinePacket as List<String>.
         // we could've used input.getLines() as collection to be passed

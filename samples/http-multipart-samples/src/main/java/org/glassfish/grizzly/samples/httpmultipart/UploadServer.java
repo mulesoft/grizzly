@@ -40,12 +40,12 @@
 package org.glassfish.grizzly.samples.httpmultipart;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
+import org.slf4j.Logger;
 
 /**
  * HTTP upload server, which instantiates two Grizzly {@link org.glassfish.grizzly.http.server.HttpHandler}s:
@@ -81,11 +81,11 @@ public class UploadServer {
             // Start the server
             server.start();
 
-            LOGGER.log(Level.INFO, "Server listens on port {0}", PORT);
-            LOGGER.log(Level.INFO, "Press enter to exit");
+            LOGGER.info("Server listens on port {}", PORT);
+            LOGGER.info("Press enter to exit");
             System.in.read();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             // Stop the server
             server.shutdownNow();

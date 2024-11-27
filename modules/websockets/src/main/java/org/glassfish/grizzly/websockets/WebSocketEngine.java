@@ -44,13 +44,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.Closeable;
 import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.GenericCloseListener;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpRequestPacket;
@@ -58,6 +57,7 @@ import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.slf4j.Logger;
 
 /**
  * WebSockets engine implementation (singleton), which handles {@link WebSocketApplication}s registration, responsible
@@ -73,7 +73,7 @@ public class WebSocketEngine {
     public static final int DEFAULT_TIMEOUT = 30;
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final WebSocketEngine engine = new WebSocketEngine();
-    static final Logger logger = Logger.getLogger(Constants.WEBSOCKET);
+    static final Logger LOGGER = Grizzly.logger(Constants.WEBSOCKET);
 
     private final List<WebSocketApplication> applications = new ArrayList<WebSocketApplication>();
 
@@ -132,8 +132,8 @@ public class WebSocketEngine {
                 foundWebSocketApp = (WebSocketApplication) data.wrapper;
             }
         } catch (Exception e) {
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, e.toString(), e);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(e.toString(), e);
             }
         }
 
@@ -163,8 +163,8 @@ public class WebSocketEngine {
                                     data,
                                     0);
             } catch (Exception e) {
-                if (logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, e.toString(), e);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(e.toString(), e);
                 }
             }
         }
@@ -223,7 +223,7 @@ public class WebSocketEngine {
                 return true;
             }
         } catch (HandshakeException e) {
-            logger.log(Level.FINE, e.getMessage(), e);
+            LOGGER.debug(e.getMessage(), e);
             if (socket != null) {
                 socket.close();
             }

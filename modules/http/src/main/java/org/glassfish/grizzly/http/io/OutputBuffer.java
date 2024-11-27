@@ -59,8 +59,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
@@ -87,6 +87,7 @@ import org.glassfish.grizzly.threadpool.Threads;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.grizzly.utils.Exceptions;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 import static org.glassfish.grizzly.Writer.Reentrant;
 
@@ -655,12 +656,8 @@ public class OutputBuffer {
             if (handler != null) {
                 handler.failed(e);
             } else {
-                if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            String.format("Failed to transfer file %s.  Cause: %s.",
-                            file.getAbsolutePath(),
-                            e.getMessage()),
-                            e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error("Failed to transfer file {}.  Cause: {}.", file.getAbsolutePath(), e.getMessage(), e);
                 }
             }
 

@@ -58,31 +58,6 @@
 
 package org.glassfish.grizzly.servlet;
 
-import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.grizzly.http.server.ServerConfiguration;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.SessionManager;
-import org.glassfish.grizzly.http.server.StaticHttpHandlerBase;
-import org.glassfish.grizzly.http.server.util.ClassLoaderUtil;
-import org.glassfish.grizzly.http.server.util.DispatcherHelper;
-import org.glassfish.grizzly.http.server.util.Enumerator;
-import org.glassfish.grizzly.http.server.util.Mapper;
-import org.glassfish.grizzly.http.server.util.MappingData;
-import org.glassfish.grizzly.http.util.MimeType;
-import org.glassfish.grizzly.http.util.DataChunk;
-import org.glassfish.grizzly.localization.LogMessages;
-
-import javax.servlet.Filter;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.SingleThreadModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,12 +80,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import javax.servlet.Filter;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextAttributeEvent;
+import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
 import javax.servlet.SessionTrackingMode;
+import javax.servlet.SingleThreadModel;
 import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.HttpUpgradeHandler;
+
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.ServerConfiguration;
+import org.glassfish.grizzly.http.server.SessionManager;
+import org.glassfish.grizzly.http.server.StaticHttpHandlerBase;
+import org.glassfish.grizzly.http.server.util.ClassLoaderUtil;
+import org.glassfish.grizzly.http.server.util.DispatcherHelper;
+import org.glassfish.grizzly.http.server.util.Enumerator;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MimeType;
+import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * <p>
@@ -132,8 +132,7 @@ import org.glassfish.grizzly.utils.DataStructures;
  */
 public class WebappContext implements ServletContext {
 
-    private static final Logger LOGGER =
-            Grizzly.logger(WebappContext.class);
+    private static final Logger LOGGER = Grizzly.logger(WebappContext.class);
 
     private static final Map<WebappContext, HttpServer> DEPLOYED_APPS =
             new HashMap<WebappContext, HttpServer>();
@@ -307,10 +306,8 @@ public class WebappContext implements ServletContext {
     public synchronized void deploy(final HttpServer targetServer) {
         if (!deployed) {
 
-            if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.log(Level.INFO,
-                               "Starting application [{0}] ...",
-                            displayName);
+            if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("Starting application [{}] ...", displayName);
                 }
             boolean error = false;
             try {
@@ -335,19 +332,15 @@ public class WebappContext implements ServletContext {
                 contextInitialized();
                 initServlets(targetServer);
                 initFilters();
-                if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.log(Level.INFO,
-                               "Application [{0}] is ready to service requests.  Root: [{1}].",
-                               new Object[] {displayName, contextPath});
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("Application [{}] is ready to service requests.  Root: [{}].", displayName, contextPath);
                 }
                 DEPLOYED_APPS.put(this, targetServer);
                 deployed = true;
             } catch (Exception e) {
                 error = true;
-                if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                               "[" + displayName + "] Exception deploying application.  See stack trace for details.",
-                               e);
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error("[{}] Exception deploying application.  See stack trace for details.", displayName, e);
                 }
             } finally {
                 if (error) {
@@ -376,10 +369,8 @@ public class WebappContext implements ServletContext {
                 contextDestroyed();
             }
         } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                        "[" + displayName + "] Exception undeploying application.  See stack trace for details.",
-                        e);
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("[{}] Exception undeploying application.  See stack trace for details.", displayName, e);
             }
         }
     }
@@ -1022,8 +1013,8 @@ public class WebappContext implements ServletContext {
             }
         } catch (Exception e) {
             // Should never happen
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Error during mapping", e);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("Error during mapping", e);
             }
             return null;
         }
@@ -1222,8 +1213,8 @@ public class WebappContext implements ServletContext {
             }
         } catch (Exception e) {
             // Should never happen
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Error during mapping", e);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("Error during mapping", e);
             }
             return null;
         }
@@ -1283,8 +1274,8 @@ public class WebappContext implements ServletContext {
 
         } catch (Exception e) {
             // Should never happen
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Error during mapping", e);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("Error during mapping", e);
             }
             return null;
         }
@@ -1332,7 +1323,7 @@ public class WebappContext implements ServletContext {
      */
     @Override
     public void log(String message) {
-        LOGGER.log(Level.INFO, String.format("[%s] %s", displayName, message));
+        LOGGER.info("[{}] {}", displayName, message);
     }
 
     /**
@@ -1351,7 +1342,7 @@ public class WebappContext implements ServletContext {
      */
     @Override
     public void log(String message, Throwable throwable) {
-        LOGGER.log(Level.INFO, String.format("[%s] %s", displayName, message), throwable);
+        LOGGER.info("[{}] {}", displayName, message, throwable);
     }
 
     /**
@@ -1469,10 +1460,8 @@ public class WebappContext implements ServletContext {
                     listener.attributeAdded(event);
                 }
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_ADD_ERROR("ServletContextAttributeListener", listener.getClass().getName()),
-                            t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_ADD_ERROR("ServletContextAttributeListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -1502,10 +1491,8 @@ public class WebappContext implements ServletContext {
                 }
                 listener.attributeRemoved(event);
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_REMOVE_ERROR("ServletContextAttributeListener", listener.getClass().getName()),
-                            t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_ATTRIBUTE_LISTENER_REMOVE_ERROR("ServletContextAttributeListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -1853,7 +1840,7 @@ public class WebappContext implements ServletContext {
                 } else if (registration.loadOnStartup >= 0) {
                     try {
                         Servlet servletInstance = createServletInstance(registration);
-                        LOGGER.log(Level.INFO, "Loading Servlet: {0}", servletInstance.getClass().getName());
+                        LOGGER.info("Loading Servlet: {}", servletInstance.getClass().getName());
                         servletInstance.init(sConfig);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -1890,16 +1877,11 @@ public class WebappContext implements ServletContext {
                             updateMappings(servletHandler, ""));
                 }
                 servletHandlers.add(servletHandler);
-                if (LOGGER.isLoggable(Level.INFO)) {
+                if (LOGGER.isInfoEnabled()) {
                     String p = ((patterns == null)
                                         ? ""
                                         : Arrays.toString(patterns));
-                    LOGGER.log(Level.INFO,
-                            "[{0}] Servlet [{1}] registered for url pattern(s) [{2}].",
-                            new Object[]{
-                                    displayName,
-                                    registration.className,
-                                    p});
+                    LOGGER.info("[{}] Servlet [{}] registered for url pattern(s) [{}].", displayName, registration.className, p);
                 }
             }
         }
@@ -1969,14 +1951,8 @@ public class WebappContext implements ServletContext {
                             createFilterConfig(registration);
                     registration.filter = f;
                     f.init(filterConfig);
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO,
-                                   "[{0}] Filter [{1}] registered for url pattern(s) [{2}] and servlet name(s) [{3}]",
-                                   new Object[] {
-                                           displayName,
-                                        registration.className,
-                                        registration.getUrlPatternMappings(),
-                                        registration.getServletNameMappings()});
+                    if (LOGGER.isInfoEnabled()) {
+                        LOGGER.info("[{}] Filter [{}] registered for url pattern(s) [{}] and servlet name(s) [{}]", displayName, registration.className, registration.getUrlPatternMappings(), registration.getServletNameMappings());
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -2062,10 +2038,8 @@ public class WebappContext implements ServletContext {
             try {
                 listener.contextInitialized(event);
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("contextInitialized", "ServletContextListener", listener.getClass().getName()),
-                            t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_INITIALIZED_ERROR("contextInitialized", "ServletContextListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -2089,10 +2063,8 @@ public class WebappContext implements ServletContext {
             try {
                 listener.contextDestroyed(event);
             } catch (Throwable t) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("contextDestroyed", "ServletContextListener", listener.getClass().getName()),
-                            t);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVLET_CONTAINER_OBJECT_DESTROYED_ERROR("contextDestroyed", "ServletContextListener", listener.getClass().getName()), t);
                 }
             }
         }
@@ -2197,7 +2169,7 @@ public class WebappContext implements ServletContext {
             return true;
         }
         if (urlPattern.indexOf('\n') >= 0 || urlPattern.indexOf('\r') >= 0) {
-            LOGGER.log(Level.WARNING, "The URL pattern ''{0}'' contains a CR or LF and so can never be matched", urlPattern);
+            LOGGER.warn("The URL pattern ''{}'' contains a CR or LF and so can never be matched", urlPattern);
             return false;
         }
         if (urlPattern.startsWith("*.")) {
@@ -2221,12 +2193,10 @@ public class WebappContext implements ServletContext {
      * See Bugzilla 34805, 43079 &amp; 43080
      */
     private void checkUnusualURLPattern(String urlPattern) {
-        if (LOGGER.isLoggable(Level.INFO)) {
+        if (LOGGER.isInfoEnabled()) {
             if(urlPattern.endsWith("*") && (urlPattern.length() < 2 ||
                     urlPattern.charAt(urlPattern.length()-2) != '/')) {
-                LOGGER.log(Level.INFO,"Suspicious url pattern: \"{0}" + "\"" +
-                        " in context - see" +
-                        " section SRV.11.2 of the Servlet specification" , urlPattern);
+                LOGGER.info("Suspicious url pattern: \"{}\" in context - see section SRV.11.2 of the Servlet specification", urlPattern);
             }
         }
     }    

@@ -40,16 +40,14 @@
 
 package org.glassfish.grizzly.http.server.accesslog;
 
-import static java.util.logging.Level.WARNING;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.slf4j.Logger;
 
 /**
  * An {@link AccessLogAppender appender} writing log entries to {@link File}s,
@@ -97,7 +95,7 @@ public class RotatingFileAppender implements AccessLogAppender {
     public RotatingFileAppender(File directory, String filePattern)
     throws IOException {
         this(filePattern, filePattern, directory);
-        LOGGER.fine("Creating rotating log appender in \"" + directory + "\" with file pattern \"" + filePattern+ "\"");
+        LOGGER.debug("Creating rotating log appender in \"{}\" with file pattern \"{}\"", directory, filePattern);
     }
 
     /**
@@ -125,7 +123,7 @@ public class RotatingFileAppender implements AccessLogAppender {
     public RotatingFileAppender(File directory, String fileName, String archivePattern)
     throws IOException {
         this(escape(fileName), archivePattern, directory);
-        LOGGER.fine("Creating rotating log appender in \"" + directory + "\" writing to \"" + fileName + "\" and archive pattern \"" + archivePattern + "\"");
+        LOGGER.debug("Creating rotating log appender in \"{}\" writing to \"{}\" and archive pattern \"{}\"", directory, fileName, archivePattern);
     }
 
     /* ====================================================================== */
@@ -197,7 +195,7 @@ public class RotatingFileAppender implements AccessLogAppender {
                 appender = new FileAppender(currentFile, true);
 
             } catch (IOException exception) {
-                LOGGER.log(WARNING, "I/O error rotating access log file", exception);
+                LOGGER.warn("I/O error rotating access log file", exception);
             }
 
             appender.append(accessLogEntry);

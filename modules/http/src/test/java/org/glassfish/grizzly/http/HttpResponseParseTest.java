@@ -50,8 +50,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 import junit.framework.TestCase;
 import org.glassfish.grizzly.Buffer;
@@ -76,6 +76,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.streams.StreamWriter;
 import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.glassfish.grizzly.utils.Pair;
+import org.slf4j.Logger;
 
 /**
  * Testing HTTP response parsing
@@ -83,7 +84,7 @@ import org.glassfish.grizzly.utils.Pair;
  * @author Alexey Stashok
  */
 public class HttpResponseParseTest extends TestCase {
-    private static final Logger logger = Grizzly.logger(HttpResponseParseTest.class);
+    private static final Logger LOGGER = Grizzly.logger(HttpResponseParseTest.class);
     
     public final int PORT = findFreePort();
 
@@ -178,7 +179,7 @@ public class HttpResponseParseTest extends TestCase {
             doTestDecoder("HTTP/1.0 404 Not found\n\n", 4096);
             assertTrue(true);
         } catch (IllegalStateException e) {
-            logger.log(Level.SEVERE, "exception", e);
+            LOGGER.error("exception", e);
             fail("Unexpected exception");
         }
     }

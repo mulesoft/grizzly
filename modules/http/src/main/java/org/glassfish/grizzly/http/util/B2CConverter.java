@@ -58,8 +58,6 @@
 
 package org.glassfish.grizzly.http.util;
 
-import org.glassfish.grizzly.utils.Charsets;
-import org.glassfish.grizzly.Grizzly;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -67,8 +65,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.utils.Charsets;
+import org.slf4j.Logger;
+
+
 
 /** Efficient conversion of bytes  to character .
  *
@@ -238,8 +240,8 @@ public class B2CConverter {
     }
 
     void log(String s) {
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "B2CConverter: " + s);
+        if (logger.isTraceEnabled()) {
+            logger.trace("B2CConverter: " + s);
         }
     }
 

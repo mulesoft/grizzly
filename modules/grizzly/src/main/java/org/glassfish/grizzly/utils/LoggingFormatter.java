@@ -44,9 +44,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.logging.Formatter;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
+
 
 /**
  *
@@ -67,7 +69,7 @@ import java.util.logging.Logger;
  */
 public class LoggingFormatter extends Formatter {
 
-    private static final Logger log = Logger.getLogger(LoggingFormatter.class.getName());
+    private static final Logger LOGGER = Grizzly.logger(LoggingFormatter.class);
     // took that from the JDK java.util.logging.SimpleFormatter
     // Line separator string.  This is the value of the line.separator
     // property at the moment that the SimpleFormatter was created.
@@ -155,21 +157,21 @@ public class LoggingFormatter extends Formatter {
      */
     public static void main(String[] args) {
 
-        log.info("Info Event");
+        LOGGER.info("Info Event");
 
-        log.severe("Severe Event");
+        LOGGER.error("Severe Event");
 
         // show the thread info in the logger.
         Thread t = new Thread(new Runnable() {
 
             @Override
             public void run() {
-                log.info("Info Event in Thread");
+                LOGGER.info("Info Event in Thread");
             }
         }, "Thread into main");
 
         t.start();
 
-        log.log(Level.SEVERE, "exception", new Exception());
+        LOGGER.error("exception", new Exception());
     }
 }

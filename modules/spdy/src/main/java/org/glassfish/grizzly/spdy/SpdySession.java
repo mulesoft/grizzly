@@ -40,14 +40,15 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_INITIAL_WINDOW_SIZE;
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_MAX_CONCURRENT_STREAMS;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.Deflater;
 
 import org.glassfish.grizzly.CloseType;
@@ -81,8 +82,7 @@ import org.glassfish.grizzly.spdy.frames.SpdyFrame;
 import org.glassfish.grizzly.utils.DataStructures;
 import org.glassfish.grizzly.utils.Holder;
 import org.glassfish.grizzly.utils.NullaryFunction;
-
-import static org.glassfish.grizzly.spdy.Constants.*;
+import org.slf4j.Logger;
 
 /**
  * The SPDY Session abstraction.
@@ -91,7 +91,6 @@ import static org.glassfish.grizzly.spdy.Constants.*;
  */
 public abstract class SpdySession {
     private static final Logger LOGGER = Grizzly.logger(SpdySession.class);
-    private static final Level LOGGER_LEVEL = Level.FINE;
 
     private static final Attribute<SpdySession> SPDY_SESSION_ATTR =
             AttributeBuilder.DEFAULT_ATTRIBUTE_BUILDER.createAttribute(
@@ -222,9 +221,8 @@ public abstract class SpdySession {
                 try {
                     stream.getOutputSink().onPeerWindowUpdate(delta);
                 } catch (SpdyStreamException e) {
-                    if (LOGGER.isLoggable(LOGGER_LEVEL)) {
-                        LOGGER.log(LOGGER_LEVEL, "SpdyStreamException occurred on stream="
-                                + stream + " during stream window update", e);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("SpdyStreamException occurred on stream={} during stream window update", stream, e);
                     }
 
                     outputSink.writeDownStream(

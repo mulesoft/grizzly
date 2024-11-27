@@ -41,8 +41,8 @@
 package org.glassfish.grizzly.ssl;
 
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
@@ -55,6 +55,7 @@ import org.glassfish.grizzly.TransformationResult;
 import org.glassfish.grizzly.attributes.AttributeStorage;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.slf4j.Logger;
 
 import static org.glassfish.grizzly.ssl.SSLUtils.*;
 
@@ -117,9 +118,8 @@ public final class SSLDecoderTransformer extends AbstractTransformer<Buffer, Buf
         TransformationResult<Buffer, Buffer> transformationResult = null;
 
         try {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "SSLDecoder engine: {0} input: {1} output: {2}",
-                        new Object[]{sslEngine, originalMessage, targetBuffer});
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("SSLDecoder engine: {} input: {} output: {}", sslEngine, originalMessage, targetBuffer);
             }
 
             final int pos = originalMessage.position();
@@ -143,9 +143,8 @@ public final class SSLDecoderTransformer extends AbstractTransformer<Buffer, Buf
 
             final SSLEngineResult.Status status = sslEngineResult.getStatus();
 
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "SSLDecoderr done engine: {0} result: {1} input: {2} output: {3}",
-                        new Object[]{sslEngine, sslEngineResult, originalMessage, targetBuffer});
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("SSLDecoderr done engine: {} result: {} input: {} output: {}", sslEngine, sslEngineResult, originalMessage, targetBuffer);
             }
 
             if (status == SSLEngineResult.Status.OK) {

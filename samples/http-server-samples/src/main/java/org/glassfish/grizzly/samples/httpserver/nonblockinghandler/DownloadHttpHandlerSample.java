@@ -44,21 +44,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
+import org.glassfish.grizzly.http.io.NIOOutputStream;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
-import org.glassfish.grizzly.http.io.NIOOutputStream;
-import org.glassfish.grizzly.http.util.MimeType;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.glassfish.grizzly.http.util.MimeType;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.slf4j.Logger;
 
 /**
  * The sample shows how the HttpHandler should be implemented in order to
@@ -113,7 +113,7 @@ public class DownloadHttpHandlerSample {
             LOGGER.info("Press enter to stop the server...");
             System.in.read();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             server.shutdownNow();
         }
@@ -172,7 +172,7 @@ public class DownloadHttpHandlerSample {
                 
                 @Override
                 public void onWritePossible() throws Exception {
-                    LOGGER.log(Level.FINE, "[onWritePossible]");
+                    LOGGER.debug("[onWritePossible]");
                     // send CHUNK of data
                     final boolean isWriteMore = sendChunk();
 
@@ -184,7 +184,7 @@ public class DownloadHttpHandlerSample {
 
                 @Override
                 public void onError(Throwable t) {
-                    LOGGER.log(Level.WARNING, "[onError] ", t);
+                    LOGGER.warn("[onError] ", t);
                     response.setStatus(500, t.getMessage());
                     complete(true);
                 }

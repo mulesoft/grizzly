@@ -40,11 +40,6 @@
 
 package org.glassfish.grizzly.nio;
 
-import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.IOEvent;
-import org.glassfish.grizzly.IOStrategy;
-import org.glassfish.grizzly.Transport.State;
 import java.io.IOException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedSelectorException;
@@ -59,15 +54,21 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.IOStrategy;
+import org.glassfish.grizzly.Transport.State;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.threadpool.Threads;
 import org.glassfish.grizzly.utils.StateHolder;
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
 
 /**
  * Class is responsible for processing certain (single) {@link SelectorHandler}
@@ -75,9 +76,9 @@ import org.glassfish.grizzly.utils.StateHolder;
  * @author Alexey Stashok
  */
 public final class SelectorRunner implements Runnable {
-    private final static Logger LOGGER = Grizzly.logger(SelectorRunner.class);
-    
-    private final static String THREAD_MARKER = " SelectorRunner";
+    private static final Logger LOGGER = Grizzly.logger(SelectorRunner.class);
+
+    private static final String THREAD_MARKER = " SelectorRunner";
     
     private final NIOTransport transport;
     private final AtomicReference<State> stateHolder;
@@ -138,7 +139,7 @@ public final class SelectorRunner implements Runnable {
             try {
                 localSelector.wakeup();
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Error during selector wakeup", e);
+                LOGGER.debug("Error during selector wakeup", e);
             }
         }
     }
@@ -197,8 +198,7 @@ public final class SelectorRunner implements Runnable {
 
     public synchronized void start() {
         if (!stateHolder.compareAndSet(State.STOPPED, State.STARTING)) {
-            LOGGER.log(Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_SELECTOR_RUNNER_NOT_IN_STOPPED_STATE_EXCEPTION());
+            LOGGER.warn(LogMessages.WARNING_GRIZZLY_SELECTOR_RUNNER_NOT_IN_STOPPED_STATE_EXCEPTION());
             return;
         }
         
@@ -361,13 +361,13 @@ public final class SelectorRunner implements Runnable {
             
             dropConnectionDueToException(key,
                     "Selector was unexpectedly closed", e,
-                    Level.SEVERE, Level.FINE);
+                    Level.ERROR, Level.DEBUG);
         } catch (Exception e) {
             dropConnectionDueToException(key,
                     "doSelect exception", e,
-                    Level.SEVERE, Level.FINE);
+                    Level.ERROR, Level.DEBUG);
         } catch (Throwable t) {
-            LOGGER.log(Level.SEVERE,"doSelect exception", t);
+            LOGGER.error("doSelect exception", t);
             transport.notifyTransportError(t);
         }
 
@@ -386,10 +386,10 @@ public final class SelectorRunner implements Runnable {
                 }
             } catch (IOException e) {
                 keyReadyOps = 0;
-                dropConnectionDueToException(key, "Unexpected IOException. Channel " + key.channel() + " will be closed.", e, Level.WARNING, Level.FINE);
+                dropConnectionDueToException(key, "Unexpected IOException. Channel " + key.channel() + " will be closed.", e, Level.WARN, Level.DEBUG);
             } catch (CancelledKeyException e) {
                 keyReadyOps = 0;
-                dropConnectionDueToException(key, "Unexpected CancelledKeyException. Channel " + key.channel() + " will be closed.", e, Level.FINE, Level.FINE);
+                dropConnectionDueToException(key, "Unexpected CancelledKeyException. Channel " + key.channel() + " will be closed.", e, Level.DEBUG, Level.DEBUG);
             }
         }
         return true;
@@ -462,7 +462,7 @@ public final class SelectorRunner implements Runnable {
             final Exception e, final Level runLogLevel,
             final Level stoppedLogLevel) {
         if (isRunning()) {
-            LOGGER.log(runLogLevel, description, e);
+            LOGGER.atLevel(runLogLevel).log(description, e);
 
             if (key != null) {
                 try {
@@ -477,14 +477,13 @@ public final class SelectorRunner implements Runnable {
                         channel.close();
                     }
                 } catch (IOException cancelException) {
-                    LOGGER.log(Level.FINE, "IOException during cancelling key",
-                            cancelException);
+                    LOGGER.debug("IOException during cancelling key", cancelException);
                 }
             }
 
             transport.notifyTransportError(e);
         } else {
-            LOGGER.log(stoppedLogLevel, description, e);
+            LOGGER.atLevel(stoppedLogLevel).log(description, e);
         }
     }
 
@@ -517,7 +516,7 @@ public final class SelectorRunner implements Runnable {
 
                     nioConnection.onSelectionKeyUpdated(newSelectionKey);
                 } catch (Exception e) {
-                    LOGGER.log(Level.FINE, "Error switching channel to a new selector", e);
+                    LOGGER.debug("Error switching channel to a new selector", e);
                 }
             }
         }
@@ -583,8 +582,8 @@ public final class SelectorRunner implements Runnable {
     }
 
     final void workaroundSelectorSpin() throws IOException {
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Workaround selector spin. selector={0}", getSelector());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Workaround selector spin. selector={}", getSelector());
         }
 
         spinnedSelectorsHistory.put(getSelector(), System.currentTimeMillis());

@@ -39,16 +39,15 @@
  */
 package org.glassfish.grizzly.websockets;
 
+import java.io.IOException;
+
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpResponsePacket;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 public class WebSocketClientFilter extends BaseWebSocketFilter {
     private static final Logger LOGGER = Grizzly.logger(WebSocketClientFilter.class);
@@ -68,7 +67,7 @@ public class WebSocketClientFilter extends BaseWebSocketFilter {
      */
     @Override
     public NextAction handleConnect(FilterChainContext ctx) throws IOException {
-        LOGGER.log(Level.FINEST, "handleConnect");
+        LOGGER.trace("handleConnect");
         // Get connection
         final Connection connection = ctx.getConnection();
         // check if it's websocket connection

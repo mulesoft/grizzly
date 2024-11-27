@@ -43,8 +43,7 @@ package org.glassfish.grizzly.http.server.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.GrizzlyFuture;
 import org.glassfish.grizzly.http.server.Request;
@@ -53,6 +52,7 @@ import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.ssl.SSLBaseFilter.CertificateEvent;
 import org.glassfish.grizzly.ssl.SSLSupport;
 import org.glassfish.grizzly.ssl.SSLSupportImpl;
+import org.slf4j.Logger;
 
 public class RequestUtils {
 
@@ -79,10 +79,8 @@ public class RequestUtils {
                 // TODO: make the timeout configurable
                 certificates = certFuture.get(30, TimeUnit.SECONDS);
             } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE,
-                               "Unable to obtain certificates from peer.",
-                               e);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Unable to obtain certificates from peer.", e);
                 }
             }
             request.setAttribute(SSLSupport.CERTIFICATE_KEY, certificates);
@@ -112,10 +110,8 @@ public class RequestUtils {
                     request.setAttribute(SSLSupport.SESSION_ID_KEY, sslO);
                 }
             } catch (Exception ioe) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE,
-                            "Unable to populate SSL attributes",
-                            ioe);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Unable to populate SSL attributes", ioe);
                 }
             }
         }
@@ -127,9 +123,8 @@ public class RequestUtils {
         if (f != null) {
             final Response response = request.getResponse();
             if (response.isCommitted()) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUESTUTILS_SENDFILE_FAILED());
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_REQUESTUTILS_SENDFILE_FAILED());
                 }
 
                 return;

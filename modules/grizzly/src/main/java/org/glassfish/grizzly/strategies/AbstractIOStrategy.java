@@ -42,12 +42,13 @@ package org.glassfish.grizzly.strategies;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.*;
 import org.glassfish.grizzly.asyncqueue.AsyncQueue;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
+import org.slf4j.Logger;
 
 /**
  *
@@ -111,7 +112,7 @@ public abstract class AbstractIOStrategy implements IOStrategy {
         try {
             connection.getTransport().fireIOEvent(ioEvent, connection, listener);
         } catch (Exception e) {
-            logger.log(Level.WARNING, LogMessages.WARNING_GRIZZLY_IOSTRATEGY_UNCAUGHT_EXCEPTION(), e);
+            logger.warn(LogMessages.WARNING_GRIZZLY_IOSTRATEGY_UNCAUGHT_EXCEPTION(), e);
             connection.closeSilently();
         }
 

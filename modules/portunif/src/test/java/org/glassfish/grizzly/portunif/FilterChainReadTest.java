@@ -60,8 +60,8 @@ import java.net.SocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import junit.framework.TestCase;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -71,6 +71,7 @@ import org.glassfish.grizzly.TransformationResult;
 import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.memory.CompositeBuffer;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * Test {@link FilterChain} blocking read.
@@ -81,7 +82,7 @@ import org.glassfish.grizzly.utils.DataStructures;
 public class FilterChainReadTest extends TestCase {
     public final int PORT = findFreePort();
 
-    private static final Logger logger = Grizzly.logger(FilterChainReadTest.class);
+    private static final Logger LOGGER = Grizzly.logger(FilterChainReadTest.class);
 
     public void testBlockingRead() throws Exception {
         final String[] clientMsgs = {"XXXXX", "Hello", "from", "client"};
@@ -359,7 +360,7 @@ public class FilterChainReadTest extends TestCase {
 
             String message = ctx.getMessage();
 
-            logger.log(Level.INFO, "First chunk come: {0}", message);
+            LOGGER.info("First chunk come: {}", message);
             intermResultQueue.add(message);
 
             Connection connection = ctx.getConnection();
@@ -371,7 +372,7 @@ public class FilterChainReadTest extends TestCase {
                     final String blckMsg = (String) rr.getMessage();
 
                     rr.recycle();
-                    logger.log(Level.INFO, "Blocking chunk come: {0}", blckMsg);
+                    LOGGER.info("Blocking chunk come: {}", blckMsg);
                     intermResultQueue.add(blckMsg);
                     message += blckMsg;
                 }

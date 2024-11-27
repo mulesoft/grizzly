@@ -43,8 +43,10 @@ package org.glassfish.grizzly.comet;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
+
 
 /**
  * Default NotificationHandler that uses a thread pool dedicated to the CometEngine to execute the notification
@@ -54,7 +56,7 @@ import java.util.logging.Logger;
  * @author Gustav Trede
  */
 public class DefaultNotificationHandler implements NotificationHandler {
-    private final static Logger logger = Logger.getLogger(DefaultNotificationHandler.class.getName());
+    private final static Logger LOGGER = Grizzly.logger(DefaultNotificationHandler.class);
     private static final IllegalStateException ISEempty = new IllegalStateException();
     /**
      * The {@link ExecutorService} used to execute threaded notification.
@@ -127,11 +129,11 @@ public class DefaultNotificationHandler implements NotificationHandler {
                     throw ISEempty;
             }
         } catch (Throwable ex) {
-            logger.log(Level.FINE, "Notification failed: ", ex);
+            LOGGER.debug("Notification failed: ", ex);
             try {
                 cometEvent.getCometContext().resumeCometHandler(cometHandler);
             } catch (Throwable t) {
-                logger.log(Level.FINE, "Resume phase failed: ", t);
+                LOGGER.debug("Resume phase failed: ", t);
             }
         }
     }

@@ -40,17 +40,19 @@
 
 package org.glassfish.grizzly.samples.simpleauth;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.samples.echo.EchoFilter;
+import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Server implementation, which echoes message, only if client was authenticated :)
@@ -73,7 +75,7 @@ import java.util.logging.Logger;
  * @author Alexey Stashok
  */
 public class Server {
-    private static final Logger logger = Logger.getLogger(Server.class.getName());
+    private static final Logger LOGGER = Grizzly.logger(Server.class);
 
     public static final String HOST = "localhost";
     public static final int PORT = 7777;
@@ -112,14 +114,14 @@ public class Server {
             // start the transport
             transport.start();
 
-            logger.info("Press any key to stop the server...");
+            LOGGER.info("Press any key to stop the server...");
             System.in.read();
         } finally {
-            logger.info("Stopping transport...");
+            LOGGER.info("Stopping transport...");
             // stop the transport
             transport.shutdownNow();
 
-            logger.info("Stopped transport...");
+            LOGGER.info("Stopped transport...");
         }
     }
 }

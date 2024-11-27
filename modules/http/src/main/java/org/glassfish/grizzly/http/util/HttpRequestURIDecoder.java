@@ -39,14 +39,15 @@
  */
 package org.glassfish.grizzly.http.util;
 
+import static org.glassfish.grizzly.utils.Charsets.UTF8_CHARSET;
+
 import java.io.CharConversionException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
-import static org.glassfish.grizzly.utils.Charsets.*;
+import org.slf4j.Logger;
 
 /**
  * Utility class that make sure an HTTP url defined inside a {@link MessageBytes}
@@ -211,7 +212,7 @@ public class HttpRequestURIDecoder {
                 }
             } catch (IOException e) {
                 // Ignore
-                LOGGER.severe("Invalid URI encoding; using HTTP default");
+                LOGGER.error("Invalid URI encoding; using HTTP default");
             }
             if (b2cConverter != null) {
                 try {
@@ -220,7 +221,7 @@ public class HttpRequestURIDecoder {
                             cc.getLength());
                     return;
                 } catch (IOException e) {
-                    LOGGER.severe("Invalid URI character encoding; trying ascii");
+                    LOGGER.error("Invalid URI character encoding; trying ascii");
                     cc.recycle();
                 }
             }
@@ -477,7 +478,7 @@ public class HttpRequestURIDecoder {
      * @param throwable Associated exception
      */
     protected void log(String message, Throwable throwable) {
-        LOGGER.log(Level.SEVERE, message, throwable);
+        LOGGER.error(message, throwable);
     }
 
     /**

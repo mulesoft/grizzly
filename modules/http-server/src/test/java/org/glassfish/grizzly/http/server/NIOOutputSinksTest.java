@@ -40,6 +40,11 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static org.glassfish.grizzly.Writer.Reentrant;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -49,8 +54,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
@@ -81,11 +84,7 @@ import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.grizzly.utils.Futures;
 import org.junit.Test;
-
-import static org.glassfish.grizzly.Writer.Reentrant;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.slf4j.Logger;
 
 @SuppressWarnings("Duplicates")
 public class NIOOutputSinksTest {
@@ -233,7 +232,7 @@ public class NIOOutputSinksTest {
                 assertEquals(writeCounter.get(), length);
                 assertTrue(callbackInvoked.get());
             } finally {
-                LOGGER.log(Level.INFO, "Written {0}", writeCounter);
+                LOGGER.debug("Written {}", writeCounter);
                 // Close the client connection
                 if (connection != null) {
                     connection.closeSilently();
@@ -633,7 +632,7 @@ public class NIOOutputSinksTest {
                 check1(resultStr, LENGTH);
                 
             } finally {
-                LOGGER.log(Level.INFO, "Written {0}", writeCounter);
+                LOGGER.info("Written {}", writeCounter);
                 // Close the client connection
                 if (connection != null) {
                     connection.closeSilently();

@@ -53,8 +53,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.ConnectionProbe;
 import org.glassfish.grizzly.Grizzly;
@@ -67,6 +66,7 @@ import org.glassfish.grizzly.utils.Exceptions;
 import org.glassfish.grizzly.utils.Holder;
 import org.glassfish.grizzly.utils.JdkVersion;
 import org.glassfish.grizzly.utils.NullaryFunction;
+import org.slf4j.Logger;
 
 /**
  * {@link org.glassfish.grizzly.Connection} implementation
@@ -114,7 +114,7 @@ public class UDPNIOConnection extends NIOConnection {
                 mkUnblock = membershipKeyClass.getDeclaredMethod("unblock", InetAddress.class);
                 isInitialized = true;
             } catch (Throwable t) {
-                LOGGER.log(Level.WARNING, LogMessages.WARNING_GRIZZLY_CONNECTION_UDPMULTICASTING_EXCEPTIONE(), t);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_CONNECTION_UDPMULTICASTING_EXCEPTIONE(), t);
             }
         }
         
@@ -526,9 +526,7 @@ public class UDPNIOConnection extends NIOConnection {
         try {
             readBufferSize = ((DatagramChannel) channel).socket().getReceiveBufferSize();
         } catch (IOException e) {
-            LOGGER.log(Level.FINE,
-                    LogMessages.WARNING_GRIZZLY_CONNECTION_GET_READBUFFER_SIZE_EXCEPTION(),
-                    e);
+            LOGGER.debug(LogMessages.WARNING_GRIZZLY_CONNECTION_GET_READBUFFER_SIZE_EXCEPTION(), e);
             readBufferSize = 0;
         }
 
@@ -549,9 +547,7 @@ public class UDPNIOConnection extends NIOConnection {
                 
                 this.readBufferSize = readBufferSize;
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_CONNECTION_SET_READBUFFER_SIZE_EXCEPTION(),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_CONNECTION_SET_READBUFFER_SIZE_EXCEPTION(), e);
             }
         }
     }
@@ -568,9 +564,7 @@ public class UDPNIOConnection extends NIOConnection {
         try {
             writeBufferSize = ((DatagramChannel) channel).socket().getSendBufferSize();
         } catch (IOException e) {
-            LOGGER.log(Level.FINE,
-                    LogMessages.WARNING_GRIZZLY_CONNECTION_GET_WRITEBUFFER_SIZE_EXCEPTION(),
-                    e);
+            LOGGER.debug(LogMessages.WARNING_GRIZZLY_CONNECTION_GET_WRITEBUFFER_SIZE_EXCEPTION(), e);
             writeBufferSize = 0;
         }
 
@@ -590,9 +584,7 @@ public class UDPNIOConnection extends NIOConnection {
                 }
                 this.writeBufferSize = writeBufferSize;
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_CONNECTION_SET_WRITEBUFFER_SIZE_EXCEPTION(),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_CONNECTION_SET_WRITEBUFFER_SIZE_EXCEPTION(), e);
             }
         }
     }

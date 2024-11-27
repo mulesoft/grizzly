@@ -39,8 +39,7 @@
  */
 package org.glassfish.grizzly.spdy;
 
-import java.util.logging.Logger;
-import org.glassfish.grizzly.Grizzly;
+
 import org.glassfish.grizzly.ThreadCache;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.ProcessingState;
@@ -52,8 +51,7 @@ import org.glassfish.grizzly.http.util.Header;
  * @author oleksiys
  */
 class SpdyRequest extends HttpRequestPacket implements SpdyHeader {
-    private static final Logger LOGGER = Grizzly.logger(SpdyRequest.class);
-    
+
     private static final ThreadCache.CachedTypeIndex<SpdyRequest> CACHE_IDX =
             ThreadCache.obtainIndex(SpdyRequest.class, 2);
 

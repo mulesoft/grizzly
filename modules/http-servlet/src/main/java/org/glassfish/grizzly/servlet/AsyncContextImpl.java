@@ -47,8 +47,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
@@ -59,7 +58,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.util.Globals;
+import org.slf4j.Logger;
 
 class AsyncContextImpl implements AsyncContext {
 
@@ -68,8 +70,7 @@ class AsyncContextImpl implements AsyncContext {
      */
     enum AsyncEventType { COMPLETE, TIMEOUT, ERROR, START_ASYNC }
 
-    private static final Logger log =
-        Logger.getLogger(AsyncContextImpl.class.getName());
+    private static final Logger LOGGER = Grizzly.logger(AsyncContextImpl.class);
 
     // Default timeout for async operations
     private static final long DEFAULT_ASYNC_TIMEOUT_MILLIS = -1; // No timeout by default
@@ -174,7 +175,7 @@ class AsyncContextImpl implements AsyncContext {
         } else {
             // Should never happen, because any unmapped paths will be 
             // mapped to the DefaultServlet
-            log.warning("Unable to determine target of zero-arg dispatcher");
+            LOGGER.warn("Unable to determine target of zero-arg dispatcher");
         }
     } 
 
@@ -196,7 +197,7 @@ class AsyncContextImpl implements AsyncContext {
         } else {
             // Should never happen, because any unmapped paths will be 
             // mapped to the DefaultServlet
-            log.log(Level.WARNING, "Unable to acquire RequestDispatcher for {0}", path);
+            LOGGER.warn("Unable to acquire RequestDispatcher for {}", path);
         }
     }
 
@@ -218,8 +219,7 @@ class AsyncContextImpl implements AsyncContext {
         } else {
             // Should never happen, because any unmapped paths will be 
             // mapped to the DefaultServlet
-            log.log(Level.WARNING, "Unable to acquire RequestDispatcher for {0}in servlet context {1}",
-                    new Object[]{path, context.getContextPath()});
+            LOGGER.warn("Unable to acquire RequestDispatcher for {}in servlet context {}", path, context.getContextPath());
         }
     }
 
@@ -515,8 +515,7 @@ class AsyncContextImpl implements AsyncContext {
                     break;
                 }
             } catch (IOException ioe) {
-                log.log(Level.WARNING, "Error invoking AsyncListener",
-                        ioe);
+                LOGGER.warn("Error invoking AsyncListener", ioe);
             }
         }
     }

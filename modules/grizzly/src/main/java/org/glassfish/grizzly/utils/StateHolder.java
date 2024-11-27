@@ -41,19 +41,19 @@
 package org.glassfish.grizzly.utils;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.ReadyFutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
-import org.glassfish.grizzly.utils.conditions.Condition;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.localization.LogMessages;
+import org.glassfish.grizzly.utils.conditions.Condition;
+import org.slf4j.Logger;
 
 /**
  * Class, which holds the state.
@@ -62,7 +62,7 @@ import org.glassfish.grizzly.localization.LogMessages;
  * @author Alexey Stashok
  */
 public final class StateHolder<E> {
-    private static final Logger _logger = Grizzly.logger(StateHolder.class);
+    private static final Logger LOGGER = Grizzly.logger(StateHolder.class);
     
     private volatile E state;
     
@@ -223,9 +223,7 @@ public final class StateHolder<E> {
                     element.future.result(state);
                 }
             } catch(Exception e) {
-                _logger.log(Level.WARNING,
-                        LogMessages.WARNING_GRIZZLY_STATE_HOLDER_CALLING_CONDITIONLISTENER_EXCEPTION(),
-                        e);
+                LOGGER.warn(LogMessages.WARNING_GRIZZLY_STATE_HOLDER_CALLING_CONDITIONLISTENER_EXCEPTION(), e);
             }
         }
     }

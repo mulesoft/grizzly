@@ -44,7 +44,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
+
 import org.glassfish.grizzly.Grizzly;
 
 /*
@@ -69,12 +69,9 @@ public class DataStructures {
                     : "org.glassfish.grizzly.utils.LinkedTransferQueue";
             
             c = getAndVerify(className);
-            Grizzly.logger(DataStructures.class).log(Level.FINE, "USING LTQ class:{0}", c);
+            Grizzly.logger(DataStructures.class).debug("USING LTQ class:{}", c);
         } catch (Throwable t) {
-            Grizzly.logger(DataStructures.class).log(Level.FINE,
-                    "failed loading datastructure class:" + className +
-                    " fallback to embedded one", t);
-            
+            Grizzly.logger(DataStructures.class).debug("failed loading datastructure class: {} fallback to embedded one", className, t);
             c = LinkedBlockingQueue.class; // fallback to LinkedBlockingQueue
         }
         

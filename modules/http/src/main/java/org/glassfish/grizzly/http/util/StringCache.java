@@ -58,15 +58,16 @@
 
 package org.glassfish.grizzly.http.util;
 
-import org.glassfish.grizzly.Grizzly;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
+
+
 
 /**
  * This class implements a String cache for ByteChunk and CharChunk.
@@ -322,9 +323,9 @@ public final class StringCache {
                         bcCount = 0;
                         bcStats.clear();
                         bcCache = tempbcCache;
-                        if (logger.isLoggable(Level.FINEST)) {
+                        if (logger.isTraceEnabled()) {
                             long t2 = System.currentTimeMillis();
-                            logger.log(Level.FINEST,"ByteCache generation time: " + (t2 - t1) + "ms");
+                            logger.trace("ByteCache generation time: {}ms", t2 - t1);
                         }
                     } else {
                         bcCount++;
@@ -435,9 +436,9 @@ public final class StringCache {
                         ccCount = 0;
                         ccStats.clear();
                         ccCache = tempccCache;
-                        if (logger.isLoggable(Level.FINEST)) {
+                        if (logger.isTraceEnabled()) {
                             long t2 = System.currentTimeMillis();
-                            logger.log(Level.FINEST,"CharCache generation time: " + (t2 - t1) + "ms");
+                            logger.trace("CharCache generation time: {}ms", t2 - t1);
                         }
                     } else {
                         ccCount++;

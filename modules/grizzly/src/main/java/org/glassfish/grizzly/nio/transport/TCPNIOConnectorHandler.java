@@ -44,10 +44,18 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.glassfish.grizzly.AbstractSocketConnectorHandler;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.IOEventLifeCycleListener;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.ReadyFutureImpl;
 import org.glassfish.grizzly.nio.NIOChannelDistributor;
@@ -55,6 +63,7 @@ import org.glassfish.grizzly.nio.RegisterChannelResult;
 import org.glassfish.grizzly.nio.SelectionKeyHandler;
 import org.glassfish.grizzly.utils.Exceptions;
 import org.glassfish.grizzly.utils.Futures;
+import org.slf4j.Logger;
 
 /**
  * TCP NIO transport client side ConnectorHandler implementation
@@ -194,8 +203,7 @@ public class TCPNIOConnectorHandler extends AbstractSocketConnectorHandler {
             try {
                 connection.onConnect();
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Exception happened, when "
-                        + "trying to connect the channel", e);
+                LOGGER.debug("Exception happened, when trying to connect the channel", e);
             }
         }
     }

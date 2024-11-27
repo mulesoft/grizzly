@@ -40,23 +40,28 @@
 
 package org.glassfish.grizzly.threadpool;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.memory.ThreadLocalPoolProvider;
+import org.glassfish.grizzly.monitoring.DefaultMonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringAware;
 import org.glassfish.grizzly.monitoring.MonitoringConfig;
-import org.glassfish.grizzly.monitoring.DefaultMonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.utils.DelayedExecutor;
+import org.slf4j.Logger;
 
 /**
  * Abstract {@link java.util.concurrent.ExecutorService} implementation.
@@ -507,8 +512,7 @@ public abstract class AbstractThreadPool extends AbstractExecutorService
      */
     @Override
     public void uncaughtException(Thread thread, Throwable throwable) {
-        logger.log(Level.WARNING,
-                LogMessages.WARNING_GRIZZLY_THREADPOOL_UNCAUGHT_EXCEPTION(thread), throwable);
+        logger.warn(LogMessages.WARNING_GRIZZLY_THREADPOOL_UNCAUGHT_EXCEPTION(thread), throwable);
     }
 
 

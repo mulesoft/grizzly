@@ -40,14 +40,13 @@
 
 package org.glassfish.grizzly.comet;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.Grizzly;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.Response;
+import org.slf4j.Logger;
 
 public class DefaultTestCometHandler extends DefaultCometHandler<String> implements Comparable<CometHandler> {
     private static final Logger LOGGER = Grizzly.logger(DefaultTestCometHandler.class);
@@ -66,7 +65,7 @@ public class DefaultTestCometHandler extends DefaultCometHandler<String> impleme
     }
 
     public void onEvent(CometEvent event) throws IOException {
-        LOGGER.log(Level.FINE, "     -> onEvent Handler:{0}", hashCode());
+        LOGGER.debug("     -> onEvent Handler:{}", hashCode());
         onEventCalled.set(true);
         if (resumeAfterEvent) {
             getCometContext().resumeCometHandler(this);

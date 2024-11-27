@@ -45,18 +45,18 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.ReadHandler;
+import org.glassfish.grizzly.http.io.NIOInputStream;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
-import org.glassfish.grizzly.http.io.NIOInputStream;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.slf4j.Logger;
 
 /**
  * The sample shows how the HttpHandler should be implemented in order to
@@ -95,7 +95,7 @@ public class UploadHttpHandlerSample {
             LOGGER.info("Press enter to stop the server...");
             System.in.read();
         } catch (IOException ioe) {
-            LOGGER.log(Level.SEVERE, ioe.toString(), ioe);
+            LOGGER.error(ioe.toString(), ioe);
         } finally {
             server.shutdownNow();
         }
@@ -128,14 +128,14 @@ public class UploadHttpHandlerSample {
 
                 @Override
                 public void onDataAvailable() throws Exception {
-                    LOGGER.log(Level.FINE, "[onDataAvailable] length: {0}", in.readyData());
+                    LOGGER.debug("[onDataAvailable] length: {}", in.readyData());
                     storeAvailableData(in, fileChannel);
                     in.notifyAvailable(this);
                 }
 
                 @Override
                 public void onError(Throwable t) {
-                    LOGGER.log(Level.WARNING, "[onError]", t);
+                    LOGGER.warn("[onError]", t);
                     response.setStatus(500, t.getMessage());
                     complete(true);
                     
@@ -148,7 +148,7 @@ public class UploadHttpHandlerSample {
 
                 @Override
                 public void onAllDataRead() throws Exception {
-                    LOGGER.log(Level.FINE, "[onAllDataRead] length: {0}", in.readyData());
+                    LOGGER.debug("[onAllDataRead] length: {}", in.readyData());
                     storeAvailableData(in, fileChannel);
                     response.setStatus(HttpStatus.ACCEPTED_202);
                     complete(false);

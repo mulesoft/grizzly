@@ -40,9 +40,7 @@
 package org.glassfish.grizzly.attributes;
 
 import org.glassfish.grizzly.Grizzly;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 class AttributeBuilderInitializer {
 
@@ -61,13 +59,11 @@ class AttributeBuilderInitializer {
                                 AttributeBuilder.class.getClassLoader());
                 return builderClass.newInstance();
             } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.log(Level.SEVERE,
-                            "Unable to load or create a new instance of AttributeBuilder {0}.  Cause: {1}",
-                            new Object[]{className, e.getMessage()});
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error("Unable to load or create a new instance of AttributeBuilder {}.  Cause: {}", className, e.getMessage());
                 }
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, e.toString(), e);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(e.toString(), e);
                 }
                 return new DefaultAttributeBuilder();
             }

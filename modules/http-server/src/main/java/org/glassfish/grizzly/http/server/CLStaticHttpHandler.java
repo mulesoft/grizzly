@@ -50,8 +50,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.WriteHandler;
@@ -64,6 +64,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.memory.BufferArray;
 import org.glassfish.grizzly.memory.MemoryManager;
 import org.glassfish.grizzly.utils.ArraySet;
+import org.slf4j.Logger;
 
 /**
  * {@link HttpHandler}, which processes requests to a static resources resolved
@@ -267,8 +268,8 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
         }
        
         if (!found) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Resource not found {0}", resourcePath);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Resource not found {}", resourcePath);
             }
             return false;
         }
@@ -277,9 +278,8 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
         
         // If it's not HTTP GET - return method is not supported status
         if (!Method.GET.equals(request.getMethod())) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Resource found {0}, but HTTP method {1} is not allowed",
-                        new Object[] {resourcePath, request.getMethod()});
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Resource found {}, but HTTP method {} is not allowed", resourcePath, request.getMethod());
             }
             response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
             response.setHeader(Header.Allow, "GET");
@@ -319,8 +319,8 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
     private URL lookupResource(String resourcePath) {
         final String[] docRootsLocal = docRoots.getArray();
         if (docRootsLocal == null || docRootsLocal.length == 0) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "No doc roots registered -> resource {0} is not found ", resourcePath);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("No doc roots registered -> resource {} is not found ", resourcePath);
             }
             
             return null;
@@ -417,7 +417,7 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
         
         @Override
         public void onWritePossible() throws Exception {
-            LOGGER.log(Level.FINE, "[onWritePossible]");
+            LOGGER.debug("[onWritePossible]");
             // send CHUNK of data
             final boolean isWriteMore = sendChunk();
 
@@ -429,7 +429,7 @@ public class CLStaticHttpHandler extends StaticHttpHandlerBase {
 
         @Override
         public void onError(Throwable t) {
-            LOGGER.log(Level.FINE, "[onError] ", t);
+            LOGGER.debug("[onError] ", t);
             response.setStatus(500, t.getMessage());
             complete(true);
         }

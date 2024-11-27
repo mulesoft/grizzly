@@ -40,6 +40,9 @@
 
 package org.glassfish.grizzly.http.server;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -48,8 +51,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -76,9 +78,7 @@ import org.glassfish.grizzly.utils.ChunkingFilter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import org.slf4j.Logger;
 
 /**
  * Test transfer-encoding application
@@ -316,7 +316,7 @@ public class TransferEncodingTest {
 
 
     private static class ClientFilter extends BaseFilter {
-        private final static Logger logger = Grizzly.logger(ClientFilter.class);
+        private final static Logger LOGGER = Grizzly.logger(ClientFilter.class);
 
         private final FutureImpl<HttpContent> testFuture;
 
@@ -339,13 +339,13 @@ public class TransferEncodingTest {
             // Cast message to a HttpContent
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            LOGGER.debug("Got HTTP response chunk");
 
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("HTTP content size: {}", buffer.remaining());
             }
 
             if (!httpContent.isLast()) {
@@ -399,13 +399,13 @@ public class TransferEncodingTest {
             // Cast message to a HttpContent
             final HttpContent httpContent = ctx.getMessage();
 
-            logger.log(Level.FINE, "Got HTTP response chunk");
+            logger.debug("Got HTTP response chunk");
 
             // Get HttpContent's Buffer
             final Buffer buffer = httpContent.getContent();
 
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "HTTP content size: {0}", buffer.remaining());
+            if (logger.isDebugEnabled()) {
+                logger.debug("HTTP content size: {}", buffer.remaining());
             }
 
             testFuture.result(httpContent.getHttpHeader());

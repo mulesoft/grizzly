@@ -44,10 +44,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.*;
+
 import org.glassfish.grizzly.Appendable;
+import org.glassfish.grizzly.Appender;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.ProcessorExecutor;
+import org.glassfish.grizzly.ProcessorResult;
+import org.glassfish.grizzly.ReadResult;
+import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueEnabledTransport;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueWriter;
 import org.glassfish.grizzly.asyncqueue.MessageCloner;
@@ -58,6 +67,8 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.Exceptions;
 import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.grizzly.utils.NullaryFunction;
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
 
 /**
  * Default {@link FilterChain} implementation
@@ -154,8 +165,8 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
                 }
             } while (prepareRemainder(ctx, filtersState));
         } catch (Throwable e) {
-            LOGGER.log(e instanceof IOException ? Level.FINE : Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_FILTERCHAIN_EXCEPTION(), e);
+            Level level = e instanceof IOException ? Level.DEBUG : Level.WARN;
+            LOGGER.atLevel(level).log(LogMessages.WARNING_GRIZZLY_FILTERCHAIN_EXCEPTION(), e);
             throwChain(ctx, executor, e);
             ctx.getCloseable().closeWithReason(Exceptions.makeIOException(e));
 
@@ -276,16 +287,14 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
 
         NextAction nextNextAction;
         do {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINE, "Execute filter. filter={0} context={1}",
-                        new Object[]{currentFilter, ctx});
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("Execute filter. filter={} context={}", currentFilter, ctx);
             }
             // execute the task
             nextNextAction = executor.execute(currentFilter, ctx);
 
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINE, "after execute filter. filter={0} context={1} nextAction={2}",
-                        new Object[]{currentFilter, ctx, nextNextAction});
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("after execute filter. filter={} context={} nextAction={}", currentFilter, ctx, nextNextAction);
             }
         } while (nextNextAction.type() == RerunFilterAction.TYPE);
 

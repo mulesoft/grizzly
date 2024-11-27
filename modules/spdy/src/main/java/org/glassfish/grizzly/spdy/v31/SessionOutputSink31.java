@@ -40,14 +40,14 @@
 
 package org.glassfish.grizzly.spdy.v31;
 
-import org.glassfish.grizzly.spdy.*;
+import static org.glassfish.grizzly.spdy.Constants.DEFAULT_INITIAL_WINDOW_SIZE;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Grizzly;
@@ -56,12 +56,14 @@ import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.asyncqueue.AsyncQueueRecord;
 import org.glassfish.grizzly.asyncqueue.MessageCloner;
 import org.glassfish.grizzly.asyncqueue.TaskQueue;
+import org.glassfish.grizzly.spdy.SessionOutputSink;
+import org.glassfish.grizzly.spdy.SpdySession;
+import org.glassfish.grizzly.spdy.SpdyStream;
 import org.glassfish.grizzly.spdy.frames.DataFrame;
 import org.glassfish.grizzly.spdy.frames.SpdyFrame;
-
-import static org.glassfish.grizzly.spdy.Constants.*;
 import org.glassfish.grizzly.spdy.frames.WindowUpdateFrame;
 import org.glassfish.grizzly.spdy.utils.ChunkedCompletionHandler;
+import org.slf4j.Logger;
 
 /**
  * Class represents an output sink associated with specific {@link SpdySession}. 
@@ -73,7 +75,6 @@ import org.glassfish.grizzly.spdy.utils.ChunkedCompletionHandler;
  */
 final class SessionOutputSink31 extends SessionOutputSink {
     private static final Logger LOGGER = Grizzly.logger(SessionOutputSink31.class);
-    private static final Level LOGGER_LEVEL = Level.FINE;
 
     private static final int MAX_OUTPUT_QUEUE_SIZE = 65536;
     
@@ -120,9 +121,8 @@ final class SessionOutputSink31 extends SessionOutputSink {
     protected void onPeerWindowUpdate(final int delta) {
         // @TODO check overflow
         final int newWindowSize = availConnectionWindowSize.addAndGet(delta);
-        if (LOGGER.isLoggable(LOGGER_LEVEL)) {
-            LOGGER.log(LOGGER_LEVEL, "SpdySession. Expand connection window size by {0} bytes. Current connection window size is: {1}",
-                    new Object[] {delta, newWindowSize});
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("SpdySession. Expand connection window size by {} bytes. Current connection window size is: {}", delta, newWindowSize);
         }
         
         flushOutputQueue();
@@ -224,9 +224,8 @@ final class SessionOutputSink31 extends SessionOutputSink {
                 if (record == null) {
                     // keep this warning for now
                     // should be reported when null record is spotted
-                    LOGGER.log(Level.WARNING, "UNEXPECTED NULL RECORD. Queue-size: {0} "
-                            + "tmpcnt={1} byteToTransfer={2} queueSizeToFree={3} queueSize={4}",
-                            new Object[]{outputQueue.size(), tmpcnt, bytesToTransfer, queueSizeToFree, queueSize});
+                    LOGGER.warn("UNEXPECTED NULL RECORD. Queue-size: {} tmpcnt={} byteToTransfer={} queueSizeToFree={} queueSize={}",
+                                outputQueue.size(), tmpcnt, bytesToTransfer, queueSizeToFree, queueSize);
                 }
                 
                 assert record != null;
@@ -281,9 +280,9 @@ final class SessionOutputSink31 extends SessionOutputSink {
                 outputQueue.releaseSpace(queueSizeToFree);
                 
                 needToNotify = true;
-                if (LOGGER.isLoggable(LOGGER_LEVEL)) {
-                    LOGGER.log(LOGGER_LEVEL, "SpdySession. Shrink connection window size by {0} bytes. Current connection window size is: {1}",
-                            new Object[] {bytesToTransfer, newWindowSize});
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("SpdySession. Shrink connection window size by {} bytes. Current connection window size is: {}",
+                                 bytesToTransfer, newWindowSize);
                 }
 
             }

@@ -49,12 +49,12 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Formatter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Appender;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.localization.LogMessages;
+import org.slf4j.Logger;
 
 /**
  * Class has useful methods to simplify the work with {@link Buffer}s.
@@ -296,9 +296,7 @@ public class Buffers {
             final int length, final ByteBuffer dstBuffer) {
 
         if (dstBuffer.remaining() < length) {
-            LOGGER.log(Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_BUFFERS_OVERFLOW_EXCEPTION(
-                    srcBuffer, srcOffset, length, dstBuffer));
+            LOGGER.warn(LogMessages.WARNING_GRIZZLY_BUFFERS_OVERFLOW_EXCEPTION(srcBuffer, srcOffset, length, dstBuffer));
             throw new BufferOverflowException();
         }
 
@@ -457,8 +455,7 @@ public class Buffers {
         }
         
         if (buffer1.order() != buffer2.order()) {
-            LOGGER.fine("Appending buffers with different ByteOrder."
-                    + "The result Buffer's order will be the same as the first Buffer's ByteOrder");
+            LOGGER.debug("Appending buffers with different ByteOrder. The result Buffer's order will be the same as the first Buffer's ByteOrder");
             buffer2.order(buffer1.order());
         }
         

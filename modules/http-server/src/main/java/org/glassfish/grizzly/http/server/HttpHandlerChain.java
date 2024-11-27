@@ -46,8 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.server.jmxbase.JmxEventListener;
@@ -60,6 +59,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.http.util.RequestURIRef;
 import org.glassfish.grizzly.localization.LogMessages;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * The HttpHandlerChain class allows the invocation of multiple {@link HttpHandler}s
@@ -228,13 +228,12 @@ public class HttpHandlerChain extends HttpHandler implements JmxEventListener {
         } catch (Exception t) {
             try {
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "Internal server error", t);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Internal server error", t);
                 }
             } catch (Exception ex2) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING,
-                            LogMessages.WARNING_GRIZZLY_HTTP_SERVER_HTTPHANDLERCHAIN_ERRORPAGE(), ex2);
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_HTTPHANDLERCHAIN_ERRORPAGE(), ex2);
                 }
             }
         }

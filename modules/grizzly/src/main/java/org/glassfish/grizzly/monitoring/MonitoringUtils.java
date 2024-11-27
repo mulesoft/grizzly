@@ -40,9 +40,9 @@
 package org.glassfish.grizzly.monitoring;
 
 import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Grizzly;
+import org.slf4j.Logger;
 
 /**
  * The class, which contains utility methods for monitoring support.
@@ -85,8 +85,7 @@ public class MonitoringUtils {
             final Constructor<?> c = clazz.getDeclaredConstructor(contructorParamType);
             return c.newInstance(constructorParam);
         } catch (Exception e) {
-            LOGGER.log(Level.FINE, "Can not load JMX Object: " +
-                    jmxObjectClassname, e);
+            LOGGER.debug("Can not load JMX Object: {}", jmxObjectClassname, e);
         }
         
         return null;

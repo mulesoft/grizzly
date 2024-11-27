@@ -58,8 +58,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
@@ -71,6 +71,7 @@ import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.slf4j.Logger;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -201,7 +202,7 @@ public class JaxwsHandler extends HttpHandler {
      */
     @Override
     public void service(Request req, Response res) throws Exception {
-        LOGGER.log(Level.FINE, "Received a request. The request thread {0} .", Thread.currentThread());
+        LOGGER.debug("Received a request. The request thread {} .", Thread.currentThread());
         // TODO: synchornous execution for ?wsdl, non AsyncProvider requests
         final WSHTTPConnection connection = new JaxwsConnection(httpAdapter,
                 req, res, req.isSecure(), isAsync);
@@ -231,7 +232,7 @@ public class JaxwsHandler extends HttpHandler {
             httpAdapter.handle(connection);
         }
         
-        LOGGER.log(Level.FINE, "Getting out of service(). Done with the request thread {0} .", Thread.currentThread());
+        LOGGER.debug("Getting out of service(). Done with the request thread {} .", Thread.currentThread());
     }
     
     /**

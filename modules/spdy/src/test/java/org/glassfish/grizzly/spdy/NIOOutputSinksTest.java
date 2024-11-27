@@ -40,6 +40,10 @@
 
 package org.glassfish.grizzly.spdy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,8 +51,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -81,8 +84,7 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 @RunWith(Parameterized.class)
 public class NIOOutputSinksTest extends AbstractSpdyTest {
@@ -241,7 +243,7 @@ public class NIOOutputSinksTest extends AbstractSpdyTest {
                 assertEquals(writeCounter.get(), length);
                 assertTrue(callbackInvoked.get());
             } finally {
-                LOGGER.log(Level.INFO, "Written {0}", writeCounter);
+                LOGGER.debug("Written {}", writeCounter);
                 // Close the client connection
                 if (connection != null) {
                     connection.closeSilently();
@@ -337,7 +339,7 @@ public class NIOOutputSinksTest extends AbstractSpdyTest {
                         writeCounter.addAndGet(bufferSize);
                     }
                 } catch (Throwable e) {
-                    LOGGER.log(Level.SEVERE, "Unexpected error", e);
+                    LOGGER.error("Unexpected error", e);
                     parseResult.failure(new IllegalStateException("Error", e));
                 }
             }
@@ -358,7 +360,7 @@ public class NIOOutputSinksTest extends AbstractSpdyTest {
                 int length = parseResult.get(60, TimeUnit.SECONDS);
                 assertEquals("Received " + length + " bytes", bytesToSend, length);
             } finally {
-                LOGGER.log(Level.INFO, "Written {0}", writeCounter);
+                LOGGER.info("Written {}", writeCounter);
                 // Close the client connection
                 if (connection != null) {
                     connection.closeSilently();
@@ -624,7 +626,7 @@ public class NIOOutputSinksTest extends AbstractSpdyTest {
                 int length = parseResult.get(60, TimeUnit.SECONDS);
                 assertEquals("Received " + length + " bytes", bytesToSend, length);
             } finally {
-                LOGGER.log(Level.INFO, "Written {0}", writeCounter);
+                LOGGER.info("Written {}", writeCounter);
                 // Close the client connection
                 if (connection != null) {
                     connection.closeSilently();
@@ -859,7 +861,7 @@ public class NIOOutputSinksTest extends AbstractSpdyTest {
                 check1(resultStr, bufferSize);
                 
             } finally {
-                LOGGER.log(Level.INFO, "Written {0}", writeCounter);
+                LOGGER.info("Written {}", writeCounter);
                 // Close the client connection
                 if (connection != null) {
                     connection.closeSilently();

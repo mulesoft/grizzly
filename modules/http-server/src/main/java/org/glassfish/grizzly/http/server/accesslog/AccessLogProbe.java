@@ -40,10 +40,7 @@
 
 package org.glassfish.grizzly.http.server.accesslog;
 
-import static java.util.logging.Level.WARNING;
-
 import java.util.Date;
-import java.util.logging.Logger;
 
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -52,6 +49,7 @@ import org.glassfish.grizzly.http.server.HttpServerFilter;
 import org.glassfish.grizzly.http.server.HttpServerProbe;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.slf4j.Logger;
 
 /**
  * A {@linkplain HttpServerProbe Grizzly probe} used to provide
@@ -147,7 +145,7 @@ public class AccessLogProbe extends HttpServerProbe.Adapter {
         try {
             appender.append(format.format(response, requestMillis, responseNanos));
         } catch (Throwable throwable) {
-            LOGGER.log(WARNING, "Exception caught appending to access log", throwable);
+            LOGGER.warn("Exception caught appending to access log", throwable);
         }
     }
 

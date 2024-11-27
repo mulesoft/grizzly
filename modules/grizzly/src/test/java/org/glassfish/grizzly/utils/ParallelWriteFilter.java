@@ -39,6 +39,11 @@
  */
 package org.glassfish.grizzly.utils;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -48,13 +53,7 @@ import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 public final class ParallelWriteFilter extends BaseFilter {
     
@@ -112,7 +111,7 @@ public final class ParallelWriteFilter extends BaseFilter {
                             completionHandlerFuture.get(10, TimeUnit.SECONDS);
 
                         } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "sending packet #" + packetNumber, e);
+                            LOGGER.error("sending packet #{}", packetNumber, e);
                         }
                     }
                 });

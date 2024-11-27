@@ -64,8 +64,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import java.util.zip.GZIPOutputStream;
 import org.glassfish.grizzly.http.CompressionConfig;
 import org.glassfish.grizzly.http.Method;
@@ -76,6 +76,7 @@ import org.glassfish.grizzly.monitoring.MonitoringAware;
 import org.glassfish.grizzly.monitoring.MonitoringConfig;
 import org.glassfish.grizzly.monitoring.MonitoringUtils;
 import org.glassfish.grizzly.utils.DataStructures;
+import org.slf4j.Logger;
 
 /**
  * This class implements a file caching mechanism used to cache static resources.
@@ -328,8 +329,7 @@ public class FileCache implements MonitoringAware<FileCacheProbe> {
             notifyProbesError(this, e);
             // If an unexpected exception occurs, try to serve the page
             // as if it wasn't in a cache.
-            LOGGER.log(Level.WARNING,
-                    LogMessages.WARNING_GRIZZLY_HTTP_SERVER_FILECACHE_GENERAL_ERROR(), e);
+            LOGGER.warn(LogMessages.WARNING_GRIZZLY_HTTP_SERVER_FILECACHE_GENERAL_ERROR(), e);
         }
         
         return null;
@@ -734,7 +734,7 @@ public class FileCache implements MonitoringAware<FileCacheProbe> {
             entry.compressedFileSize = size;
             entry.compressedFile = tmpCompressedFile;
         } catch (IOException e) {
-            LOGGER.log(Level.FINE, "Can not compress file: " + entry.plainFile, e);
+            LOGGER.debug("Can not compress file: {}", entry.plainFile, e);
         }
     }
     

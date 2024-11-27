@@ -40,6 +40,11 @@
 
 package org.glassfish.grizzly;
 
+import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -52,8 +57,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.glassfish.grizzly.asyncqueue.AsyncQueueWriter;
 import org.glassfish.grizzly.asyncqueue.TaskQueue;
 import org.glassfish.grizzly.asyncqueue.WritableMessage;
@@ -80,9 +84,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import static org.glassfish.grizzly.utils.FreePortFinder.findFreePort;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
 
 /**
  * AsyncWriteQueue tests.
@@ -353,7 +355,7 @@ public class AsyncWriteQueueTest {
             try {
                 available = readFuture.get(10, TimeUnit.SECONDS);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "read error", e);
+                LOGGER.warn("read error", e);
             }
 
             assertTrue("Read timeout. Server received: " +serverRcvdBytes.get() +
