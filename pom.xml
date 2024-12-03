@@ -543,6 +543,6 @@
         <grizzly.alpn.version>1.7</grizzly.alpn.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
         <slf4jVersion>2.0.16</slf4jVersion>
-        <log4jVersion>2.24.1</log4jVersion>
+        <log4jVersion>2.24.2</log4jVersion>
     </properties>
 </project>
