@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 
-class MuleLoggerProvider {
+public class MuleLoggerProvider {
 
     private static final String DISABLE_LOG_SEPARATION_PROPERTY = "mule.disableLogSeparation";
     private static final String USE_SLF4J_PROPERTY = "mule.grizzly.useSLF4J";
@@ -386,6 +386,96 @@ class MuleLoggerProvider {
         @Override
         public String get() {
             return delegate.get();
+        }
+    }
+
+    public static void logAtLevel(Logger logger, org.slf4j.event.Level level, String msg, Throwable e) {
+        switch (level) {
+            case ERROR:
+                if (logger.isErrorEnabled()) {
+                    logger.error(msg, e);
+                }
+                break;
+            case WARN:
+                if (logger.isWarnEnabled()) {
+                    logger.warn(msg, e);
+                }
+                break;
+            case INFO:
+                if (logger.isInfoEnabled()) {
+                    logger.info(msg, e);
+                }
+                break;
+            case DEBUG:
+                if (logger.isDebugEnabled()) {
+                    logger.debug(msg, e);
+                }
+                break;
+            case TRACE:
+                if (logger.isTraceEnabled()) {
+                    logger.trace(msg, e);
+                }
+                break;
+        }
+    }
+
+    public static void logAtLevel(Logger logger, org.slf4j.event.Level level, String msg) {
+        switch (level) {
+            case ERROR:
+                if (logger.isErrorEnabled()) {
+                    logger.error(msg);
+                }
+                break;
+            case WARN:
+                if (logger.isWarnEnabled()) {
+                    logger.warn(msg);
+                }
+                break;
+            case INFO:
+                if (logger.isInfoEnabled()) {
+                    logger.info(msg);
+                }
+                break;
+            case DEBUG:
+                if (logger.isDebugEnabled()) {
+                    logger.debug(msg);
+                }
+                break;
+            case TRACE:
+                if (logger.isTraceEnabled()) {
+                    logger.trace(msg);
+                }
+                break;
+        }
+    }
+
+    public static void logAtLevel(Logger logger, org.slf4j.event.Level level, String format, Object... args) {
+        switch (level) {
+            case ERROR:
+                if (logger.isErrorEnabled()) {
+                    logger.error(format, args);
+                }
+                break;
+            case WARN:
+                if (logger.isWarnEnabled()) {
+                    logger.warn(format, args);
+                }
+                break;
+            case INFO:
+                if (logger.isInfoEnabled()) {
+                    logger.info(format, args);
+                }
+                break;
+            case DEBUG:
+                if (logger.isDebugEnabled()) {
+                    logger.debug(format, args);
+                }
+                break;
+            case TRACE:
+                if (logger.isTraceEnabled()) {
+                    logger.trace(format, args);
+                }
+                break;
         }
     }
 }

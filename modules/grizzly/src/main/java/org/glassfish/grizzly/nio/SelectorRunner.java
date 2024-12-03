@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.nio;
 
+import static org.glassfish.grizzly.MuleLoggerProvider.logAtLevel;
+
 import java.io.IOException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedSelectorException;
@@ -462,7 +464,7 @@ public final class SelectorRunner implements Runnable {
             final Exception e, final Level runLogLevel,
             final Level stoppedLogLevel) {
         if (isRunning()) {
-            LOGGER.atLevel(runLogLevel).log(description, e);
+            logAtLevel(LOGGER, runLogLevel, description, e);
 
             if (key != null) {
                 try {
@@ -483,7 +485,7 @@ public final class SelectorRunner implements Runnable {
 
             transport.notifyTransportError(e);
         } else {
-            LOGGER.atLevel(stoppedLogLevel).log(description, e);
+            logAtLevel(LOGGER, stoppedLogLevel, description, e);
         }
     }
 

@@ -40,6 +40,8 @@
 
 package org.glassfish.grizzly.filterchain;
 
+import static org.glassfish.grizzly.MuleLoggerProvider.logAtLevel;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +55,7 @@ import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Context;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.MuleLoggerProvider;
 import org.glassfish.grizzly.ProcessorExecutor;
 import org.glassfish.grizzly.ProcessorResult;
 import org.glassfish.grizzly.ReadResult;
@@ -166,7 +169,7 @@ public final class DefaultFilterChain extends ListFacadeFilterChain {
             } while (prepareRemainder(ctx, filtersState));
         } catch (Throwable e) {
             Level level = e instanceof IOException ? Level.DEBUG : Level.WARN;
-            LOGGER.atLevel(level).log(LogMessages.WARNING_GRIZZLY_FILTERCHAIN_EXCEPTION(), e);
+            logAtLevel(LOGGER, level, LogMessages.WARNING_GRIZZLY_FILTERCHAIN_EXCEPTION(), e);
             throwChain(ctx, executor, e);
             ctx.getCloseable().closeWithReason(Exceptions.makeIOException(e));
 
