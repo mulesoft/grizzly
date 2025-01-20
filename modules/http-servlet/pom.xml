@@ -174,7 +174,7 @@
     </dependencies>
     <properties>
         <jersey-version>1.19.4</jersey-version>
-        <jaxb.runtime.version>2.3.2</jaxb.runtime.version>
+        <jaxb.runtime.version>2.3.9</jaxb.runtime.version>
         <maven.compiler.argument>-Xlint:unchecked,-deprecation,fallthrough,finally,cast,dep-ann,empty,overrides</maven.compiler.argument>
     </properties>
 </project>
